@@ -24,3 +24,5 @@ hs_err_pid*
 
 # maven build files
 target
+*.swp
+.vim-project
