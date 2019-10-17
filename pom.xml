@@ -18,13 +18,37 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <dependencies>
+
+    <!-- compile scope -->
+    <!-- IPFS begin -->
+    <dependency>
+      <groupId>com.github.ipfs</groupId>
+      <artifactId>java-ipfs-http-client</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.multiformats</groupId>
+      <artifactId>java-multihash</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <!-- IPFS end -->
+
+    <!-- test scope -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
