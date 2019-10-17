@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package io.singularitynet.sdk.test;
+
+option java_multiple_files = true;
+
+message Input {
+    string input = 1;
+}
+
+message Output {
+    string output = 1;
+}
+
+service TestService {
+    rpc echo(Input) returns (Output) {}
+}
