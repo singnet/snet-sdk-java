@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class TestService extends TestServiceGrpc.TestServiceImplBase {
 
+    public static final int RANDOM_AVAILABLE_PORT = 0;
+
     public static Server start(int port) {
         Server server = ServerBuilder
             .forPort(port)
