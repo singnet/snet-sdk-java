@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Collections;
 import org.web3j.protocol.core.*;
 import org.web3j.tuples.generated.*;
-import io.singularitynet.sdk.contracts.*;
+import io.singularitynet.sdk.contracts.Registry;
 import static org.mockito.Mockito.*;
 
 import static io.singularitynet.sdk.registry.Utils.*;
 
 public class RegistryMock {
 
-    private Registry registry = mock(Registry.class);
+    private final Registry registry = mock(Registry.class);
 
     public Registry get() {
         return registry;

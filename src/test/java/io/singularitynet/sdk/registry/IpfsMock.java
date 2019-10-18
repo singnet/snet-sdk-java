@@ -9,7 +9,7 @@ import static io.singularitynet.sdk.registry.Utils.*;
 
 public class IpfsMock {
 
-    private IPFS ipfs = mock(IPFS.class);
+    private final IPFS ipfs = mock(IPFS.class);
 
     public IPFS get() {
         return ipfs;
