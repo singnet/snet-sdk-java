@@ -28,12 +28,7 @@ public class IntegrationTest {
         testServer = TestService.start(TestService.RANDOM_AVAILABLE_PORT);
         registry = new RegistryMock();
         ipfs = new IpfsMock();
-        registry.getServiceRegistrationById("test-org-id", "test-service-id")
-            .returns(serviceRegistration()
-                    .setId("test-service-id")
-                    .setMetadataUri("ipfs://QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb"));
-        ipfs.cat("QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
-            .returns(serviceMetadataJson(testServer.getPort()));
+
         RegistryContract registryContract = new RegistryContract(registry.get());
         MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.get());
         client = new BaseServiceClient("test-org-id", "test-service-id",
@@ -48,6 +43,12 @@ public class IntegrationTest {
 
     @Test
     public void clientCanCallGrpcServiceUsingSnetSdkGrpcChannel() {
+        registry.getServiceRegistrationById("test-org-id", "test-service-id")
+            .returns(serviceRegistration()
+                    .setId("test-service-id")
+                    .setMetadataUri("ipfs://QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb"));
+        ipfs.cat("QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
+            .returns(serviceMetadataJson(testServer.getPort()));
         TestServiceBlockingStub stub = client.getGrpcStub(TestServiceGrpc::newBlockingStub);
 
         Output output = stub.echo(Input.newBuilder().setInput("ping").build());
