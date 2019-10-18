@@ -34,9 +34,15 @@ jobs:
 
       # get dependencies
       - run:
+          name: Get dependencies
           command: |
             curl -L https://get.web3j.io | bash
             source $HOME/.web3j/source.sh
             ./get_contracts.sh
       # run tests!
-      - run: mvn test
+      - run:
+          name: Run tests
+          command: mvn test
+      - run:
+          name: Upload coverage
+          command: bash <(curl -s https://codecov.io/bash)
