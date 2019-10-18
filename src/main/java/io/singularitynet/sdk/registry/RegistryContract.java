@@ -17,7 +17,7 @@ public class RegistryContract {
     }
 
     public Optional<ServiceRegistration> getServiceRegistrationById(String orgId, String serviceId) {
-        return rethrowChecked(() -> {
+        return wrapExceptions(() -> {
             Tuple4<Boolean, byte[], byte[], List<byte[]>> result = 
                 registry.getServiceRegistrationById(strToBytes32(orgId), strToBytes32(serviceId)).send();
             return Optional.of(ServiceRegistration.newBuilder()

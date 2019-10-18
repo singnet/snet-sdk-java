@@ -18,7 +18,7 @@ public class IpfsMock {
     public ReturnMock<JsonObjectBuilder> cat(String hash) {
         return new ReturnMock<JsonObjectBuilder>() {
             public IpfsMock returns(JsonObjectBuilder value) {
-                return rethrowChecked(() -> {
+                return wrapExceptions(() -> {
                     when(ipfs.cat(eq(Multihash.fromBase58(hash))))
                         .thenReturn(strToBytes(value.build().toString()));
                     return IpfsMock.this;

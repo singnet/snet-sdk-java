@@ -16,7 +16,7 @@ public class IpfsMetadataStorage implements MetadataStorage {
 
     @Override
     public byte[] get(URI uri) {
-        return rethrowChecked(() -> {
+        return wrapExceptions(() -> {
             Multihash filePointer = Multihash.fromBase58(uri.getAuthority());
             return ipfs.cat(filePointer);
         });

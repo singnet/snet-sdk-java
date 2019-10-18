@@ -27,7 +27,7 @@ public class Utils {
         return new String(bytes, UTF_8);
     }
 
-    public static <T> T rethrowChecked(Callable<T> callable) {
+    public static <T> T wrapExceptions(Callable<T> callable) {
         try {
             return callable.call();
         } catch (Exception e) {
