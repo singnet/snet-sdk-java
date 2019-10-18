@@ -20,7 +20,6 @@ public class IntegrationTest {
     private Server testServer;
     private RegistryMock registry;
     private IpfsMock ipfs;
-    private Config config;
 
     private ServiceClient client;
 
@@ -29,17 +28,16 @@ public class IntegrationTest {
         testServer = TestService.start(TestService.RANDOM_AVAILABLE_PORT);
         registry = new RegistryMock();
         ipfs = new IpfsMock();
-        config = new Config() {
-            public Registry getRegistry() { return registry.getRegistry(); }
-            public IPFS getIpfs() { return ipfs.getIpfs(); }
-        };
         registry.getServiceRegistrationById("test-org-id", "test-service-id")
             .returns(serviceRegistration()
                     .setId("test-service-id")
                     .setMetadataUri("ipfs://QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb"));
         ipfs.cat("QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
             .returns(serviceMetadataJson(testServer.getPort()));
-        client = new BaseServiceClient("test-org-id", "test-service-id", config); 
+        RegistryContract registryContract = new RegistryContract(registry.getRegistry());
+        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.getIpfs());
+        client = new BaseServiceClient("test-org-id", "test-service-id",
+                registryContract, metadataStorage); 
     }
 
     @After

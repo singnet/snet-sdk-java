@@ -12,10 +12,8 @@ public class BaseServiceClient implements ServiceClient {
 
     private final ManagedChannel channel;
 
-    public BaseServiceClient(String orgId, String serviceId, Config config) {
-        RegistryContract registryContract = new RegistryContract(config.getRegistry());
+    public BaseServiceClient(String orgId, String serviceId, RegistryContract registryContract, MetadataStorage metadataStorage) {
         ServiceRegistration registration = registryContract.getServiceRegistrationById(orgId, serviceId).get();
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(config.getIpfs());
         byte[] metadataBytes = metadataStorage.get(registration.getMetadataUri());
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         ServiceMetadata serviceMetadata = gson.fromJson(bytesToStr(metadataBytes), ServiceMetadata.class);
