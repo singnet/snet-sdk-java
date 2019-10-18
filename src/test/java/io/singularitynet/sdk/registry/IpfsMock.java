@@ -11,7 +11,7 @@ public class IpfsMock {
 
     private IPFS ipfs = mock(IPFS.class);
 
-    public IPFS getIpfs() {
+    public IPFS get() {
         return ipfs;
     }
 

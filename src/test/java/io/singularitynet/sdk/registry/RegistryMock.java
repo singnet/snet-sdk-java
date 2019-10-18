@@ -13,7 +13,7 @@ public class RegistryMock {
 
     private Registry registry = mock(Registry.class);
 
-    public Registry getRegistry() {
+    public Registry get() {
         return registry;
     }
 

@@ -34,8 +34,8 @@ public class IntegrationTest {
                     .setMetadataUri("ipfs://QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb"));
         ipfs.cat("QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
             .returns(serviceMetadataJson(testServer.getPort()));
-        RegistryContract registryContract = new RegistryContract(registry.getRegistry());
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.getIpfs());
+        RegistryContract registryContract = new RegistryContract(registry.get());
+        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.get());
         client = new BaseServiceClient("test-org-id", "test-service-id",
                 registryContract, metadataStorage); 
     }
