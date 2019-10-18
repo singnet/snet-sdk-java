@@ -2,25 +2,18 @@ package io.singularitynet.sdk.client;
 
 import io.grpc.*;
 import java.util.function.Function;
-import com.google.gson.*;
 import java.net.URL;
 
-import io.singularitynet.sdk.registry.*;
-import static io.singularitynet.sdk.registry.Utils.*;
+import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.registry.ServiceMetadata;
 
 public class BaseServiceClient implements ServiceClient {
 
-    private final String orgId;
-    private final String serviceId;
-    private final RegistryContract registryContract;
-    private final MetadataStorage metadataStorage;
+    private final MetadataProvider metadataProvider;
     private ManagedChannel channel;
 
-    public BaseServiceClient(String orgId, String serviceId, RegistryContract registryContract, MetadataStorage metadataStorage) {
-        this.orgId = orgId;
-        this.serviceId = serviceId;
-        this.metadataStorage = metadataStorage;
-        this.registryContract = registryContract;
+    public BaseServiceClient(MetadataProvider metadataProvider) {
+        this.metadataProvider = metadataProvider;
     }
 
     @Override
@@ -41,10 +34,7 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     private ManagedChannel getChannel() {
-        ServiceRegistration registration = registryContract.getServiceRegistrationById(orgId, serviceId).get();
-        byte[] metadataBytes = metadataStorage.get(registration.getMetadataUri());
-        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-        ServiceMetadata serviceMetadata = gson.fromJson(bytesToStr(metadataBytes), ServiceMetadata.class);
+        ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
         URL url = serviceMetadata.getEndpointGroups().get(0).getEndpoints().get(0);
         return ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())

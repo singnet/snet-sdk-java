@@ -31,8 +31,9 @@ public class IntegrationTest {
 
         RegistryContract registryContract = new RegistryContract(registry.get());
         MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.get());
-        client = new BaseServiceClient("test-org-id", "test-service-id",
-                registryContract, metadataStorage); 
+        MetadataProvider metadataProvider = new RegistryMetadataProvider(
+                "test-org-id", "test-service-id", registryContract, metadataStorage);
+        client = new BaseServiceClient(metadataProvider); 
     }
 
     @After
