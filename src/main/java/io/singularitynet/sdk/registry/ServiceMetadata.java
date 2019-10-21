@@ -65,7 +65,7 @@ public class ServiceMetadata {
             return this;
         }
 
-        public Builder addEndpointGroups(EndpointGroup endpointGroup) {
+        public Builder addEndpointGroup(EndpointGroup endpointGroup) {
             this.endpointGroups.add(endpointGroup);
             return this;
         }

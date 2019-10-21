@@ -4,6 +4,8 @@ import io.ipfs.api.IPFS;
 import io.ipfs.multihash.Multihash;
 import javax.json.*;
 import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.net.URL;
 
 import static io.singularitynet.sdk.registry.Utils.*;
 
@@ -15,51 +17,56 @@ public class IpfsMock {
         return ipfs;
     }
 
-    public ReturnMock<JsonObjectBuilder> cat(String hash) {
-        return new ReturnMock<JsonObjectBuilder>() {
-            public IpfsMock returns(JsonObjectBuilder value) {
-                return wrapExceptions(() -> {
-                    when(ipfs.cat(eq(Multihash.fromBase58(hash))))
-                        .thenReturn(strToBytes(value.build().toString()));
-                    return IpfsMock.this;
-                });
-            }
-        };
-    }
-
-    public static interface ReturnMock<T> {
-        IpfsMock returns(T value);
-    }
-
-    public static JsonObjectBuilder serviceMetadataJson(int port) {
-        return Json.createObjectBuilder()
+    public URI addService(ServiceMetadata metadata) {
+        JsonObjectBuilder rootBuilder = Json.createObjectBuilder()
             .add("version", "1")
-            .add("display_name", "Test Service Name")
+            .add("display_name", metadata.getDisplayName())
             .add("encoding", "proto")
             .add("service_type", "grpc")
             .add("model_ipfs_hash", "QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
-            .add("mpe_address", "0x8FB1dC8df86b388C7e00689d1eCb533A160B4D0C")
-            .add("groups", Json.createArrayBuilder()
-                    .add(Json.createObjectBuilder()
-                        .add("group_name", "default_group")
-                        .add("pricing", Json.createArrayBuilder()
-                            .add(Json.createObjectBuilder()
-                                .add("price_model", "fixed_price")
-                                .add("price_in_cogs", 1)
-                                .add("default", true)
-                                .build())
-                            .build())
-                        .add("endpoints", Json.createArrayBuilder()
-                            .add("http://localhost:" + port)
-                            .build())
-                        .add("group_id", "m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc=")
-                        .build())
-                    .build())
-            .add("assets", Json.createObjectBuilder().build())
+            .add("mpe_address", metadata.getMpeAddress());
+
+        JsonArrayBuilder groupsBuilder = Json.createArrayBuilder();
+        for (EndpointGroup group : metadata.getEndpointGroups()) {
+            JsonObjectBuilder groupBuilder = Json.createObjectBuilder()
+                .add("group_name", group.getGroupName());
+
+            JsonArrayBuilder pricingBuilder = Json.createArrayBuilder();
+            boolean dflt = true;
+            for (Pricing price : group.getPricing()) {
+                JsonObjectBuilder priceBuilder = Json.createObjectBuilder()
+                    .add("price_model", price.getPriceModel().toString())
+                    .add("price_in_cogs", price.getPriceInCogs().toString());
+                if (dflt) {
+                    priceBuilder.add("default", true);
+                    dflt = false;
+                }
+                pricingBuilder.add(priceBuilder);
+            }
+            groupBuilder.add("pricing", pricingBuilder);
+
+            JsonArrayBuilder endpointsBuilder = Json.createArrayBuilder();
+            for (URL endpoint : group.getEndpoints()) {
+                endpointsBuilder.add(endpoint.toString());
+            }
+            groupBuilder.add("endpoints", endpointsBuilder)
+                .add("group_id", "m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc=");
+            groupsBuilder.add(groupBuilder);
+        }
+        rootBuilder.add("groups", groupsBuilder)
+            .add("assets", Json.createObjectBuilder())
             .add("service_description", Json.createObjectBuilder()
                     .add("url", "https://singnet.github.io/dnn-model-services/users_guide/i3d-video-action-recognition.html")
-                    .add("description", "This service uses I3D to perform action recognition on videos.")
-                    .build());
+                    .add("description", "This service uses I3D to perform action recognition on videos."));
+
+        return wrapExceptions(() -> { 
+            String json = rootBuilder.build().toString();
+            String hash = "QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb";
+            when(ipfs.cat(eq(Multihash.fromBase58(hash))))
+                .thenReturn(strToBytes(json));
+            return new URI("ipfs://" + hash);
+        });
     }
+
 }
 

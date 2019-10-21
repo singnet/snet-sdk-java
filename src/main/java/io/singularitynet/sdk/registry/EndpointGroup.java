@@ -74,7 +74,7 @@ public class EndpointGroup {
             return this;
         }
 
-        public Builder setEndpoints(URL endpoint) {
+        public Builder addEndpoint(URL endpoint) {
             this.endpoints.add(endpoint);
             return this;
         }
