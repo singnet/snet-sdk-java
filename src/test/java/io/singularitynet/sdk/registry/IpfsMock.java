@@ -50,7 +50,7 @@ public class IpfsMock {
                 endpointsBuilder.add(endpoint.toString());
             }
             groupBuilder.add("endpoints", endpointsBuilder)
-                .add("group_id", "m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc=");
+                .add("group_id", bytesToBase64(group.getPaymentGroupId()));
             groupsBuilder.add(groupBuilder);
         }
         rootBuilder.add("groups", groupsBuilder)

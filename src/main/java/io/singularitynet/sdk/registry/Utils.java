@@ -2,6 +2,7 @@ package io.singularitynet.sdk.registry;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.concurrent.Callable;
+import java.util.Base64;
 
 public class Utils {
 
@@ -16,6 +17,14 @@ public class Utils {
             bytes32[i++] = b;
         }
         return bytes32;
+    }
+
+    public static byte[] base64ToBytes(String str) {
+        return Base64.getDecoder().decode(str);
+    }
+
+    public static String bytesToBase64(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     public static String bytes32ToStr(byte[] bytes) {

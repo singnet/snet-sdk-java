@@ -12,6 +12,7 @@ import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.client.*;
 import io.singularitynet.sdk.mpe.*;
 import io.singularitynet.sdk.test.TestServiceGrpc.TestServiceBlockingStub;
+import static io.singularitynet.sdk.registry.Utils.base64ToBytes;
 
 public class SingleServiceSingleClientTest {
 
@@ -50,7 +51,7 @@ public class SingleServiceSingleClientTest {
                     .setGroupName("default_group")
                     .addPricing(pricing)
                     .addEndpoint(server.getEndpoint())
-                    .setPaymentGroupId("m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc=")
+                    .setPaymentGroupId(base64ToBytes("m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc="))
                     .build())
             .build();
         URI metadataUri = ipfs.addService(service);

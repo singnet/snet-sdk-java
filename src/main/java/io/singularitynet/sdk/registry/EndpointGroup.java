@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
+import static com.google.common.base.Preconditions.checkArgument;
 
 @EqualsAndHashCode
 @ToString
@@ -43,8 +44,8 @@ public class EndpointGroup {
         return endpoints;
     }
 
-    public String getPaymentGroupId() {
-        return paymentGroupId;
+    public byte[] getPaymentGroupId() {
+        return Utils.base64ToBytes(paymentGroupId);
     }
 
     public static class Builder {
@@ -79,8 +80,9 @@ public class EndpointGroup {
             return this;
         }
 
-        public Builder setPaymentGroupId(String paymentGroupId) {
-            this.paymentGroupId = paymentGroupId;
+        public Builder setPaymentGroupId(byte[] paymentGroupId) {
+            checkArgument(paymentGroupId.length == 32, "Payment group id should be 32 bytes length");
+            this.paymentGroupId = Utils.bytesToBase64(paymentGroupId);
             return this;
         }
 
