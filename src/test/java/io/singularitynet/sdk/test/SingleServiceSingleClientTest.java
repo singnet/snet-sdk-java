@@ -6,9 +6,11 @@ import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.math.BigInteger;
+import java.util.Optional;
 
 import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.client.*;
+import io.singularitynet.sdk.mpe.*;
 import io.singularitynet.sdk.test.TestServiceGrpc.TestServiceBlockingStub;
 
 public class SingleServiceSingleClientTest {
@@ -62,7 +64,7 @@ public class SingleServiceSingleClientTest {
         MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.get());
         MetadataProvider metadataProvider = new RegistryMetadataProvider(
                 orgId, serviceId, registryContract, metadataStorage);
-        serviceClient = new BaseServiceClient(metadataProvider); 
+        serviceClient = new BaseServiceClient(metadataProvider, new EmptyPaymentStrategy()); 
 
         serviceStub = serviceClient.getGrpcStub(TestServiceGrpc::newBlockingStub);
     }
@@ -77,7 +79,14 @@ public class SingleServiceSingleClientTest {
     public void clientCanCallGrpcServiceUsingSnetSdkGrpcChannel() {
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
-        assertEquals(Output.newBuilder().setOutput("ping").build(), output);
+        assertEquals("Result returned", Output.newBuilder().setOutput("ping").build(), output);
+    }
+
+    @Test
+    public void clientSendsPaymentDataInGrpcMetadata() {
+        Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
+
+        assertEquals("Number of payments received by daemon", 1, server.getDaemon().getPayments().size());
     }
 
 }

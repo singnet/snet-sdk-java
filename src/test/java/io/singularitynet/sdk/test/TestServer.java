@@ -4,6 +4,12 @@ import io.grpc.stub.StreamObserver;
 import io.grpc.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import io.singularitynet.sdk.mpe.*;
 
 public class TestServer {
 
@@ -48,8 +54,13 @@ public class TestServer {
         }
     }
 
+    public Daemon getDaemon() {
+        return daemon;
+    }
+
     public static class TestService extends TestServiceGrpc.TestServiceImplBase  {
 
+        @Override
         public void echo(Input input, StreamObserver<Output> callback) {
             Output output = Output.newBuilder()
                 .setOutput(input.getInput())
@@ -62,11 +73,23 @@ public class TestServer {
 
     public static class Daemon implements ServerInterceptor {
 
+        private List<Payment> payments = Collections.synchronizedList(new ArrayList<>());
+
+        @Override
         public <ReqT,RespT> ServerCall.Listener<ReqT> interceptCall(
                 ServerCall<ReqT,RespT> call, Metadata headers,
                 ServerCallHandler<ReqT,RespT> next) {
+            Optional<Payment> payment = PaymentSerializer.fromMetadata(headers);
+            if (payment.isPresent()) {
+                payments.add(payment.get());
+            }
             return next.startCall(call, headers);
         }
+
+        public List<Payment> getPayments() {
+            return payments;
+        }
+
 
     }
 
