@@ -7,8 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import io.singularitynet.sdk.ethereum.Signer;
-// TODO: move into common package
-import io.singularitynet.sdk.registry.Utils;
+import io.singularitynet.sdk.common.Utils;
 
 @EqualsAndHashCode
 @ToString

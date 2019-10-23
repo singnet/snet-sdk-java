@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.List;
 import io.singularitynet.sdk.contracts.Registry;
 
-import static io.singularitynet.sdk.registry.Utils.*;
+import static io.singularitynet.sdk.common.Utils.*;
 
 public class RegistryContract {
 

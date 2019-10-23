@@ -6,7 +6,7 @@ import org.web3j.crypto.Hash;
 import java.io.ByteArrayOutputStream;
 import static com.google.common.base.Preconditions.checkState;
 
-import io.singularitynet.sdk.registry.Utils;
+import io.singularitynet.sdk.common.Utils;
 
 public class PrivateKeyIdentity implements Signer {
 

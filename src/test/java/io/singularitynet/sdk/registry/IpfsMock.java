@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import java.net.URI;
 import java.net.URL;
 
-import static io.singularitynet.sdk.registry.Utils.*;
+import static io.singularitynet.sdk.common.Utils.*;
 
 public class IpfsMock {
 

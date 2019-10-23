@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import org.web3j.tuples.generated.Tuple7;
 
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
-import io.singularitynet.sdk.registry.Utils;
+import io.singularitynet.sdk.common.Utils;
 
 public class MultiPartyEscrowContract {
 

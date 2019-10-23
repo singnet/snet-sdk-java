@@ -1,7 +1,7 @@
 package io.singularitynet.sdk.registry;
 
 import com.google.gson.*;
-import static io.singularitynet.sdk.registry.Utils.*;
+import static io.singularitynet.sdk.common.Utils.*;
 
 public class RegistryMetadataProvider implements MetadataProvider {
         

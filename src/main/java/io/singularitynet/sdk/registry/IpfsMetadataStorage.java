@@ -4,7 +4,7 @@ import java.net.URI;
 import io.ipfs.api.IPFS;
 import io.ipfs.multihash.Multihash;
 
-import static io.singularitynet.sdk.registry.Utils.*;
+import static io.singularitynet.sdk.common.Utils.*;
 
 public class IpfsMetadataStorage implements MetadataStorage {
 

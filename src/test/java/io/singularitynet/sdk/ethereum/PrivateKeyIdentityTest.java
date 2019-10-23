@@ -3,7 +3,7 @@ package io.singularitynet.sdk.ethereum;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import io.singularitynet.sdk.registry.Utils;
+import io.singularitynet.sdk.common.Utils;
 
 public class PrivateKeyIdentityTest {
 

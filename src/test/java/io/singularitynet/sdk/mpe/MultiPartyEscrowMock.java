@@ -6,7 +6,7 @@ import org.web3j.tuples.generated.*;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import static org.mockito.Mockito.*;
 
-import static io.singularitynet.sdk.registry.Utils.*;
+import static io.singularitynet.sdk.common.Utils.*;
 
 public class MultiPartyEscrowMock {
 

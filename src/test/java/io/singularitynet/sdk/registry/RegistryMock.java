@@ -7,8 +7,8 @@ import static org.mockito.Mockito.*;
 import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 
-import static io.singularitynet.sdk.registry.Utils.*;
-import io.singularitynet.sdk.registry.Utils;
+import static io.singularitynet.sdk.common.Utils.*;
+import io.singularitynet.sdk.common.Utils;
 
 public class RegistryMock {
 

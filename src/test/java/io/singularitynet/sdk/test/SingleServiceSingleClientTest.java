@@ -8,7 +8,7 @@ import java.net.URI;
 import java.math.BigInteger;
 import java.util.Optional;
 
-import static io.singularitynet.sdk.registry.Utils.base64ToBytes;
+import static io.singularitynet.sdk.common.Utils.base64ToBytes;
 import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.client.*;
 import io.singularitynet.sdk.mpe.*;

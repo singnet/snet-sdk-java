@@ -5,6 +5,8 @@ import lombok.ToString;
 import com.google.gson.annotations.SerializedName;
 import static com.google.common.base.Preconditions.checkArgument;
 
+import io.singularitynet.sdk.common.Utils;
+
 @EqualsAndHashCode
 @ToString
 public class PaymentGroup {

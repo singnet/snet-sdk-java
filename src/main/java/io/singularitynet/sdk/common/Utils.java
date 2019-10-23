@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.registry;
+package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.concurrent.Callable;

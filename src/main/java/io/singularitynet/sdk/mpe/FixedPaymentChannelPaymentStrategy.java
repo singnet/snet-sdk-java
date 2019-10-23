@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import io.singularitynet.sdk.ethereum.Signer;
-import io.singularitynet.sdk.registry.Utils;
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.registry.*;
 
