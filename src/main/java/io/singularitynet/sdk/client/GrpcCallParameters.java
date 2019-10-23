@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.mpe;
+package io.singularitynet.sdk.client;
 
 import io.grpc.MethodDescriptor;
 import io.grpc.CallOptions;

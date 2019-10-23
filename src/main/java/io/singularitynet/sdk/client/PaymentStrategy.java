@@ -1,7 +1,6 @@
-package io.singularitynet.sdk.mpe;
+package io.singularitynet.sdk.client;
 
-// TODO: cyclic dependency between mpe and client packages
-import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.mpe.Payment;
 
 public interface PaymentStrategy {
 
