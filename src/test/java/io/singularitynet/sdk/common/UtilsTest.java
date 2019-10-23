@@ -49,4 +49,20 @@ public class UtilsTest {
 
         Utils.bytes32ToStr(new byte[31]);
     }
+
+    @Test
+    public void addressToBytesPrefixed() {
+        byte[] result = Utils.addressToBytes("0x01020E0F");
+
+        assertArrayEquals("Address with prefix converted",
+                new byte[] { 0x01, 0x02, 0x0E, 0x0F }, result);
+    }
+
+    @Test
+    public void addressToBytesNoPrefix() {
+        byte[] result = Utils.addressToBytes("01020E0F");
+
+        assertArrayEquals("Address with prefix converted",
+                new byte[] { 0x01, 0x02, 0x0E, 0x0F }, result);
+    }
 }
