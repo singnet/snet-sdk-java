@@ -12,8 +12,12 @@ public class PrivateKeyIdentity implements Signer {
 
     private final ECKeyPair key;
 
+    public PrivateKeyIdentity(ECKeyPair key) {
+        this.key = key;
+    }
+
     public PrivateKeyIdentity(byte[] privateKey) {
-        this.key = ECKeyPair.create(privateKey);
+        this(ECKeyPair.create(privateKey));
     }
 
     @Override
