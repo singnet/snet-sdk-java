@@ -9,6 +9,10 @@ import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.mpe.*;
 
+/**
+ * The class is responsible for providing all necessary facilities to call
+ * a platform service.
+ */
 public class BaseServiceClient implements ServiceClient {
 
     private final String groupName;
@@ -18,6 +22,14 @@ public class BaseServiceClient implements ServiceClient {
 
     private ManagedChannel channel;
 
+    /**
+     * Constructor.
+     * @param groupName name of the endpoing group in service metadata to
+     * connect.
+     * @param metadataProvider provides the service related metadata.
+     * @param paymentStrategy provides payment for the client call.
+     * @param paymentChannelProvider provides the payment channel state.
+     */
     public BaseServiceClient(String groupName,
             MetadataProvider metadataProvider,
             PaymentStrategy paymentStrategy,

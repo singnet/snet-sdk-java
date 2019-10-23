@@ -8,11 +8,21 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.mpe.*;
 import io.singularitynet.sdk.registry.*;
 
+/**
+ * The class is responsible for providing a payment for the client call using
+ * the specified payment channel.
+ */
 public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         
     private final BigInteger channelId;
     private final Signer signer;
 
+    /**
+     * Constructor.
+     * @param channelId id of the payment channel to use for the payment
+     * generation.
+     * @param signer used to sign the payment.
+     */
     public FixedPaymentChannelPaymentStrategy(BigInteger channelId, Signer signer) {
         this.channelId = channelId;
         this.signer = signer;
