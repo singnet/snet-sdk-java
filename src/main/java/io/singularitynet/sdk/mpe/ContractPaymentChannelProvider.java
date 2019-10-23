@@ -10,6 +10,7 @@ public class ContractPaymentChannelProvider implements PaymentChannelProvider {
         this.mpe = mpe;
     }
 
+    @Override
     public PaymentChannel getChannelById(BigInteger channelId) {
         return mpe.getChannelById(channelId).get();
     }

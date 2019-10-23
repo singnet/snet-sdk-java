@@ -30,6 +30,7 @@ public class MultiPartyEscrowContract {
                     .setPaymentGroupId(channel.component5())
                     .setValue(channel.component6())
                     .setExpiration(channel.component7())
+                    .setSpentAmount(BigInteger.ZERO)
                     .build());
         });
     }

@@ -24,10 +24,11 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         PaymentChannel channel = serviceClient.getPaymentChannelProvider()
             .getChannelById(channelId);
         BigInteger price = getPrice(channel, serviceClient);
-        BigInteger newAmount = channel.getValue().add(price);
+        // TODO: test on price exceeds channel value
+        BigInteger newAmount = channel.getSpentAmount().add(price);
         return EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
-            .setAmount(BigInteger.valueOf(11))
+            .setAmount(newAmount)
             .setSigner(signer)
             .build();
     }

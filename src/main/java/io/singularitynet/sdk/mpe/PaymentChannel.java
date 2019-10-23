@@ -18,6 +18,7 @@ public class PaymentChannel {
     private final byte[] paymentGroupId;
     private final BigInteger value;
     private final BigInteger expiration;
+    private final BigInteger spentAmount;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -37,6 +38,7 @@ public class PaymentChannel {
         this.paymentGroupId = builder.paymentGroupId;
         this.value = builder.value;
         this.expiration = builder.expiration;
+        this.spentAmount = builder.spentAmount;
     }
 
     public BigInteger getChannelId() {
@@ -75,6 +77,10 @@ public class PaymentChannel {
         return expiration;
     }
 
+    public BigInteger getSpentAmount() {
+        return spentAmount;
+    }
+
     public static class Builder {
 
         private BigInteger channelId;
@@ -86,6 +92,7 @@ public class PaymentChannel {
         private byte[] paymentGroupId;
         private BigInteger value;
         private BigInteger expiration;
+        private BigInteger spentAmount;
 
         private Builder() {
         }
@@ -100,6 +107,7 @@ public class PaymentChannel {
             this.paymentGroupId = object.paymentGroupId;
             this.value = object.value;
             this.expiration = object.expiration;
+            this.spentAmount = object.spentAmount;
         }
 
         public Builder setChannelId(BigInteger channelId) {
@@ -145,6 +153,11 @@ public class PaymentChannel {
 
         public Builder setExpiration(BigInteger expiration) {
             this.expiration = expiration;
+            return this;
+        }
+
+        public Builder setSpentAmount(BigInteger spentAmount) {
+            this.spentAmount = spentAmount;
             return this;
         }
 

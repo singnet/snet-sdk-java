@@ -102,6 +102,7 @@ public class SingleServiceSingleClientTest {
             .setPaymentGroupId(base64ToBytes("m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc="))
             .setValue(BigInteger.valueOf(41))
             .setExpiration(BigInteger.valueOf(125))
+            .setSpentAmount(BigInteger.valueOf(0))
             .build();
         mpe.setContractAddress("0x8FB1dC8df86b388C7e00689d1eCb533A160B4D0C");
         mpe.addPaymentChannel(paymentChannel);
