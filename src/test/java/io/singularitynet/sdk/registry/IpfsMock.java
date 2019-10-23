@@ -68,5 +68,41 @@ public class IpfsMock {
         });
     }
 
+    public URI addOrganization(OrganizationMetadata metadata) {
+        JsonObjectBuilder rootBuilder = Json.createObjectBuilder()
+            .add("org_name", metadata.getOrgName())
+            .add("org_id", metadata.getOrgId());
+
+        JsonArrayBuilder groupsBuilder = Json.createArrayBuilder();
+        for (PaymentGroup group : metadata.getPaymentGroups()) {
+            PaymentDetails paymentDetails = group.getPaymentDetails();
+            JsonObjectBuilder groupBuilder = Json.createObjectBuilder()
+                .add("group_name", group.getGroupName())
+                .add("group_id", bytesToBase64(group.getPaymentGroupId()))
+                .add("payment", Json.createObjectBuilder()
+                        .add("payment_address", paymentDetails.getPaymentAddress())
+                        .add("payment_expiration_threshold", paymentDetails.getPaymentExpirationThreshold().toString())
+                        .add("payment_channel_storage_type", "etcd")
+                        .add("payment_channel_storage_client", Json.createObjectBuilder()
+                            .add("connection_timeout", "100s")
+                            .add("request_timeout", "5s")
+                            .add("endpoints", Json.createArrayBuilder()
+                                .add("https://snet-etcd.singularitynet.io:2379")
+                                )
+                            )
+                        );
+            groupsBuilder.add(groupBuilder);
+        }
+        rootBuilder.add("groups", groupsBuilder);
+
+        return wrapExceptions(() -> { 
+            String json = rootBuilder.build().toString();
+            String hash = "QmSesBRhz67FRixd3mGMNmQE5sNyZxdDgcNMEBmmhHk2X6";
+            when(ipfs.cat(eq(Multihash.fromBase58(hash))))
+                .thenReturn(strToBytes(json));
+            return new URI("ipfs://" + hash);
+        });
+    }
+
 }
 

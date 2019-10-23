@@ -3,6 +3,7 @@ package io.singularitynet.sdk.registry;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.concurrent.Callable;
 import java.util.Base64;
+import org.web3j.abi.datatypes.Address;
 
 public class Utils {
 
@@ -34,6 +35,11 @@ public class Utils {
 
     public static String bytesToStr(byte[] bytes) {
         return new String(bytes, UTF_8);
+    }
+
+    // TODO: replace by Address.toByteArray()
+    public static byte[] addressToBytes(String address) {
+        return new Address(address).toUint().getValue().toByteArray();
     }
 
     public static <T> T wrapExceptions(Callable<T> callable) {

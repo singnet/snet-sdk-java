@@ -7,21 +7,22 @@ import java.util.function.Consumer;
 
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
-import io.singularitynet.sdk.mpe.PaymentStrategy;
-import io.singularitynet.sdk.mpe.Payment;
-import io.singularitynet.sdk.mpe.GrpcCallParameters;
-import io.singularitynet.sdk.mpe.PaymentSerializer;
+import io.singularitynet.sdk.mpe.*;
 
 public class BaseServiceClient implements ServiceClient {
 
     private final MetadataProvider metadataProvider;
     private final PaymentStrategy paymentStrategy;
+    private final PaymentChannelProvider paymentChannelProvider;
 
     private ManagedChannel channel;
 
-    public BaseServiceClient(MetadataProvider metadataProvider, PaymentStrategy paymentStrategy) {
+    public BaseServiceClient(MetadataProvider metadataProvider,
+            PaymentStrategy paymentStrategy,
+            PaymentChannelProvider paymentChannelProvider) {
         this.metadataProvider = metadataProvider;
         this.paymentStrategy = paymentStrategy;
+        this.paymentChannelProvider = paymentChannelProvider;
     }
 
     @Override
@@ -32,6 +33,16 @@ public class BaseServiceClient implements ServiceClient {
     @Override
     public void shutdownNow() {
         channel.shutdownNow();
+    }
+
+    @Override
+    public PaymentChannelProvider getPaymentChannelProvider() {
+        return paymentChannelProvider;
+    }
+
+    @Override
+    public MetadataProvider getMetadataProvider() {
+        return metadataProvider;
     }
 
     private ManagedChannel getChannelLazy() {
@@ -47,7 +58,7 @@ public class BaseServiceClient implements ServiceClient {
         URL url = serviceMetadata.getEndpointGroups().get(0).getEndpoints().get(0);
         return ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
-            .intercept(new PaymentClientInterceptor(paymentStrategy))
+            .intercept(new PaymentClientInterceptor(this, paymentStrategy))
             // TODO: support TLS connections
             .usePlaintext()
             .build();
@@ -55,9 +66,11 @@ public class BaseServiceClient implements ServiceClient {
 
     private static class PaymentClientInterceptor implements ClientInterceptor {
 
+        private final ServiceClient serviceClient;
         private final PaymentStrategy paymentStrategy;
 
-        public PaymentClientInterceptor(PaymentStrategy paymentStrategy) {
+        public PaymentClientInterceptor(ServiceClient serviceClient, PaymentStrategy paymentStrategy) {
+            this.serviceClient = serviceClient;
             this.paymentStrategy = paymentStrategy;
         }
 
@@ -67,9 +80,10 @@ public class BaseServiceClient implements ServiceClient {
                 CallOptions callOptions,
                 Channel next) {
             final Payment payment = paymentStrategy.getPayment(
-                    new GrpcCallParameters<>(method, callOptions, next));
+                    new GrpcCallParameters<>(method, callOptions, next),
+                    serviceClient);
             return new ClientCallWrapper<>(next.newCall(method, callOptions),
-                    headers -> PaymentSerializer.toMetadata(payment, headers));
+                    headers -> payment.toMetadata(headers));
         }
 
     }
