@@ -34,8 +34,8 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
 
     private BigInteger getPrice(PaymentChannel channel, ServiceClient serviceClient) {
         ServiceMetadata serviceMetadata = serviceClient.getMetadataProvider().getServiceMetadata();
-        // TODO: this can contradict to failover strategy do we need
-        // GroupSelectionStrategy?
+        // TODO: this can contradict to failover strategy:
+        // how to align endpoint group selected by failover and payment group?
         EndpointGroup group = serviceMetadata.getEndpointGroups().stream()
             .filter(grp -> Arrays.equals(channel.getPaymentGroupId(), grp.getPaymentGroupId()))
             .findFirst().get();

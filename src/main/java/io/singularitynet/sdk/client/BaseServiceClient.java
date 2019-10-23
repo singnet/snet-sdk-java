@@ -11,15 +11,18 @@ import io.singularitynet.sdk.mpe.*;
 
 public class BaseServiceClient implements ServiceClient {
 
+    private final String groupName;
     private final MetadataProvider metadataProvider;
     private final PaymentStrategy paymentStrategy;
     private final PaymentChannelProvider paymentChannelProvider;
 
     private ManagedChannel channel;
 
-    public BaseServiceClient(MetadataProvider metadataProvider,
+    public BaseServiceClient(String groupName,
+            MetadataProvider metadataProvider,
             PaymentStrategy paymentStrategy,
             PaymentChannelProvider paymentChannelProvider) {
+        this.groupName = groupName;
         this.metadataProvider = metadataProvider;
         this.paymentStrategy = paymentStrategy;
         this.paymentChannelProvider = paymentChannelProvider;
@@ -55,7 +58,9 @@ public class BaseServiceClient implements ServiceClient {
 
     private ManagedChannel getChannel() {
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
-        URL url = serviceMetadata.getEndpointGroups().get(0).getEndpoints().get(0);
+        URL url = serviceMetadata.getEndpointGroups().stream()
+            .filter(group -> groupName.equals(group.getGroupName()))
+            .findFirst().get().getEndpoints().get(0);
         return ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
             .intercept(new PaymentClientInterceptor(this, paymentStrategy))

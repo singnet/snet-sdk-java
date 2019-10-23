@@ -72,11 +72,12 @@ public class SingleServiceSingleClientTest {
             .setPriceModel(PriceModel.FIXED_PRICE)
             .setPriceInCogs(BigInteger.valueOf(11))
             .build();
+        String endpointGroupName = "default_group";
         service = ServiceMetadata.newBuilder()
             .setDisplayName("Test Service Name")
             .setMpeAddress("0x8FB1dC8df86b388C7e00689d1eCb533A160B4D0C")
             .addEndpointGroup(EndpointGroup.newBuilder()
-                    .setGroupName("default_group")
+                    .setGroupName(endpointGroupName)
                     .addPricing(pricing)
                     .addEndpoint(server.getEndpoint())
                     .setPaymentGroupId(base64ToBytes("m5FKWq4hW0foGW5qSbzGSjgZRuKs7A1ZwbIrJ9e96rc="))
@@ -116,7 +117,7 @@ public class SingleServiceSingleClientTest {
                 orgId, serviceId, registryContract, metadataStorage);
         MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(mpe.get());
         PaymentChannelProvider paymentChannelProvider = new ContractPaymentChannelProvider(mpeContract);
-        serviceClient = new BaseServiceClient(metadataProvider,
+        serviceClient = new BaseServiceClient(endpointGroupName, metadataProvider,
                 new FixedPaymentChannelPaymentStrategy(channelId, signer),
                 paymentChannelProvider); 
 
