@@ -149,11 +149,12 @@
         <configuration>
           <!-- artifact to download binary protobuf compiler -->
           <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-          <!-- make maven using GRPC plugin for compile-custom and
-          test-compile-custom goals -->
+          <!-- make maven using GRPC plugin for compile-custom and test-compile-custom goals -->
           <pluginId>grpc-java</pluginId>
           <!-- artifact to download GRPC protobuf compiler plugin -->
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+          <!-- to not recompile protobuf each time -->
+          <checkStaleness>true</checkStaleness>
         </configuration>
         <executions>
           <execution>
@@ -209,6 +210,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
