@@ -46,6 +46,3 @@ jobs:
       - run:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)
-      - run:
-          name: Compile javadoc
-          command: mvn javadoc:javadoc
