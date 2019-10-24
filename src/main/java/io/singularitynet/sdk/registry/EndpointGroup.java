@@ -17,6 +17,8 @@ public class EndpointGroup {
     private final String groupName;
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
+    // TODO: replace by GroupId class to implement toString() and seemless JSON
+    // conversion
     @SerializedName("group_id") private final String paymentGroupId;
 
     public static Builder newBuilder() {

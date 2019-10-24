@@ -4,6 +4,8 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
 
+import java.math.BigInteger;
+
 public class UtilsTest {
 
     @Rule
@@ -64,5 +66,23 @@ public class UtilsTest {
 
         assertArrayEquals("Address with prefix converted",
                 new byte[] { 0x01, 0x02, 0x0E, 0x0F }, result);
+    }
+
+    @Test
+    public void bigIntToBytes32() {
+        byte[] bytes32 = Utils.bigIntToBytes32(BigInteger.valueOf(0x1234));
+
+        assertArrayEquals("BigInteger converted to 32 bytes",
+                new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x12, 0x34 },
+                bytes32);
+    }
+
+    @Test
+    public void bytes32ToBigInt() {
+        BigInteger bigint = Utils.bytes32ToBigInt(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x12, 0x34 });
+
+        assertEquals("BigInteger converted from 32 bytes",
+                BigInteger.valueOf(0x1234),
+                bigint);
     }
 }

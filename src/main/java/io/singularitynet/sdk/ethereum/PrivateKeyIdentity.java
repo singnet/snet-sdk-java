@@ -2,6 +2,7 @@ package io.singularitynet.sdk.ethereum;
 
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
+import org.web3j.crypto.Keys;
 import org.web3j.crypto.Hash;
 import java.io.ByteArrayOutputStream;
 import static com.google.common.base.Preconditions.checkState;
@@ -22,10 +23,15 @@ public class PrivateKeyIdentity implements Signer {
 
     @Override
     public byte[] sign(byte[] message) {
-        return signatureAsBytes(Sign.signPrefixedMessage(Hash.sha3(message), key));
+        return signatureToBytes(Sign.signPrefixedMessage(Hash.sha3(message), key));
     }
 
-    private static byte[] signatureAsBytes(Sign.SignatureData signature) {
+    @Override
+    public String getAddress() {
+        return Keys.getAddress(key.getPublicKey());
+    }
+
+    private static byte[] signatureToBytes(Sign.SignatureData signature) {
         return Utils.wrapExceptions(() -> {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             bytes.write(signature.getR());

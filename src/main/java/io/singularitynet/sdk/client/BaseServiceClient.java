@@ -1,10 +1,10 @@
 package io.singularitynet.sdk.client;
 
-import io.grpc.*;
 import java.util.function.Function;
-import java.net.URL;
 import java.util.function.Consumer;
+import io.grpc.*;
 
+import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.mpe.*;
@@ -15,39 +15,33 @@ import io.singularitynet.sdk.mpe.*;
  */
 public class BaseServiceClient implements ServiceClient {
 
-    private final String groupName;
+    private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
-    private final PaymentStrategy paymentStrategy;
     private final PaymentChannelProvider paymentChannelProvider;
-
-    private ManagedChannel channel;
+    private final PaymentStrategy paymentStrategy;
 
     /**
      * Constructor.
-     * @param groupName name of the endpoing group in service metadata to
-     * connect.
+     * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
-     * @param paymentStrategy provides payment for the client call.
      * @param paymentChannelProvider provides the payment channel state.
+     * @param paymentStrategy provides payment for the client call.
      */
-    public BaseServiceClient(String groupName,
+    public BaseServiceClient(
+            DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
-            PaymentStrategy paymentStrategy,
-            PaymentChannelProvider paymentChannelProvider) {
-        this.groupName = groupName;
+            PaymentChannelProvider paymentChannelProvider,
+            PaymentStrategy paymentStrategy) {
+        this.daemonConnection = daemonConnection;
+        this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
-        this.paymentStrategy = paymentStrategy;
         this.paymentChannelProvider = paymentChannelProvider;
+        this.paymentStrategy = paymentStrategy;
     }
 
     @Override
-    public <T> T getGrpcStub(Function<Channel, T> constructor) {
-        return constructor.apply(getChannelLazy());
-    }
-
-    @Override
-    public void shutdownNow() {
-        channel.shutdownNow();
+    public MetadataProvider getMetadataProvider() {
+        return metadataProvider;
     }
 
     @Override
@@ -56,29 +50,13 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public MetadataProvider getMetadataProvider() {
-        return metadataProvider;
+    public <T> T getGrpcStub(Function<Channel, T> constructor) {
+        return daemonConnection.getGrpcStub(constructor);
     }
 
-    private ManagedChannel getChannelLazy() {
-        // TODO: make thread safe
-        if (channel == null) {
-            channel = getChannel();
-        }
-        return channel;
-    }
-
-    private ManagedChannel getChannel() {
-        ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
-        URL url = serviceMetadata.getEndpointGroups().stream()
-            .filter(group -> groupName.equals(group.getGroupName()))
-            .findFirst().get().getEndpoints().get(0);
-        return ManagedChannelBuilder
-            .forAddress(url.getHost(), url.getPort())
-            .intercept(new PaymentClientInterceptor(this, paymentStrategy))
-            // TODO: support TLS connections
-            .usePlaintext()
-            .build();
+    @Override
+    public void shutdownNow() {
+        daemonConnection.shutdownNow();
     }
 
     private static class PaymentClientInterceptor implements ClientInterceptor {

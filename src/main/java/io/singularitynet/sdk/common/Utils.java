@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.concurrent.Callable;
 import java.util.Base64;
 import org.web3j.abi.datatypes.Address;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 public class Utils {
 
@@ -42,7 +44,21 @@ public class Utils {
 
     // TODO: replace by Address.toByteArray()
     public static byte[] addressToBytes(String address) {
+        // TODO: check that address length is 20 bytes
         return new Address(address).toUint().getValue().toByteArray();
+    }
+
+    public static byte[] bigIntToBytes32(BigInteger value) {
+        byte[] bytes32 = new byte[32];
+        byte[] bytes = value.toByteArray();
+        // TODO: check bytes length is not greater than 32
+        System.arraycopy(bytes, 0, bytes32, 32 - bytes.length, bytes.length);
+        return bytes32;
+    }
+
+    public static BigInteger bytes32ToBigInt(byte[] bytes) {
+        // TODO: check bytes length is equal to 32
+        return new BigInteger(bytes);
     }
 
     public static <T> T wrapExceptions(Callable<T> callable) {

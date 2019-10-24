@@ -27,6 +27,7 @@ public class EscrowPayment implements Payment {
     private final BigInteger channelId;
     private final BigInteger channelNonce;
     private final BigInteger amount;
+    // TODO: replace by Signature class to implement toString()
     private final byte[] signature;
 
     @Override
@@ -56,6 +57,22 @@ public class EscrowPayment implements Payment {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    public BigInteger getChannelId() {
+        return channelId;
+    }
+
+    public BigInteger getChannelNonce() {
+        return channelNonce;
+    }
+
+    public BigInteger getAmount() {
+        return amount;
+    }
+
+    public byte[] getSignature() {
+        return signature;
     }
 
     public static class Builder {
@@ -90,7 +107,9 @@ public class EscrowPayment implements Payment {
 
         private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
 
-        private byte[] getMessage() {
+        // TODO: write unit test to check that message is constructed and
+        // signed correctly
+        byte[] getMessage() {
             return Utils.wrapExceptions(() -> {
                 ByteArrayOutputStream message = new ByteArrayOutputStream();
                 message.write(PAYMENT_MESSAGE_PREFIX);
