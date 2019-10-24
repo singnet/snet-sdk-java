@@ -15,42 +15,36 @@ import io.singularitynet.sdk.mpe.PaymentChannel;
 
 public class PaymentChannelStateService {
 
-    private final DaemonConnection daemonConnection;
-    private final Ethereum ethereum;
-    private final Signer signer;
+    private final MessageSigner messageSigner;
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
             Ethereum ethereum, Signer signer) {
-        this.daemonConnection = daemonConnection;
-        this.ethereum = ethereum;
-        this.signer = signer;
+        this.messageSigner = new MessageSigner(ethereum, signer);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 
     public PaymentChannelStateReply getChannelState(PaymentChannel channel) {
-        return Utils.wrapExceptions(() -> {
-            ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
-                // TODO: make MPE contract address be a part of channel id
-                // TODO: everywhere replace BigInteger.toByteArray() by Utils.bigIntToBytes32()
-                .setChannelId(toBytesString(channel.getChannelId()))
-                .setCurrentBlock(ethereum.ethBlockNumber().send().getBlockNumber().longValue());
-            signChannelStateRequest(channel, request); 
+        ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
+            // TODO: make MPE contract address be a part of channel id
+            // TODO: everywhere replace BigInteger.toByteArray() by Utils.bigIntToBytes32()
+            .setChannelId(toBytesString(channel.getChannelId()));
 
-            ChannelStateReply grpcReply = stub.getChannelState(request.build());
+        messageSigner.signChannelStateRequest(channel, request); 
 
-            PaymentChannelStateReply.Builder reply = PaymentChannelStateReply.newBuilder()
-                .setCurrentNonce(toBigInt(grpcReply.getCurrentNonce()));
+        ChannelStateReply grpcReply = stub.getChannelState(request.build());
 
-            if (grpcReply.getCurrentSignedAmount() == ByteString.EMPTY) {
-                return reply.build();
-            }
+        PaymentChannelStateReply.Builder reply = PaymentChannelStateReply.newBuilder()
+            .setCurrentNonce(toBigInt(grpcReply.getCurrentNonce()));
 
-            reply.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
-            reply.setCurrentSignature(grpcReply.getCurrentSignature().toByteArray());
-
+        if (grpcReply.getCurrentSignedAmount() == ByteString.EMPTY) {
             return reply.build();
-        });
+        }
+
+        reply.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
+        reply.setCurrentSignature(grpcReply.getCurrentSignature().toByteArray());
+
+        return reply.build();
     }
 
     private static ByteString toBytesString(BigInteger value) {
@@ -61,19 +55,34 @@ public class PaymentChannelStateService {
         return Utils.bytes32ToBigInt(value.toByteArray());
     }
 
-    private static final byte[] GET_CHANNEL_STATE_PREFIX = Utils.strToBytes("__get_channel_state");
+    static class MessageSigner {
 
-    private void signChannelStateRequest(PaymentChannel channel, ChannelStateRequest.Builder request) {
-        Utils.wrapExceptions(() -> {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bytes.write(GET_CHANNEL_STATE_PREFIX);
-            bytes.write(Utils.addressToBytes(channel.getMpeContractAddress()));
-            bytes.write(request.getChannelId().toByteArray());
-            bytes.write(Utils.bigIntToBytes32(BigInteger.valueOf(request.getCurrentBlock())));
+        private static final byte[] GET_CHANNEL_STATE_PREFIX = Utils.strToBytes("__get_channel_state");
 
-            request.setSignature(ByteString.copyFrom(signer.sign(bytes.toByteArray())));
-            return null;
-        });
+        private final Ethereum ethereum;
+        private final Signer signer;
+
+        public MessageSigner(Ethereum ethereum, Signer signer) {
+            this.ethereum = ethereum;
+            this.signer = signer;
+        }
+
+        public void signChannelStateRequest(PaymentChannel channel, ChannelStateRequest.Builder request) {
+            Utils.wrapExceptions(() -> {
+                long block = ethereum.ethBlockNumber().send().getBlockNumber().longValue();
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bytes.write(GET_CHANNEL_STATE_PREFIX);
+                bytes.write(Utils.addressToBytes(channel.getMpeContractAddress()));
+                bytes.write(request.getChannelId().toByteArray());
+                bytes.write(Utils.bigIntToBytes32(BigInteger.valueOf(block)));
+
+                request.setCurrentBlock(block)
+                    .setSignature(ByteString.copyFrom(signer.sign(bytes.toByteArray())));
+                return null;
+            });
+        }
+
     }
 
 }
