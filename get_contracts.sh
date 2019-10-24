@@ -28,3 +28,5 @@ mv ./snet-daemon-v$snet_daemon_version-linux-amd64 snet-daemon
 sed -i '8s/^/option java_package = "io.singularitynet.daemon.escrow";\n/' snet-daemon/proto/state_service.proto
 sed -i '2s/^/option java_package = "io.singularitynet.daemon.escrow";\n/' snet-daemon/proto/control_service.proto
 sed -i '2s/^/option java_package = "io.singularitynet.daemon.configuration";\n/' snet-daemon/proto/configuration_service.proto
+mkdir ../src/main/proto
+cp snet-daemon/proto/state_service.proto ../src/main/proto

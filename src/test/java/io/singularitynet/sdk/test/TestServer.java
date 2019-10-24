@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import io.singularitynet.daemon.escrow.*;
 import io.singularitynet.sdk.mpe.*;
 
 public class TestServer {
@@ -71,7 +72,8 @@ public class TestServer {
 
     }
 
-    public static class Daemon implements ServerInterceptor {
+    public static class Daemon extends PaymentChannelStateServiceGrpc.PaymentChannelStateServiceImplBase
+            implements ServerInterceptor {
 
         private List<Payment> payments = Collections.synchronizedList(new ArrayList<>());
 
@@ -90,6 +92,10 @@ public class TestServer {
             return payments;
         }
 
+        @Override
+        public void getChannelState(StateService.ChannelStateRequest request,
+                StreamObserver<StateService.ChannelStateReply> responseObserver) {
+        }
 
     }
 
