@@ -19,7 +19,7 @@ public class GrpcTest {
 
     @Before
     public void setUp() {
-        server = TestServer.start();
+        server = TestServer.startWithoutDaemon();
         URL url = server.getEndpoint();
         clientInterceptor = new TestClientInterceptor();
         channel = ManagedChannelBuilder

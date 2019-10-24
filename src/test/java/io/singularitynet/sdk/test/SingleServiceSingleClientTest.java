@@ -25,6 +25,7 @@ public class SingleServiceSingleClientTest {
     private RegistryMock registry;
     private IpfsMock ipfs;
     private MultiPartyEscrowMock mpe;
+    private DaemonMock daemon;
 
     private TestServer server;
 
@@ -49,8 +50,9 @@ public class SingleServiceSingleClientTest {
         registry = new RegistryMock();
         ipfs = new IpfsMock();
         mpe = new MultiPartyEscrowMock();
+        daemon = new DaemonMock();
 
-        server = TestServer.start();
+        server = TestServer.start(daemon);
 
         orgId = "test-org-id";
         org = OrganizationMetadata.newBuilder()
@@ -124,7 +126,7 @@ public class SingleServiceSingleClientTest {
         Request ethBlockNumberReq = mock(Request.class);
         when(ethBlockNumberReq.send()).thenReturn(ethBlockNumber);
         when(ethereum.ethBlockNumber()).thenReturn(ethBlockNumberReq);
-        server.getDaemon().setChannelStateIsAbsent(paymentChannel);
+        daemon.setChannelStateIsAbsent(paymentChannel);
 
         RegistryContract registryContract = new RegistryContract(registry.get());
         MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs.get());
@@ -161,14 +163,14 @@ public class SingleServiceSingleClientTest {
     public void clientSendsPaymentDataInGrpcMetadata() {
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
-        assertEquals("Number of payments received by daemon", 1, server.getDaemon().getPayments().size());
+        assertEquals("Number of payments received by daemon", 1, daemon.getPayments().size());
     }
 
     @Test
     public void sendPaymentForChannelNotUsedBefore() {
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
-        assertEquals("Payment received by daemon", expectedPayment, server.getDaemon().getPayments().get(0));
+        assertEquals("Payment received by daemon", expectedPayment, daemon.getPayments().get(0));
     }
 
     @Test
@@ -183,7 +185,7 @@ public class SingleServiceSingleClientTest {
             .setAmount(BigInteger.valueOf(3))
             .setSigner(signer)
             .build();
-        server.getDaemon().setChannelState(channelId,
+        daemon.setChannelState(channelId,
                 PaymentChannelStateReply.newBuilder()
                 .setCurrentNonce(prevPayment.getChannelNonce())
                 .setCurrentSignedAmount(prevPayment.getAmount())
@@ -192,7 +194,7 @@ public class SingleServiceSingleClientTest {
 
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
-        assertEquals("Payment received by daemon", expectedPayment, server.getDaemon().getPayments().get(0));
+        assertEquals("Payment received by daemon", expectedPayment, daemon.getPayments().get(0));
     }
 
 }

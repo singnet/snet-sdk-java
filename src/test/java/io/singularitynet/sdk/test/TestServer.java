@@ -4,51 +4,46 @@ import io.grpc.stub.StreamObserver;
 import io.grpc.*;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Optional;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.math.BigInteger;
-import com.google.protobuf.ByteString;
-import io.singularitynet.sdk.daemon.*;
-
-import io.singularitynet.daemon.escrow.*;
-import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.mpe.*;
+import io.singularitynet.sdk.daemon.DaemonMock;
 
 public class TestServer {
 
     private static final int RANDOM_AVAILABLE_PORT = 0;
 
     private final Server server;
-    private final Daemon daemon;
     private final TestService testService;
 
-    private TestServer(Server server, Daemon daemon, TestService testService) {
+    private TestServer(Server server, TestService testService) {
         this.server = server; 
-        this.daemon = daemon;
         this.testService = testService;
     }
 
-    public static TestServer start() {
-        TestService service = new TestService();
-        Daemon daemon = new Daemon();
+    public static TestServer start(DaemonMock daemon) {
+        return startInternal(Optional.of(daemon));
+    }
 
-        Server server = ServerBuilder
+    public static TestServer startWithoutDaemon() {
+        return startInternal(Optional.empty());
+    }
+
+    private static TestServer startInternal(Optional<DaemonMock> daemon) {
+        TestService service = new TestService();
+
+        ServerBuilder builder = ServerBuilder
             .forPort(RANDOM_AVAILABLE_PORT)
-            .addService(service)
-            .addService(daemon)
-            .intercept(daemon)
-            .build();
+            .addService(service);
+        if (daemon.isPresent()) {
+            builder.addService(daemon.get()).intercept(daemon.get());
+        }
+        Server server = builder.build();
         try {
             server.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new TestServer(server, daemon, service);
+        return new TestServer(server, service);
     }
 
     public void shutdownNow() {
@@ -63,10 +58,6 @@ public class TestServer {
         }
     }
 
-    public Daemon getDaemon() {
-        return daemon;
-    }
-
     public static class TestService extends TestServiceGrpc.TestServiceImplBase  {
 
         @Override
@@ -76,59 +67,6 @@ public class TestServer {
                 .build();
             callback.onNext(output);
             callback.onCompleted();
-        }
-
-    }
-
-    // TODO: move daemon mock into separate class
-    public static class Daemon extends PaymentChannelStateServiceGrpc.PaymentChannelStateServiceImplBase
-            implements ServerInterceptor {
-
-        private final List<Payment> payments = Collections.synchronizedList(new ArrayList<>());
-        private final Map<BigInteger, StateService.ChannelStateReply> channelStates = new HashMap<>();
-
-        @Override
-        public <ReqT,RespT> ServerCall.Listener<ReqT> interceptCall(
-                ServerCall<ReqT,RespT> call, Metadata headers,
-                ServerCallHandler<ReqT,RespT> next) {
-            Optional<Payment> payment = PaymentSerializer.fromMetadata(headers);
-            if (payment.isPresent()) {
-                payments.add(payment.get());
-            }
-            return next.startCall(call, headers);
-        }
-
-        public List<Payment> getPayments() {
-            return payments;
-        }
-
-        @Override
-        public void getChannelState(StateService.ChannelStateRequest request,
-                StreamObserver<StateService.ChannelStateReply> callback) {
-            // TODO: write unit test to check that requests are signed
-            // correctly
-            BigInteger channelId = Utils.bytes32ToBigInt(request.getChannelId().toByteArray());
-            StateService.ChannelStateReply reply = channelStates.get(channelId);
-            if (reply == null) {
-                callback.onError(new Throwable("No such channel"));
-            }
-
-            callback.onNext(reply);
-            callback.onCompleted();
-        }
-
-        public void setChannelState(BigInteger channelId, PaymentChannelStateReply reply) {
-            channelStates.put(channelId, StateService.ChannelStateReply.newBuilder()
-                    .setCurrentNonce(ByteString.copyFrom(Utils.bigIntToBytes32(reply.getCurrentNonce())))
-                    .setCurrentSignedAmount(ByteString.copyFrom(Utils.bigIntToBytes32(reply.getCurrentSignedAmount())))
-                    .setCurrentSignature(ByteString.copyFrom(reply.getCurrentSignature()))
-                    .build());
-        }
-
-        public void setChannelStateIsAbsent(PaymentChannel channel) {
-            channelStates.put(channel.getChannelId(), StateService.ChannelStateReply.newBuilder()
-                    .setCurrentNonce(ByteString.copyFrom(Utils.bigIntToBytes32(channel.getNonce())))
-                    .build());
         }
 
     }
