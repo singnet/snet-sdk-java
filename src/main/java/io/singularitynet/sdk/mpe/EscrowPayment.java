@@ -114,9 +114,9 @@ public class EscrowPayment implements Payment {
                 ByteArrayOutputStream message = new ByteArrayOutputStream();
                 message.write(PAYMENT_MESSAGE_PREFIX);
                 message.write(Utils.addressToBytes(paymentChannel.getMpeContractAddress()));
-                message.write(paymentChannel.getChannelId().toByteArray());
-                message.write(paymentChannel.getNonce().toByteArray());
-                message.write(amount.toByteArray());
+                message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
+                message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
+                message.write(Utils.bigIntToBytes32(amount));
                 return message.toByteArray();
             });
         }

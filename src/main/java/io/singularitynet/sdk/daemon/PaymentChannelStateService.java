@@ -27,7 +27,6 @@ public class PaymentChannelStateService {
     public PaymentChannelStateReply getChannelState(PaymentChannel channel) {
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             // TODO: make MPE contract address be a part of channel id
-            // TODO: everywhere replace BigInteger.toByteArray() by Utils.bigIntToBytes32()
             .setChannelId(toBytesString(channel.getChannelId()));
 
         messageSigner.signChannelStateRequest(channel, request); 
