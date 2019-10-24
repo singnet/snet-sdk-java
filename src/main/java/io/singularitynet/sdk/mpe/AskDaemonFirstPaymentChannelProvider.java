@@ -7,13 +7,12 @@ import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 
-// TODO: rename
-public class ContractPaymentChannelProvider implements PaymentChannelProvider {
+public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
 
     private final MultiPartyEscrowContract mpe;
     private final PaymentChannelStateService stateService;
 
-    public ContractPaymentChannelProvider(MultiPartyEscrowContract mpe,
+    public AskDaemonFirstPaymentChannelProvider(MultiPartyEscrowContract mpe,
             PaymentChannelStateService stateService) {
         this.mpe = mpe;
         this.stateService = stateService;

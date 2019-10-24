@@ -138,7 +138,7 @@ public class SingleServiceSingleClientTest {
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, ethereum, signer);
         PaymentChannelProvider paymentChannelProvider =
-            new ContractPaymentChannelProvider(mpeContract, stateService);
+            new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(channelId, signer);
         serviceClient = new BaseServiceClient(connection, metadataProvider,
                 paymentChannelProvider, paymentStrategy); 
