@@ -79,6 +79,11 @@ public class EndpointGroup {
             return this;
         }
 
+        public Builder clearPricing() {
+            this.pricing.clear();
+            return this;
+        } 
+
         public Builder addEndpoint(URL endpoint) {
             this.endpoints.add(endpoint);
             return this;

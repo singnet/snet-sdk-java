@@ -50,6 +50,7 @@ public class Pricing {
             return this;
         }
 
+        // TODO: replace BigInteger by Price type
         public Builder setPriceInCogs(BigInteger priceInCogs) {
             this.priceInCogs = priceInCogs;
             return this;

@@ -70,6 +70,11 @@ public class ServiceMetadata {
             return this;
         }
 
+        public Builder clearEndpointGroups() {
+            this.endpointGroups.clear();
+            return this;
+        }
+
         public ServiceMetadata build() {
             return new ServiceMetadata(this);
         }
