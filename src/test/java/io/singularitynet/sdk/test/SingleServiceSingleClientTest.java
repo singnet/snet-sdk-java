@@ -90,23 +90,24 @@ public class SingleServiceSingleClientTest {
 
     @Test
     public void sendPaymentForChannelNotUsedBefore() {
-        EscrowPayment expectedPayment = env.newEscrowPayment(paymentChannel).setAmount(price).build();
-
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
+        EscrowPayment expectedPayment = env.newEscrowPayment(paymentChannel).setAmount(price).build();
         assertEquals("Payment received by daemon", expectedPayment, env.daemon().getPayments().get(0));
     }
 
     @Test
     public void sendPaymentForChannelUsedBeforeNoClaim() {
         BigInteger prevPrice = BigInteger.valueOf(3);
-        EscrowPayment expectedPayment = env.newEscrowPayment(paymentChannel).setAmount(prevPrice.add(price)).build();
-        EscrowPayment prevPayment = env.newEscrowPayment(paymentChannel).setAmount(prevPrice).build();
+        EscrowPayment prevPayment = env.newEscrowPayment(paymentChannel)
+            .setAmount(prevPrice).build();
         env.daemon().setChannelState(paymentChannel.getChannelId(),
                 env.newPaymentChannelStateReply(prevPayment).build());
 
         Output output = serviceStub.echo(Input.newBuilder().setInput("ping").build());
 
+        EscrowPayment expectedPayment = env.newEscrowPayment(paymentChannel)
+            .setAmount(prevPrice.add(price)).build();
         assertEquals("Payment received by daemon", expectedPayment, env.daemon().getPayments().get(0));
     }
 
