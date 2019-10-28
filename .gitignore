@@ -28,6 +28,3 @@ target
 # vim specific files
 *.swp
 .vim-project
-
-# snet-daemon protobuf
-state_service.proto

@@ -12,7 +12,7 @@ tar -xzf ./singularitynet-platform-contracts.tgz
 mv package singularitynet-platform-contracts
 
 cd singularitynet-platform-contracts
-mkdir ../generated-sources/sol/java
+mkdir -p ../generated-sources/sol/java
 output=../generated-sources/sol/java
 package=io.singularitynet.sdk.contracts
 web3j solidity generate -a ./abi/MultiPartyEscrow.json --outputDir $output --package $package #--solidityTypes
@@ -28,5 +28,5 @@ mv ./snet-daemon-v$snet_daemon_version-linux-amd64 snet-daemon
 sed -i '8s/^/option java_package = "io.singularitynet.daemon.escrow";\n/' snet-daemon/proto/state_service.proto
 sed -i '2s/^/option java_package = "io.singularitynet.daemon.escrow";\n/' snet-daemon/proto/control_service.proto
 sed -i '2s/^/option java_package = "io.singularitynet.daemon.configuration";\n/' snet-daemon/proto/configuration_service.proto
-mkdir ../src/main/proto
-cp snet-daemon/proto/state_service.proto ../src/main/proto
+mkdir -p ./proto
+cp snet-daemon/proto/state_service.proto ./proto

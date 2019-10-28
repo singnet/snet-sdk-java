@@ -155,6 +155,8 @@
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
           <!-- to not recompile protobuf each time -->
           <checkStaleness>true</checkStaleness>
+          <!-- daemon protobuf unpacked from release artifact -->
+          <protoSourceRoot>${project.build.directory}/proto</protoSourceRoot>
         </configuration>
         <executions>
           <execution>
