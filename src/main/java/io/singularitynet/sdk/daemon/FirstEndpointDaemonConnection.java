@@ -49,12 +49,14 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
         URL url = serviceMetadata.getEndpointGroups().stream()
             .filter(group -> groupName.equals(group.getGroupName()))
             .findFirst().get().getEndpoints().get(0);
-        return ManagedChannelBuilder
+        ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
-            .intercept(interceptorProxy)
-            // TODO: support TLS connections
-            .usePlaintext()
-            .build();
+            .intercept(interceptorProxy);
+        // FIXME: test HTTPS connections
+        if ("http".equals(url.getProtocol())) {
+            builder.usePlaintext();
+        }
+        return builder.build();
     }
 
     // ThreadSafe

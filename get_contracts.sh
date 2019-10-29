@@ -17,6 +17,8 @@ output=../generated-sources/sol/java
 package=io.singularitynet.sdk.contracts
 web3j solidity generate -a ./abi/MultiPartyEscrow.json --outputDir $output --package $package #--solidityTypes
 web3j solidity generate -a ./abi/Registry.json --outputDir $output --package $package
+mkdir -p ../resources
+cp -R ./networks ../resources/
 
 cd ..
 snet_daemon_version=2.0.2

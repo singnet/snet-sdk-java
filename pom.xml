@@ -141,6 +141,13 @@
       </extension>
     </extensions>
 
+    <resources>
+      <resource>
+        <!-- resources unpacked from dependencies -->
+        <directory>${project.build.directory}/resources</directory>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>

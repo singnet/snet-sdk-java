@@ -15,6 +15,8 @@ import io.singularitynet.sdk.registry.*;
 public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         
     private final BigInteger channelId;
+    // TODO: move signer to ServiceClient as it is used to get channel state as
+    // well
     private final Signer signer;
 
     /**
