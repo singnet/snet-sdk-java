@@ -85,4 +85,23 @@ public class UtilsTest {
                 BigInteger.valueOf(0x1234),
                 bigint);
     }
+
+    @Test
+    public void bytesToStrTrimTrailingZeros() {
+        byte[] bytes = { 't', 'e', 's', 't', 0, 0, 0 };
+
+        String str = Utils.bytesToStr(bytes);
+
+        assertEquals("String from bytes with trailing zeros", "test", str);
+    }
+
+    @Test
+    public void bytesToStr() {
+        byte[] bytes = "test".getBytes();
+
+        String str = Utils.bytesToStr(bytes);
+
+        assertEquals("String from bytes", "test", str);
+    }
+
 }

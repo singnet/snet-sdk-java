@@ -15,7 +15,12 @@ public class Utils {
     }
 
     public static String bytesToStr(byte[] bytes) {
-        return new String(bytes, UTF_8);
+        String str = new String(bytes, UTF_8);
+        int zeroPos = str.indexOf(0);
+        if (zeroPos == -1) {
+            return str;
+        }
+        return str.substring(0, zeroPos);
     }
 
     public static byte[] strToBytes32(String str) {
