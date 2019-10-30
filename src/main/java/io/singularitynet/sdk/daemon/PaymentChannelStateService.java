@@ -15,12 +15,12 @@ import io.singularitynet.sdk.mpe.PaymentChannel;
 
 public class PaymentChannelStateService {
 
-    private final MessageSigner messageSigner;
+    private final MessageSigningHelper signingHelper;
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
             Ethereum ethereum, Signer signer) {
-        this.messageSigner = new MessageSigner(ethereum, signer);
+        this.signingHelper = new MessageSigningHelper(ethereum, signer);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 
@@ -29,7 +29,7 @@ public class PaymentChannelStateService {
             // TODO: make MPE contract address be a part of channel id
             .setChannelId(toBytesString(channel.getChannelId()));
 
-        messageSigner.signChannelStateRequest(channel, request); 
+        signingHelper.signChannelStateRequest(channel, request); 
 
         ChannelStateReply grpcReply = stub.getChannelState(request.build());
 
@@ -54,14 +54,14 @@ public class PaymentChannelStateService {
         return Utils.bytes32ToBigInt(value.toByteArray());
     }
 
-    static class MessageSigner {
+    static class MessageSigningHelper {
 
         private static final byte[] GET_CHANNEL_STATE_PREFIX = Utils.strToBytes("__get_channel_state");
 
         private final Ethereum ethereum;
         private final Signer signer;
 
-        public MessageSigner(Ethereum ethereum, Signer signer) {
+        public MessageSigningHelper(Ethereum ethereum, Signer signer) {
             this.ethereum = ethereum;
             this.signer = signer;
         }
@@ -76,9 +76,9 @@ public class PaymentChannelStateService {
                 bytes.write(request.getChannelId().toByteArray());
                 bytes.write(Utils.bigIntToBytes32(BigInteger.valueOf(block)));
 
-                request.setCurrentBlock(block)
+                return request
+                    .setCurrentBlock(block)
                     .setSignature(ByteString.copyFrom(signer.sign(bytes.toByteArray())));
-                return null;
             });
         }
 

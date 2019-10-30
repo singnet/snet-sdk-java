@@ -62,10 +62,19 @@ public class UtilsTest {
 
     @Test
     public void addressToBytesNoPrefix() {
-        byte[] result = Utils.addressToBytes("01020E0F");
+        byte[] result = Utils.addressToBytes("F1020E0F");
 
-        assertArrayEquals("Address with prefix converted",
-                new byte[] { 0x01, 0x02, 0x0E, 0x0F }, result);
+        assertArrayEquals("Address without prefix converted",
+                new byte[] { (byte) 0xF1, 0x02, 0x0E, 0x0F }, result);
+    }
+
+    @Test
+    public void addressToBytesContractAddress() {
+        byte[] result = Utils.addressToBytes("f25186B5081Ff5cE73482AD761DB0eB0d25abfBF");
+
+        assertArrayEquals("Contract address converted",
+                new byte[] { (byte) 0xf2, 0x51, (byte) 0x86, (byte) 0xB5, 0x08, 0x1F, (byte) 0xf5, (byte) 0xcE, 0x73, 0x48, 0x2A, (byte) 0xD7, 0x61, (byte) 0xDB, 0x0e, (byte) 0xB0, (byte) 0xd2, (byte) 0x5a, (byte) 0xbf, (byte) 0xBF },
+                result);
     }
 
     @Test
@@ -102,6 +111,16 @@ public class UtilsTest {
         String str = Utils.bytesToStr(bytes);
 
         assertEquals("String from bytes", "test", str);
+    }
+
+    @Test
+    public void strToBytes() {
+        String str = "test";
+
+        byte[] bytes = Utils.strToBytes(str);
+
+        assertArrayEquals("Bytes from string", new byte[] { 't', 'e', 's', 't' },
+                bytes);
     }
 
 }

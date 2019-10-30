@@ -50,7 +50,11 @@ public class Utils {
     // TODO: replace by Address.toByteArray()
     public static byte[] addressToBytes(String address) {
         // TODO: check that address length is 20 bytes
-        return new Address(address).toUint().getValue().toByteArray();
+        byte[] bytes = new Address(address).toUint().getValue().toByteArray();
+        if (bytes[0] == 0) {
+            return Arrays.copyOfRange(bytes, 1, bytes.length);
+        }
+        return bytes;
     }
 
     public static byte[] bigIntToBytes32(BigInteger value) {
@@ -64,6 +68,22 @@ public class Utils {
     public static BigInteger bytes32ToBigInt(byte[] bytes) {
         // TODO: check bytes length is equal to 32
         return new BigInteger(bytes);
+    }
+
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuffer hex = new StringBuffer();
+        int eight = 0;
+        for (byte b : bytes) {
+            hex.append(HEX_ARRAY[(b >> 4) & 0xF]).append(HEX_ARRAY[b & 0xF]).append(" ");
+            eight++;
+            if (eight == 8) {
+                hex.append(" ");
+                eight = 0;
+            }
+        }
+        return hex.toString();
     }
 
     public static <T> T wrapExceptions(Callable<T> callable) {

@@ -40,8 +40,6 @@ public class DaemonMock extends PaymentChannelStateServiceGrpc.PaymentChannelSta
     @Override
     public void getChannelState(StateService.ChannelStateRequest request,
             StreamObserver<StateService.ChannelStateReply> callback) {
-        // TODO: write unit test to check that requests are signed
-        // correctly
         BigInteger channelId = Utils.bytes32ToBigInt(request.getChannelId().toByteArray());
         StateService.ChannelStateReply reply = channelStates.get(channelId);
         if (reply == null) {

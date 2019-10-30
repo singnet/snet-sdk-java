@@ -1,10 +1,11 @@
 package io.singularitynet.sdk.ethereum;
 
+import java.math.BigInteger;
+import java.io.ByteArrayOutputStream;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Hash;
-import java.io.ByteArrayOutputStream;
 import static com.google.common.base.Preconditions.checkState;
 
 import io.singularitynet.sdk.common.Utils;
@@ -15,6 +16,10 @@ public class PrivateKeyIdentity implements Signer {
 
     public PrivateKeyIdentity(ECKeyPair key) {
         this.key = key;
+    }
+
+    public PrivateKeyIdentity(BigInteger privateKey) {
+        this(ECKeyPair.create(privateKey));
     }
 
     public PrivateKeyIdentity(byte[] privateKey) {
