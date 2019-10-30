@@ -35,7 +35,7 @@ public class IpfsMock {
             boolean dflt = true;
             for (Pricing price : group.getPricing()) {
                 JsonObjectBuilder priceBuilder = Json.createObjectBuilder()
-                    .add("price_model", price.getPriceModel().toString())
+                    .add("price_model", price.getPriceModel().toString().toLowerCase())
                     .add("price_in_cogs", price.getPriceInCogs().toString());
                 if (dflt) {
                     priceBuilder.add("default", true);

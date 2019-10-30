@@ -64,4 +64,22 @@ public class GsonTest {
 
         assertEquals("Kovan address", "0x89a780619a7b0542b52bbb929bc1ea01516542ec", map.get("42").get("address"));
     }
+
+    @Test
+    public void testParseEnumField() {
+        EnumField result = this.gson.fromJson("{ \"field\": \"FIRST\" }", EnumField.class);
+
+        assertEquals(EnumField.EnumType.FIRST, result.field);
+    }
+
+    private static class EnumField {
+
+        EnumType field;
+
+        private static enum EnumType {
+            FIRST,
+            SECOND
+        }
+    }
+
 }

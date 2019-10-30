@@ -1,7 +1,6 @@
 package io.singularitynet.sdk.test;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -16,9 +15,6 @@ import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.common.Utils;
 
 public class Web3jTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private Web3j web3j;
     private ReadonlyTransactionManager roTransactionManager;
