@@ -52,7 +52,7 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
             .intercept(interceptorProxy);
-        // FIXME: test HTTPS connections
+        // TODO: test HTTPS connections
         if ("http".equals(url.getProtocol())) {
             builder.usePlaintext();
         }

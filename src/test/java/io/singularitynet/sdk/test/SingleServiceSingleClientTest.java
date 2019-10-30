@@ -39,7 +39,6 @@ public class SingleServiceSingleClientTest {
             .addPricing(env.newPricing().setPriceInCogs(price).build())
             .build();
         service.clearEndpointGroups().addEndpointGroup(endpointGroup);
-        // TODO: make service id part of service metadata
         env.registerService(orgId, serviceId);
 
         Signer signer = env.newSigner();

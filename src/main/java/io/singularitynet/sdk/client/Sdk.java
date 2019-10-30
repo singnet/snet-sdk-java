@@ -45,7 +45,7 @@ public class Sdk {
             return web3j.netVersion().send().getNetVersion();
         });
         ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
-                // FIXME: add unit test on prefix adding
+                // TODO: add unit test on prefix adding
                 web3j, config.getSigner().getAddress().toString());
 
         Address registryAddress = readContractAddress(networkId, "networks/Registry.json", "Registry");

@@ -107,7 +107,7 @@ public class EscrowPayment implements Payment {
 
         private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
 
-        // TODO: write unit test to check that message is constructed and
+        // FIXME: write unit test to check that message is constructed and
         // signed correctly
         byte[] getMessage() {
             return Utils.wrapExceptions(() -> {
