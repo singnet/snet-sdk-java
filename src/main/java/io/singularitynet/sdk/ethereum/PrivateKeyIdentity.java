@@ -32,8 +32,8 @@ public class PrivateKeyIdentity implements Signer {
     }
 
     @Override
-    public String getAddress() {
-        return Keys.getAddress(key.getPublicKey());
+    public Address getAddress() {
+        return new Address(Keys.getAddress(key.getPublicKey()));
     }
 
     private static byte[] signatureToBytes(Sign.SignatureData signature) {

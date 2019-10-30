@@ -6,6 +6,7 @@ import static com.google.common.base.Preconditions.checkState;
 import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
 
@@ -68,12 +69,12 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
             .setPaymentChannel(channel)
             .setAmount(amount)
             .getMessage();
-        String address = CryptoUtils.getSignerAddress(payment, signature);
+        Address address = CryptoUtils.getSignerAddress(payment, signature);
         checkState(channel.getSigner().equals(address) ||
                 channel.getSender().equals(address), 
                 "Signature signer is not sender not signer. " + 
                 "Daemon returned incorrect signature of the %s payment. " +
-                "Channel id: %s", type, channel.getChannelId());
+                "Channel: %s, Payment signer: %s", type, channel, address);
     }
 
 }

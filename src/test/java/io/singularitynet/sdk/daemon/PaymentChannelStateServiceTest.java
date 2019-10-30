@@ -12,6 +12,7 @@ import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.daemon.escrow.StateService.ChannelStateRequest;
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class PaymentChannelStateServiceTest {
 
@@ -27,7 +28,7 @@ public class PaymentChannelStateServiceTest {
         String privateKey = "89765001819765816734960087977248703971879862101523844953632906408104497565820";
         // FIXME: mock ethereum to return correct block number
         long ethereumBlock = 53;
-        String mpeAddress = "0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF";
+        Address mpeAddress = new Address("0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF");
         long channelId = 42;
 
         Signer signer = new PrivateKeyIdentity(new BigInteger(privateKey));

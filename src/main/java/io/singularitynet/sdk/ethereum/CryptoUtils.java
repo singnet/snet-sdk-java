@@ -11,11 +11,11 @@ import io.singularitynet.sdk.common.Utils;
 
 public class CryptoUtils {
 
-    public static String getSignerAddress(byte[] message, byte[] signature) {
+    public static Address getSignerAddress(byte[] message, byte[] signature) {
         return Utils.wrapExceptions(() -> {
             Sign.SignatureData signatureData = bytesToSignature(signature);
             BigInteger publicKey = Sign.signedPrefixedMessageToKey(Hash.sha3(message), signatureData);
-            return Keys.getAddress(publicKey);
+            return new Address(Keys.getAddress(publicKey));
         });
     }
 

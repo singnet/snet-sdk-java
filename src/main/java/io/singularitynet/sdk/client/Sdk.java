@@ -25,6 +25,7 @@ import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.client.BaseServiceClient;
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class Sdk {
 
@@ -41,20 +42,19 @@ public class Sdk {
             return config.getWeb3j().netVersion().send().getNetVersion();
         });
         ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
-                // FIXME: set specific type for address instead of String
                 // FIXME: add unit test on prefix adding
-                config.getWeb3j(), "0x" + config.getSigner().getAddress());
+                config.getWeb3j(), config.getSigner().getAddress().toString());
 
-        String registryAddress = readContractAddress(networkId, "networks/Registry.json", "Registry");
-        Registry registry = Registry.load(registryAddress, config.getWeb3j(),
+        Address registryAddress = readContractAddress(networkId, "networks/Registry.json", "Registry");
+        Registry registry = Registry.load(registryAddress.toString(), config.getWeb3j(),
                 transactionManager, config.getContractGasProvider());
         RegistryContract registryContract = new RegistryContract(registry);
         MetadataStorage metadataStorage = new IpfsMetadataStorage(config.getIpfs());
         MetadataProvider metadataProvider = new RegistryMetadataProvider(
                 orgId, serviceId, registryContract, metadataStorage);
 
-        String mpeAddress = readContractAddress(networkId, "networks/MultiPartyEscrow.json", "MultiPartyEscrow");
-        MultiPartyEscrow mpe = MultiPartyEscrow.load(mpeAddress, config.getWeb3j(),
+        Address mpeAddress = readContractAddress(networkId, "networks/MultiPartyEscrow.json", "MultiPartyEscrow");
+        MultiPartyEscrow mpe = MultiPartyEscrow.load(mpeAddress.toString(), config.getWeb3j(),
                 transactionManager, config.getContractGasProvider());
         MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(mpe);
 
@@ -69,7 +69,7 @@ public class Sdk {
                 paymentChannelProvider, paymentStrategy); 
     }
 
-    private static String readContractAddress(String networkId, String networkJson, String contractName) {
+    private static Address readContractAddress(String networkId, String networkJson, String contractName) {
         return Utils.wrapExceptions(() -> {
             InputStreamReader jsonReader = new InputStreamReader(Sdk.class.getClassLoader().getResourceAsStream(networkJson));
             try {
@@ -83,7 +83,7 @@ public class Sdk {
                 // TODO: test precondition
                 Preconditions.checkState(address != null, "No address of %s contract found in the network %s configuration",
                         contractName, networkId);
-                return (String) address;
+                return new Address((String) address);
             } finally {
                 jsonReader.close();
             }

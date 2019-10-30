@@ -1,10 +1,9 @@
 package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static com.google.common.base.Preconditions.checkArgument;
+import com.google.common.base.Preconditions;
 import java.util.concurrent.Callable;
 import java.util.Base64;
-import org.web3j.abi.datatypes.Address;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -24,7 +23,7 @@ public class Utils {
     }
 
     public static byte[] strToBytes32(String str) {
-        checkArgument(str.length() <= 32, "Passed string length exceeds 32 bytes");
+        Preconditions.checkArgument(str.length() <= 32, "Passed string length exceeds 32 bytes");
         byte[] bytes32 = new byte[32];
         int i = 0;
         for (byte b : str.getBytes(UTF_8)) {
@@ -34,7 +33,7 @@ public class Utils {
     }
 
     public static String bytes32ToStr(byte[] bytes) {
-        checkArgument(bytes.length == 32, "Passed array length is not equal to 32 bytes");
+        Preconditions.checkArgument(bytes.length == 32, "Passed array length is not equal to 32 bytes");
         String full = new String(bytes, UTF_8);
         return full.substring(0, full.indexOf(0));
     }
@@ -45,16 +44,6 @@ public class Utils {
 
     public static String bytesToBase64(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
-    }
-
-    // TODO: replace by Address.toByteArray()
-    public static byte[] addressToBytes(String address) {
-        // TODO: check that address length is 20 bytes
-        byte[] bytes = new Address(address).toUint().getValue().toByteArray();
-        if (bytes[0] == 0) {
-            return Arrays.copyOfRange(bytes, 1, bytes.length);
-        }
-        return bytes;
     }
 
     public static byte[] bigIntToBytes32(BigInteger value) {
@@ -84,6 +73,16 @@ public class Utils {
             }
         }
         return hex.toString();
+    }
+
+    public static byte[] hexToBytes(String str) {
+        Preconditions.checkArgument(str.length() % 2 == 0, "String should contain even number of hex digits");
+        byte[] bytes = new byte[str.length() / 2]; 
+        for (int i = 0; i < str.length(); i += 2) {
+            bytes[i / 2] = (byte) ((Character.digit(str.charAt(i), 16) << 4) +
+                Character.digit(str.charAt(i + 1), 16));
+        }
+        return bytes;
     }
 
     public static <T> T wrapExceptions(Callable<T> callable) {

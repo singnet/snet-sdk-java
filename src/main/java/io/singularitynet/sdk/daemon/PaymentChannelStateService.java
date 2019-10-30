@@ -72,7 +72,7 @@ public class PaymentChannelStateService {
 
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bytes.write(GET_CHANNEL_STATE_PREFIX);
-                bytes.write(Utils.addressToBytes(channel.getMpeContractAddress()));
+                bytes.write(channel.getMpeContractAddress().toByteArray());
                 bytes.write(request.getChannelId().toByteArray());
                 bytes.write(Utils.bigIntToBytes32(BigInteger.valueOf(block)));
 

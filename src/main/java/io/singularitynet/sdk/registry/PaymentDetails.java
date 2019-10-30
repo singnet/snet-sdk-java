@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.math.BigInteger;
 
+import io.singularitynet.sdk.ethereum.Address;
+
 @EqualsAndHashCode
 @ToString
 public class PaymentDetails {
@@ -24,8 +26,8 @@ public class PaymentDetails {
         this.paymentExpirationThreshold = builder.paymentExpirationThreshold;
     }
 
-    public String getPaymentAddress() {
-        return paymentAddress;
+    public Address getPaymentAddress() {
+        return new Address(paymentAddress);
     }
 
     public BigInteger getPaymentExpirationThreshold() {
@@ -45,8 +47,8 @@ public class PaymentDetails {
             this.paymentExpirationThreshold = object.paymentExpirationThreshold;
         }
 
-        public Builder setPaymentAddress(String paymentAddress) {
-            this.paymentAddress = paymentAddress;
+        public Builder setPaymentAddress(Address paymentAddress) {
+            this.paymentAddress = paymentAddress.toString();
             return this;
         }
 

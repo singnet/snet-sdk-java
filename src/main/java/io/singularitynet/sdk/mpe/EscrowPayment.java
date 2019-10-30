@@ -113,7 +113,7 @@ public class EscrowPayment implements Payment {
             return Utils.wrapExceptions(() -> {
                 ByteArrayOutputStream message = new ByteArrayOutputStream();
                 message.write(PAYMENT_MESSAGE_PREFIX);
-                message.write(Utils.addressToBytes(paymentChannel.getMpeContractAddress()));
+                message.write(paymentChannel.getMpeContractAddress().toByteArray());
                 message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
                 message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
                 message.write(Utils.bigIntToBytes32(amount));

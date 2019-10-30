@@ -24,7 +24,7 @@ public class Environment {
     private DaemonMock daemon = new DaemonMock();
     private TestServer server = TestServer.start(daemon);
 
-    private String mpeAddress = randomAddress();
+    private Address mpeAddress = randomAddress();
 
     private Environment() {
         ethereum = newEthereumMock();
@@ -87,14 +87,14 @@ public class Environment {
     private static final int ADDRESS_LENGTH = 20;
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-    public static String randomAddress() {
+    public static Address randomAddress() {
         StringBuffer address = new StringBuffer();
         address.append("0x");
         for (int i = 0; i < ADDRESS_LENGTH * 2; ++i) {
             int halfByte = (int) (Math.random() * 16);
             address.append(HEX_ARRAY[halfByte]);
         }
-        return address.toString();
+        return new Address(address.toString());
     }
 
     public static byte[] randomUint256() {
@@ -105,7 +105,7 @@ public class Environment {
         return uint256;
     }
 
-    private Map<String, Signer> signerByAddress = new HashMap<>();
+    private Map<Address, Signer> signerByAddress = new HashMap<>();
 
     public Signer newSigner() {
         Signer signer = new PrivateKeyIdentity(Utils.base64ToBytes("1PeCDRD7vLjqiGoHl7A+yPuJIy8TdbNc1vxOyuPjxBM="));
@@ -121,7 +121,7 @@ public class Environment {
             .setGroupName("default_group")
             .setPaymentGroupId(groupId)
             .setPaymentDetails(PaymentDetails.newBuilder()
-                    .setPaymentAddress("0xfA8a01E837c30a3DA3Ea862e6dB5C6232C9b800A")
+                    .setPaymentAddress(new Address("0xfA8a01E837c30a3DA3Ea862e6dB5C6232C9b800A"))
                     .setPaymentExpirationThreshold(BigInteger.valueOf(100))
                     .build());
         paymentGroupById.put(Utils.bytesToBase64(groupId), paymentGroup);
@@ -220,7 +220,7 @@ public class Environment {
             .setChannelId(channelId)
             .setMpeContractAddress(mpeAddress)
             .setNonce(BigInteger.valueOf(7))
-            .setSender("0xC4f3BFE7D69461B7f363509393D44357c084404c")
+            .setSender(new Address("0xC4f3BFE7D69461B7f363509393D44357c084404c"))
             .setSigner(signer.getAddress())
             .setRecipient(group.getPaymentDetails().getPaymentAddress())
             .setPaymentGroupId(group.getPaymentGroupId())

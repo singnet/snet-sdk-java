@@ -5,16 +5,18 @@ import lombok.ToString;
 import java.math.BigInteger;
 import static com.google.common.base.Preconditions.checkArgument;
 
+import io.singularitynet.sdk.ethereum.Address;
+
 @EqualsAndHashCode
 @ToString
 public class PaymentChannel {
 
     private final BigInteger channelId;
-    private final String mpeContractAddress;
+    private final Address mpeContractAddress;
     private final BigInteger nonce;
-    private final String sender;
-    private final String signer;
-    private final String recipient;
+    private final Address sender;
+    private final Address signer;
+    private final Address recipient;
     private final byte[] paymentGroupId;
     private final BigInteger value;
     private final BigInteger expiration;
@@ -45,7 +47,7 @@ public class PaymentChannel {
         return channelId;
     }
 
-    public String getMpeContractAddress() {
+    public Address getMpeContractAddress() {
         return mpeContractAddress;
     }
 
@@ -53,15 +55,15 @@ public class PaymentChannel {
         return nonce;
     }
 
-    public String getSender() {
+    public Address getSender() {
         return sender;
     }
 
-    public String getSigner() {
+    public Address getSigner() {
         return signer;
     }
 
-    public String getRecipient() {
+    public Address getRecipient() {
         return recipient;
     }
 
@@ -84,11 +86,11 @@ public class PaymentChannel {
     public static class Builder {
 
         private BigInteger channelId;
-        private String mpeContractAddress;
+        private Address mpeContractAddress;
         private BigInteger nonce;
-        private String sender;
-        private String signer;
-        private String recipient;
+        private Address sender;
+        private Address signer;
+        private Address recipient;
         private byte[] paymentGroupId;
         private BigInteger value;
         private BigInteger expiration;
@@ -115,7 +117,7 @@ public class PaymentChannel {
             return this;
         }
 
-        public Builder setMpeContractAddress(String mpeContractAddress) {
+        public Builder setMpeContractAddress(Address mpeContractAddress) {
             this.mpeContractAddress = mpeContractAddress;
             return this;
         }
@@ -125,17 +127,17 @@ public class PaymentChannel {
             return this;
         }
 
-        public Builder setSender(String sender) {
+        public Builder setSender(Address sender) {
             this.sender = sender;
             return this;
         }
 
-        public Builder setSigner(String signer) {
+        public Builder setSigner(Address signer) {
             this.signer = signer;
             return this;
         }
 
-        public Builder setRecipient(String recipient) {
+        public Builder setRecipient(Address recipient) {
             this.recipient = recipient;
             return this;
         }

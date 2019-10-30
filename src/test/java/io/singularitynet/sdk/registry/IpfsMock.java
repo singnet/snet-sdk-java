@@ -24,8 +24,7 @@ public class IpfsMock {
             .add("encoding", "proto")
             .add("service_type", "grpc")
             .add("model_ipfs_hash", "QmR3anSdm4s13iLt3zzyrSbtvCDJNwhkrYG6yFGFHXBznb")
-            .add("mpe_address", metadata.getMpeAddress());
-
+            .add("mpe_address", metadata.getMpeAddress().toString());
         JsonArrayBuilder groupsBuilder = Json.createArrayBuilder();
         for (EndpointGroup group : metadata.getEndpointGroups()) {
             JsonObjectBuilder groupBuilder = Json.createObjectBuilder()
@@ -80,7 +79,7 @@ public class IpfsMock {
                 .add("group_name", group.getGroupName())
                 .add("group_id", bytesToBase64(group.getPaymentGroupId()))
                 .add("payment", Json.createObjectBuilder()
-                        .add("payment_address", paymentDetails.getPaymentAddress())
+                        .add("payment_address", paymentDetails.getPaymentAddress().toString())
                         .add("payment_expiration_threshold", paymentDetails.getPaymentExpirationThreshold().toString())
                         .add("payment_channel_storage_type", "etcd")
                         .add("payment_channel_storage_client", Json.createObjectBuilder()

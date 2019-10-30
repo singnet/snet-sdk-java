@@ -6,6 +6,7 @@ import org.web3j.tuples.generated.Tuple7;
 
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class MultiPartyEscrowContract {
 
@@ -22,11 +23,11 @@ public class MultiPartyEscrowContract {
                 mpe.channels(channelId).send();
             return Optional.of(PaymentChannel.newBuilder()
                     .setChannelId(channelId)
-                    .setMpeContractAddress(mpe.getContractAddress())
+                    .setMpeContractAddress(new Address(mpe.getContractAddress()))
                     .setNonce(channel.component1())
-                    .setSender(channel.component2())
-                    .setSigner(channel.component3())
-                    .setRecipient(channel.component4())
+                    .setSender(new Address(channel.component2()))
+                    .setSigner(new Address(channel.component3()))
+                    .setRecipient(new Address(channel.component4()))
                     .setPaymentGroupId(channel.component5())
                     .setValue(channel.component6())
                     .setExpiration(channel.component7())

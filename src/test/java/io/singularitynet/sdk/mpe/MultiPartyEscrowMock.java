@@ -7,6 +7,7 @@ import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import static org.mockito.Mockito.*;
 
 import static io.singularitynet.sdk.common.Utils.*;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class MultiPartyEscrowMock {
 
@@ -20,17 +21,17 @@ public class MultiPartyEscrowMock {
         when(mpe.channels(eq(paymentChannel.getChannelId()))).
                 thenReturn(new RemoteFunctionCall<>(null, () -> {
                     return new Tuple7<>(paymentChannel.getNonce(),
-                            paymentChannel.getSender(),
-                            paymentChannel.getSigner(),
-                            paymentChannel.getRecipient(),
+                            paymentChannel.getSender().toString(),
+                            paymentChannel.getSigner().toString(),
+                            paymentChannel.getRecipient().toString(),
                             paymentChannel.getPaymentGroupId(),
                             paymentChannel.getValue(),
                             paymentChannel.getExpiration());
                 }));
     }
 
-    public void setContractAddress(String address) {
-        when(mpe.getContractAddress()).thenReturn(address);
+    public void setContractAddress(Address address) {
+        when(mpe.getContractAddress()).thenReturn(address.toString());
     }
 
 }
