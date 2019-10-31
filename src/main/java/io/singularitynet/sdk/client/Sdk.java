@@ -2,6 +2,8 @@ package io.singularitynet.sdk.client;
 
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.protocol.Web3j;
+import org.web3j.tx.gas.ContractGasProvider;
+import io.ipfs.api.IPFS;
 import com.google.gson.Gson;
 import java.io.InputStreamReader;
 import com.google.common.base.Preconditions;
@@ -27,15 +29,24 @@ import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.client.BaseServiceClient;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Signer;
 
 public class Sdk {
 
-    private final Configuration config;
     private final Web3j web3j;
+    private final IPFS ipfs;
+    private final ContractGasProvider gasProvider;
+    private final Signer signer;
 
     public Sdk(Configuration config) {
-        this.config = config;
-        this.web3j = config.getWeb3j();
+        this(new ConfigurationDependencyFactory(config));
+    }
+
+    public Sdk(DependencyFactory factory) {
+        this.web3j = factory.getWeb3j();
+        this.ipfs = factory.getIpfs();
+        this.gasProvider = factory.getContractGasProvider(web3j);
+        this.signer = factory.getSigner();
     }
 
     public ServiceClient newServiceClient(String orgId, String serviceId,
@@ -46,34 +57,33 @@ public class Sdk {
         });
         ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
                 // TODO: add unit test on prefix adding
-                web3j, config.getSigner().getAddress().toString());
+                web3j, signer.getAddress().toString());
 
         Address registryAddress = readContractAddress(networkId, "networks/Registry.json", "Registry");
         Registry registry = Registry.load(registryAddress.toString(), web3j,
-                transactionManager, config.getContractGasProvider());
+                transactionManager, gasProvider);
         RegistryContract registryContract = new RegistryContract(registry);
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(config.getIpfs());
+        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
         MetadataProvider metadataProvider = new RegistryMetadataProvider(
                 orgId, serviceId, registryContract, metadataStorage);
 
         Address mpeAddress = readContractAddress(networkId, "networks/MultiPartyEscrow.json", "MultiPartyEscrow");
         MultiPartyEscrow mpe = MultiPartyEscrow.load(mpeAddress.toString(), web3j,
-                transactionManager, config.getContractGasProvider());
+                transactionManager, gasProvider);
         MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(mpe);
 
         DaemonConnection connection = new FirstEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract, web3j, config.getSigner());
+                connection, mpeContract, web3j, signer);
         PaymentChannelProvider paymentChannelProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
         return new BaseServiceClient(connection, metadataProvider,
-                paymentChannelProvider, paymentStrategy, config.getSigner()); 
+                paymentChannelProvider, paymentStrategy, signer); 
     }
 
     public void shutdown() {
-        // FIXME: select the class which owns web3j
         web3j.shutdown();
     }
 

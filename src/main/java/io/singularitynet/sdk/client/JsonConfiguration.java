@@ -1,11 +1,6 @@
 package io.singularitynet.sdk.client;
 
 import java.net.URL;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.ContractGasProvider;
-import org.web3j.tx.gas.DefaultGasProvider;
-import io.ipfs.api.IPFS;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.FieldNamingPolicy;
@@ -20,7 +15,7 @@ public class JsonConfiguration implements Configuration {
 
     private final String ethereumJsonRpcEndpoint;
     private final URL ipfsUrl;
-    private final SignerType signerType;
+    private final String signerType;
     private final String signerMnemonic;
     private final String signerPrivateKeyBase64;
 
@@ -37,36 +32,28 @@ public class JsonConfiguration implements Configuration {
     }
 
     @Override
-    public Web3j getWeb3j() {
-        return Web3j.build(new HttpService(ethereumJsonRpcEndpoint));
+    public String getEthereumJsonRpcEndpoint() {
+        return ethereumJsonRpcEndpoint;
     }
 
     @Override
-    public ContractGasProvider getContractGasProvider() {
-        return new DefaultGasProvider();
+    public URL getIpfsUrl() {
+        return ipfsUrl;
     }
 
     @Override
-    public IPFS getIpfs() {
-        // TODO: support https
-        return new IPFS(ipfsUrl.getHost(), ipfsUrl.getPort());
+    public SignerType getSignerType() {
+        return Enum.valueOf(SignerType.class, signerType.toUpperCase());
     }
 
     @Override
-    public Signer getSigner() {
-        switch (signerType) {
-            case MNEMONIC:
-                return new MnemonicIdentity(signerMnemonic);
-            case PRIVATE_KEY:
-                return new PrivateKeyIdentity(Utils.base64ToBytes(signerPrivateKeyBase64));
-            default:
-                throw new IllegalArgumentException("Unexpected signer type: " + signerType);
-        }
+    public String getSignerMnemonic() {
+        return signerMnemonic;
     }
 
-    private static enum SignerType {
-        MNEMONIC,
-        PRIVATE_KEY
+    @Override
+    public byte[] getSignerPrivateKey() {
+        return Utils.base64ToBytes(signerPrivateKeyBase64);
     }
 
 }

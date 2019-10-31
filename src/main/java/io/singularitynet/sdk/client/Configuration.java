@@ -1,16 +1,20 @@
 package io.singularitynet.sdk.client;
 
-import org.web3j.protocol.Web3j;
-import org.web3j.tx.gas.ContractGasProvider;
-import io.ipfs.api.IPFS;
+import java.net.URL;
 
 import io.singularitynet.sdk.ethereum.Signer;
 
 public interface Configuration {
 
-    Web3j getWeb3j();
-    ContractGasProvider getContractGasProvider();
-    IPFS getIpfs();
-    Signer getSigner();
+    static enum SignerType {
+        MNEMONIC,
+        PRIVATE_KEY
+    }
+
+    String getEthereumJsonRpcEndpoint();
+    URL getIpfsUrl();
+    SignerType getSignerType();
+    String getSignerMnemonic();
+    byte[] getSignerPrivateKey();
 
 }
