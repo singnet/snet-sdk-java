@@ -66,22 +66,31 @@ public class Environment {
         return server;
     }
 
-    private Ethereum newEthereumMock() {
-        return Utils.wrapExceptions(() -> {
-            Ethereum ethereum = mock(Ethereum.class);
-            BigInteger curEthBlock = BigInteger.valueOf(53);
-            EthBlockNumber ethBlockNumber = mock(EthBlockNumber.class);
-            when(ethBlockNumber.getBlockNumber()).thenReturn(curEthBlock);
-            Request ethBlockNumberReq = mock(Request.class);
-            when(ethBlockNumberReq.send()).thenReturn(ethBlockNumber);
-            when(ethereum.ethBlockNumber()).thenReturn(ethBlockNumberReq);
-            return ethereum;
-        });
+    private static Ethereum newEthereumMock() {
+        Ethereum ethereum = mock(Ethereum.class);
+        setCurrentEthereumBlockNumber(ethereum, (long)(1000 * Math.random()));
+        return ethereum;
     }
 
     public void updateMocks() {
         registerServices();
         registerOrganizations();
+    }
+
+    public void setCurrentEthereumBlockNumber(long blockNumber) {
+        setCurrentEthereumBlockNumber(this.ethereum, blockNumber);
+    }
+
+    private static void setCurrentEthereumBlockNumber(Ethereum ethereum, long blockNumber) {
+        Utils.wrapExceptions(() -> {
+            BigInteger curEthBlock = BigInteger.valueOf(blockNumber);
+            EthBlockNumber ethBlockNumber = mock(EthBlockNumber.class);
+            when(ethBlockNumber.getBlockNumber()).thenReturn(curEthBlock);
+            Request ethBlockNumberReq = mock(Request.class);
+            when(ethBlockNumberReq.send()).thenReturn(ethBlockNumber);
+            when(ethereum.ethBlockNumber()).thenReturn(ethBlockNumberReq);
+            return null;
+        });
     }
 
     private static final int ADDRESS_LENGTH = 20;

@@ -26,11 +26,11 @@ public class PaymentChannelStateServiceTest {
     @Test
     public void signChannelStateRequest() {
         String privateKey = "89765001819765816734960087977248703971879862101523844953632906408104497565820";
-        // FIXME: mock ethereum to return correct block number
-        long ethereumBlock = 53;
+        long ethereumBlockNumber = 53;
         Address mpeAddress = new Address("0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF");
         long channelId = 42;
 
+        env.setCurrentEthereumBlockNumber(ethereumBlockNumber);
         Signer signer = new PrivateKeyIdentity(new BigInteger(privateKey));
         PaymentChannelStateService.MessageSigningHelper helper =
             new PaymentChannelStateService.MessageSigningHelper(env.ethereum(), signer);

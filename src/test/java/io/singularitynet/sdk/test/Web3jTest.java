@@ -4,6 +4,8 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.math.BigInteger;
+import java.io.IOException;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -38,6 +40,13 @@ public class Web3jTest {
                     Utils.strToBytes32("speech-recognition")).send();
 
         assertTrue(result.component1());
+    }
+
+    @Test
+    public void ethBlockNumber() throws IOException {
+        BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
+
+        assertNotNull(blockNumber);
     }
 
 }
