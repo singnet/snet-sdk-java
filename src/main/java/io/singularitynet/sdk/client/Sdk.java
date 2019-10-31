@@ -73,6 +73,7 @@ public class Sdk {
     }
 
     public void shutdown() {
+        // FIXME: select the class which owns web3j
         web3j.shutdown();
     }
 
