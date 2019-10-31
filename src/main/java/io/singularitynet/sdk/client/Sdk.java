@@ -69,7 +69,7 @@ public class Sdk {
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
         return new BaseServiceClient(connection, metadataProvider,
-                paymentChannelProvider, paymentStrategy); 
+                paymentChannelProvider, paymentStrategy, config.getSigner()); 
     }
 
     public void shutdown() {

@@ -3,7 +3,6 @@ package io.singularitynet.sdk.client;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.mpe.*;
 import io.singularitynet.sdk.registry.*;
@@ -15,19 +14,14 @@ import io.singularitynet.sdk.registry.*;
 public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         
     private final BigInteger channelId;
-    // FIXME: move signer to ServiceClient as it is used to get channel state as
-    // well
-    private final Signer signer;
 
     /**
      * Constructor.
      * @param channelId id of the payment channel to use for the payment
      * generation.
-     * @param signer used to sign the payment.
      */
-    public FixedPaymentChannelPaymentStrategy(BigInteger channelId, Signer signer) {
+    public FixedPaymentChannelPaymentStrategy(BigInteger channelId) {
         this.channelId = channelId;
-        this.signer = signer;
     }
 
     @Override
@@ -41,7 +35,7 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         return EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
             .setAmount(newAmount)
-            .setSigner(signer)
+            .setSigner(serviceClient.getSigner())
             .build();
     }
 

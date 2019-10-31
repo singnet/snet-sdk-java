@@ -60,9 +60,9 @@ public class SingleServiceSingleClientTest {
         PaymentChannelProvider paymentChannelProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                paymentChannel.getChannelId(), signer);
+                paymentChannel.getChannelId());
         serviceClient = new BaseServiceClient(connection, metadataProvider,
-                paymentChannelProvider, paymentStrategy); 
+                paymentChannelProvider, paymentStrategy, signer); 
 
         serviceStub = serviceClient.getGrpcStub(TestServiceGrpc::newBlockingStub);
     }

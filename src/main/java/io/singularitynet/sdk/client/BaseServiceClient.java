@@ -7,7 +7,9 @@ import io.grpc.*;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
-import io.singularitynet.sdk.mpe.*;
+import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.Payment;
+import io.singularitynet.sdk.ethereum.Signer;
 
 /**
  * The class is responsible for providing all necessary facilities to call
@@ -19,6 +21,7 @@ public class BaseServiceClient implements ServiceClient {
     private final MetadataProvider metadataProvider;
     private final PaymentChannelProvider paymentChannelProvider;
     private final PaymentStrategy paymentStrategy;
+    private final Signer signer;
 
     /**
      * Constructor.
@@ -26,17 +29,20 @@ public class BaseServiceClient implements ServiceClient {
      * @param metadataProvider provides the service related metadata.
      * @param paymentChannelProvider provides the payment channel state.
      * @param paymentStrategy provides payment for the client call.
+     * @param signer signs payments.
      */
     public BaseServiceClient(
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
             PaymentChannelProvider paymentChannelProvider,
-            PaymentStrategy paymentStrategy) {
+            PaymentStrategy paymentStrategy,
+            Signer signer) {
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
         this.paymentChannelProvider = paymentChannelProvider;
         this.paymentStrategy = paymentStrategy;
+        this.signer = signer;
     }
 
     @Override
@@ -47,6 +53,11 @@ public class BaseServiceClient implements ServiceClient {
     @Override
     public PaymentChannelProvider getPaymentChannelProvider() {
         return paymentChannelProvider;
+    }
+
+    @Override
+    public Signer getSigner() {
+        return signer;
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.ethereum.Signer;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -23,6 +24,11 @@ public interface ServiceClient {
      * @return payment channel provider instance.
      */
     PaymentChannelProvider getPaymentChannelProvider();
+
+    /**
+     * Return the signer to sign payments.
+     */
+    Signer getSigner();
 
     /**
      * Construct new gRPC stub to call the platform service.
