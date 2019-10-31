@@ -23,7 +23,7 @@ public class MultiPartyEscrowContract {
                 mpe.channels(channelId).send();
             return Optional.of(PaymentChannel.newBuilder()
                     .setChannelId(channelId)
-                    .setMpeContractAddress(new Address(mpe.getContractAddress()))
+                    .setMpeContractAddress(getContractAddress())
                     .setNonce(channel.component1())
                     .setSender(new Address(channel.component2()))
                     .setSigner(new Address(channel.component3()))
@@ -34,6 +34,10 @@ public class MultiPartyEscrowContract {
                     .setSpentAmount(BigInteger.ZERO)
                     .build());
         });
+    }
+
+    public Address getContractAddress() {
+        return new Address(mpe.getContractAddress());
     }
 
 }

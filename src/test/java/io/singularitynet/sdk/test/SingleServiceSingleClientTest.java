@@ -56,7 +56,7 @@ public class SingleServiceSingleClientTest {
         DaemonConnection connection = new FirstEndpointDaemonConnection(
                 endpointGroup.getGroupName(), metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, env.ethereum(), signer);
+                connection, mpeContract, env.ethereum(), signer);
         PaymentChannelProvider paymentChannelProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(

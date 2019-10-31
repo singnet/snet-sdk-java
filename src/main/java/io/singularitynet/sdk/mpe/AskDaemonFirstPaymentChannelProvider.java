@@ -22,7 +22,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
     @Override
     public PaymentChannel getChannelById(BigInteger channelId) {
         PaymentChannel channel = mpe.getChannelById(channelId).get();
-        PaymentChannelStateReply reply = stateService.getChannelState(channel);
+        PaymentChannelStateReply reply = stateService.getChannelState(channelId);
         if (!reply.hasCurrentSignedAmount()) {
             checkState(channel.getNonce().compareTo(reply.getCurrentNonce()) >= 0,
                     "Daemon sent channel state which is newer then blockchain one. " +

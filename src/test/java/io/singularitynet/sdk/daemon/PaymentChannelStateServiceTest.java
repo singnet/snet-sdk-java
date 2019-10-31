@@ -33,14 +33,11 @@ public class PaymentChannelStateServiceTest {
         env.setCurrentEthereumBlockNumber(ethereumBlockNumber);
         Signer signer = new PrivateKeyIdentity(new BigInteger(privateKey));
         PaymentChannelStateService.MessageSigningHelper helper =
-            new PaymentChannelStateService.MessageSigningHelper(env.ethereum(), signer);
-        PaymentChannel channel = PaymentChannel.newBuilder()
-            .setMpeContractAddress(mpeAddress)
-            .build();
+            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, env.ethereum(), signer);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(ByteString.copyFrom(Utils.bigIntToBytes32(BigInteger.valueOf(channelId))));
 
-        helper.signChannelStateRequest(channel, request);
+        helper.signChannelStateRequest(request);
 
         assertEquals("Signature", "kegbvf4a+kzqDiIkDDsWIZu2EFqbR5dQzKrSmy3w6uxhg+NuOFc09wwXSwUiO46R5FN+XQ/Yjtwgxyck4K9OhRs=",
                 Utils.bytesToBase64(request.getSignature().toByteArray()));

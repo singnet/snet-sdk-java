@@ -64,7 +64,7 @@ public class Sdk {
         DaemonConnection connection = new FirstEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, web3j, config.getSigner());
+                connection, mpeContract, web3j, config.getSigner());
         PaymentChannelProvider paymentChannelProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
