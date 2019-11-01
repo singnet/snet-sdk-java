@@ -14,7 +14,7 @@ Install dependencies for the first time:
 ```
 curl -L https://get.web3j.io | bash
 source $HOME/.web3j/source.sh
-./get_contracts.sh
+./get_dependencies.sh
 ```
 
 Build and test:
