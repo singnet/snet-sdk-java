@@ -62,6 +62,11 @@ package io.singularitynet.sdk.daemon {
     }
     PaymentChannelStateService o-- Signer
     PaymentChannelStateService -- DaemonConnection
+
+    interface Payment {
+        void toMetadata(Metadata headers);
+    }
+
 }
 
 package io.singularitynet.sdk.mpe {
@@ -79,12 +84,8 @@ package io.singularitynet.sdk.mpe {
     AskDaemonFirstPaymentChannelProvider *-- MultiPartyEscrowContract
     AskDaemonFirstPaymentChannelProvider *-- PaymentChannelStateService
 
-    interface Payment {
-        void toMetadata(Metadata headers);
-    }
-
     class EscrowPayment
-    Payment <|.. EscrowPayment
+    Payment ()- EscrowPayment
 
 }
 

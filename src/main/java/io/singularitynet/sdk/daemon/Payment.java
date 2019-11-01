@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.mpe;
+package io.singularitynet.sdk.daemon;
 
 import io.grpc.Metadata;
 

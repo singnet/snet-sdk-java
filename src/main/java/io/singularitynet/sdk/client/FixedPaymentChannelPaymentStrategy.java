@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.mpe.*;
+import io.singularitynet.sdk.daemon.Payment;
+import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.EscrowPayment;
 import io.singularitynet.sdk.registry.*;
 
 /**

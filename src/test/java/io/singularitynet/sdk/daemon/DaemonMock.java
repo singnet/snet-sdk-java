@@ -13,8 +13,7 @@ import com.google.protobuf.ByteString;
 
 import io.singularitynet.daemon.escrow.*;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.daemon.*;
-import io.singularitynet.sdk.mpe.*;
+import io.singularitynet.sdk.mpe.PaymentChannel;
 
 public class DaemonMock extends PaymentChannelStateServiceGrpc.PaymentChannelStateServiceImplBase
     implements ServerInterceptor {

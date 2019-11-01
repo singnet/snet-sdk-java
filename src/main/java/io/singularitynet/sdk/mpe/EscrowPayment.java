@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import io.singularitynet.sdk.daemon.Payment;
+import io.singularitynet.sdk.daemon.PaymentSerializer;
 import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.common.Utils;
 
@@ -14,6 +16,10 @@ import io.singularitynet.sdk.common.Utils;
 public class EscrowPayment implements Payment {
 
     public static final String PAYMENT_TYPE_ESCROW = "escrow";
+
+    static {
+        PaymentSerializer.register(PAYMENT_TYPE_ESCROW, EscrowPayment::fromMetadata);
+    }
 
     private static final Metadata.Key<BigInteger> SNET_PAYMENT_CHANNEL_ID =
         Metadata.Key.of("snet-payment-channel-id", PaymentSerializer.ASCII_BIGINTEGER_MARSHALLER);

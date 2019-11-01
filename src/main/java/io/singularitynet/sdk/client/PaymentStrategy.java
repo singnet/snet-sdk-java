@@ -1,6 +1,6 @@
 package io.singularitynet.sdk.client;
 
-import io.singularitynet.sdk.mpe.Payment;
+import io.singularitynet.sdk.daemon.Payment;
 
 /**
  * The strategy provides a payment for the client call.

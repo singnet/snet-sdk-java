@@ -5,10 +5,10 @@ import java.util.function.Consumer;
 import io.grpc.*;
 
 import io.singularitynet.sdk.daemon.DaemonConnection;
+import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
-import io.singularitynet.sdk.mpe.Payment;
 import io.singularitynet.sdk.ethereum.Signer;
 
 /**
