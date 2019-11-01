@@ -1,0 +1,57 @@
+@startuml
+
+title SingularityNet Java SDK
+
+interface MetadataStorage {
+  byte[] get(URI uri);
+}
+class IpfsMetadataStorage
+MetadataStorage <|.. IpfsMetadataStorage
+
+class RegistryContract {
+  Optional<ServiceRegistration> getServiceRegistrationById(String orgId, String serviceId);
+}
+
+interface MetadataProvider {
+  ServiceMetadata getServiceMetadata();
+}
+class RegistryMetadataProvider
+MetadataProvider <|.. RegistryMetadataProvider
+RegistryContract --* RegistryMetadataProvider 
+MetadataStorage --* RegistryMetadataProvider
+
+interface Signer {
+  byte[] sign(byte[] message);
+}
+class PrivateKeyIdentity
+Signer <|.. PrivateKeyIdentity
+
+interface PaymentChannelProvider {
+  PaymentChannel getChannelById(BigInteger channelId);
+}
+class ContractPaymentChannelProvider
+class MultiPartyEscrowContract {
+  Optional<PaymentChannel> getChannelById(BigInteger channelId);
+}
+PaymentChannelProvider <|.. ContractPaymentChannelProvider
+MultiPartyEscrowContract --* ContractPaymentChannelProvider
+
+interface PaymentStrategy {
+  <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
+}
+class FixedPaymentChannelPaymentStrategy
+PaymentStrategy <|.. FixedPaymentChannelPaymentStrategy
+
+interface ServiceClient {
+  T getGrpcStub(Function<Channel, T> constructor);
+  void shutdownNow();
+  PaymentChannelProvider getPaymentChannelProvider();
+  MetadataProvider getMetadataProvider();
+}
+class BaseServiceClient
+ServiceClient <|.. BaseServiceClient
+MetadataProvider --* BaseServiceClient
+PaymentChannelProvider --* BaseServiceClient
+PaymentStrategy --* BaseServiceClient
+
+@enduml
