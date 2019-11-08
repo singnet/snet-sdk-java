@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class UtilsTest {
 
@@ -50,6 +51,16 @@ public class UtilsTest {
         thrown.expectMessage("Passed array length is not equal to 32 bytes");
 
         Utils.bytes32ToStr(new byte[31]);
+    }
+
+    @Test
+    public void bytes32ToStr32CharLength() {
+        byte[] bytes = new byte[32];
+        Arrays.fill(bytes, (byte)'x');
+
+        String str = Utils.bytes32ToStr(bytes);
+
+        assertEquals("Max length string", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", str);
     }
 
     @Test

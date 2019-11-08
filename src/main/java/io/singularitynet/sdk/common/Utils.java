@@ -35,7 +35,11 @@ public class Utils {
     public static String bytes32ToStr(byte[] bytes) {
         Preconditions.checkArgument(bytes.length == 32, "Passed array length is not equal to 32 bytes");
         String full = new String(bytes, UTF_8);
-        return full.substring(0, full.indexOf(0));
+        int lastZero = full.indexOf(0);
+        if (lastZero == -1) {
+            return full;
+        }
+        return full.substring(0, lastZero);
     }
 
     public static byte[] base64ToBytes(String str) {
