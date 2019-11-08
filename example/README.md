@@ -53,7 +53,7 @@ $ snet channel open-init snet default_group 0.1 +7days --gas-price 380000000000
 2. Run application
 
 ```sh
-$ mvn exec:java -Dexec.args="<account-private-key> <channel-id>"
+$ mvn exec:java -Dexec.mainClass="io.singularitynet.sdk.example.CntkImageRecognition" -Dexec.args="<account-private-key> <channel-id>"
 ```
 
 # Create your own service client
