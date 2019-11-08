@@ -4,9 +4,9 @@
 platform_contracts_version=0.3.4
 platform_contracts_tgz=https://registry.npmjs.org/singularitynet-platform-contracts/-/singularitynet-platform-contracts-$platform_contracts_version.tgz
 
-mkdir -p target
+mkdir -p sdk/target
 
-cd target
+cd sdk/target
 wget $platform_contracts_tgz -O singularitynet-platform-contracts.tgz
 tar -xzf ./singularitynet-platform-contracts.tgz
 mv package singularitynet-platform-contracts
