@@ -21,8 +21,8 @@ public class ExampleService {
         BigInteger channelId = new BigInteger(args[1]);
 
         String json = "{" +
-            "\"ethereum_json_rpc_endpoint\": \"http://localhost:8545\", " +
-            "\"ipfs_url\": \"http://localhost:5002\"," +
+            "\"ethereum_json_rpc_endpoint\": \"https://ropsten.infura.io\", " +
+            "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
             "\"signer_type\": \"PRIVATE_KEY\"," +
             "\"signer_private_key_base64\": \"" + hexToBase64(privateKey) + "\"" +
             "}";
