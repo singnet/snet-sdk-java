@@ -40,7 +40,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     public Signer getSigner() {
         switch (config.getSignerType()) {
             case MNEMONIC:
-                return new MnemonicIdentity(config.getSignerMnemonic());
+                return new MnemonicIdentity(config.getSignerMnemonic(), 0);
             case PRIVATE_KEY:
                 return new PrivateKeyIdentity(config.getSignerPrivateKey());
             default:
