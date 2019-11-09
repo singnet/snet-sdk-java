@@ -11,6 +11,9 @@ import io.singularitynet.sdk.common.Utils;
 
 public class CryptoUtils {
 
+    private CryptoUtils() {
+    }
+
     public static Address getSignerAddress(byte[] message, byte[] signature) {
         return Utils.wrapExceptions(() -> {
             Sign.SignatureData signatureData = bytesToSignature(signature);

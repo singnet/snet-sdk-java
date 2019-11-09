@@ -9,6 +9,9 @@ import java.util.Arrays;
 
 public class Utils {
 
+    private Utils() {
+    }
+
     public static byte[] strToBytes(String str) {
         return str.getBytes(UTF_8);
     }
