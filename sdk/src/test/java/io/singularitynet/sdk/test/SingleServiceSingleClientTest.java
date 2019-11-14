@@ -19,6 +19,7 @@ public class SingleServiceSingleClientTest {
     private BigInteger price;
     private PaymentChannel paymentChannel;
 
+    private Sdk sdk;
     private ServiceClient serviceClient;
     private TestServiceBlockingStub serviceStub;
 
@@ -48,7 +49,7 @@ public class SingleServiceSingleClientTest {
 
         env.updateMocks();
 
-        Sdk sdk = new Sdk(env.web3j(), env.ipfs().get(), signer,
+        sdk = new Sdk(env.web3j(), env.ipfs().get(), signer,
                 env.registry().get(), env.mpe().get());
 
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
@@ -61,6 +62,7 @@ public class SingleServiceSingleClientTest {
 
     @After
     public void tearDown() {
+        sdk.shutdown();
         serviceClient.shutdownNow();
         env.server().shutdownNow();
     }
