@@ -70,6 +70,12 @@ public class BaseServiceClient implements ServiceClient {
         daemonConnection.shutdownNow();
     }
 
+    /**
+     * Class responsibility is injecting payment information into gRPC metadata
+     * before making remote gRPC call. It uses PaymentStrategy instance to
+     * calculate payment and ClientCallWrapper instance to inject payment into
+     * gRPC metadata.
+     */
     private static class PaymentClientInterceptor implements ClientInterceptor {
 
         private final ServiceClient serviceClient;
@@ -94,6 +100,12 @@ public class BaseServiceClient implements ServiceClient {
 
     }
 
+    /**
+     * This class is io.grpc.ClientCall wrapper injecting custom gRPC metadata
+     * before client call. Class overrides start() method and updates metadata
+     * before passing it to wrapped io.grpc.ClientCall instance. This is the
+     * only way of metadata injection in gRPC client call interceptor. 
+     */
     private static class ClientCallWrapper<ReqT, RespT> extends ClientCall<ReqT, RespT> {
 
         private final ClientCall<ReqT, RespT> delegate;
