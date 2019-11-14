@@ -33,7 +33,7 @@ public class PaymentChannelStateServiceTest {
         env.setCurrentEthereumBlockNumber(ethereumBlockNumber);
         Signer signer = new PrivateKeyIdentity(new BigInteger(privateKey));
         PaymentChannelStateService.MessageSigningHelper helper =
-            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, env.ethereum(), signer);
+            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, env.web3j(), signer);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(ByteString.copyFrom(Utils.bigIntToBytes32(BigInteger.valueOf(channelId))));
 

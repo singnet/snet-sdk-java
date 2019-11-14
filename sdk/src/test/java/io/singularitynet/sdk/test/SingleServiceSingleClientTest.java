@@ -48,21 +48,13 @@ public class SingleServiceSingleClientTest {
 
         env.updateMocks();
 
-        RegistryContract registryContract = new RegistryContract(env.registry().get());
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(env.ipfs().get());
-        MetadataProvider metadataProvider = new RegistryMetadataProvider(
-                orgId, serviceId, registryContract, metadataStorage);
-        MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(env.mpe().get());
-        DaemonConnection connection = new FirstEndpointDaemonConnection(
-                endpointGroup.getGroupName(), metadataProvider);
-        PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract, env.ethereum(), signer);
-        PaymentChannelProvider paymentChannelProvider =
-            new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+        Sdk sdk = new Sdk(env.web3j(), env.ipfs().get(), signer,
+                env.registry().get(), env.mpe().get());
+
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
                 paymentChannel.getChannelId());
-        serviceClient = new BaseServiceClient(connection, metadataProvider,
-                paymentChannelProvider, paymentStrategy, signer); 
+        serviceClient = sdk.newServiceClient(orgId, serviceId,
+                endpointGroup.getGroupName(), paymentStrategy);
 
         serviceStub = serviceClient.getGrpcStub(TestServiceGrpc::newBlockingStub);
     }

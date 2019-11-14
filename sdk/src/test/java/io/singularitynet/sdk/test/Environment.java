@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 import java.net.URI;
 import java.util.*;
 import java.math.BigInteger;
-import org.web3j.protocol.core.Ethereum;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 
@@ -17,7 +17,7 @@ import io.singularitynet.sdk.ethereum.*;
 
 public class Environment {
 
-    private Ethereum ethereum = mock(Ethereum.class);
+    private Web3j web3j = mock(Web3j.class);
     private RegistryMock registry = new RegistryMock();
     private IpfsMock ipfs = new IpfsMock();
     private MultiPartyEscrowMock mpe = new MultiPartyEscrowMock();
@@ -27,7 +27,7 @@ public class Environment {
     private Address mpeAddress = randomAddress();
 
     private Environment() {
-        ethereum = newEthereumMock();
+        web3j = newWeb3jMock();
         registry = new RegistryMock();
         ipfs = new IpfsMock();
         mpe = new MultiPartyEscrowMock();
@@ -42,8 +42,8 @@ public class Environment {
         return new Environment();
     }
 
-    public Ethereum ethereum() {
-        return ethereum;
+    public Web3j web3j() {
+        return web3j;
     }
 
     public RegistryMock registry() {
@@ -66,10 +66,10 @@ public class Environment {
         return server;
     }
 
-    private static Ethereum newEthereumMock() {
-        Ethereum ethereum = mock(Ethereum.class);
-        setCurrentEthereumBlockNumber(ethereum, (long)(1000 * Math.random()));
-        return ethereum;
+    private static Web3j newWeb3jMock() {
+        Web3j web3j = mock(Web3j.class);
+        setCurrentEthereumBlockNumber(web3j, (long)(1000 * Math.random()));
+        return web3j;
     }
 
     public void updateMocks() {
@@ -78,17 +78,17 @@ public class Environment {
     }
 
     public void setCurrentEthereumBlockNumber(long blockNumber) {
-        setCurrentEthereumBlockNumber(this.ethereum, blockNumber);
+        setCurrentEthereumBlockNumber(this.web3j, blockNumber);
     }
 
-    private static void setCurrentEthereumBlockNumber(Ethereum ethereum, long blockNumber) {
+    private static void setCurrentEthereumBlockNumber(Web3j web3j, long blockNumber) {
         Utils.wrapExceptions(() -> {
             BigInteger curEthBlock = BigInteger.valueOf(blockNumber);
             EthBlockNumber ethBlockNumber = mock(EthBlockNumber.class);
             when(ethBlockNumber.getBlockNumber()).thenReturn(curEthBlock);
             Request ethBlockNumberReq = mock(Request.class);
             when(ethBlockNumberReq.send()).thenReturn(ethBlockNumber);
-            when(ethereum.ethBlockNumber()).thenReturn(ethBlockNumberReq);
+            when(web3j.ethBlockNumber()).thenReturn(ethBlockNumberReq);
             return null;
         });
     }
