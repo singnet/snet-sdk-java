@@ -4,9 +4,9 @@ import java.net.URL;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.FieldNamingPolicy;
-import com.google.common.base.Preconditions;
 
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
@@ -18,17 +18,19 @@ public class JsonConfiguration implements Configuration {
     private final String signerType;
     private final String signerMnemonic;
     private final String signerPrivateKeyBase64;
+    private final String registryAddress;
+    private final String multiPartyEscrowAddress;
 
     public JsonConfiguration(String json) {
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         JsonConfiguration config = gson.fromJson(json, JsonConfiguration.class);
-        Preconditions.checkArgument(config.ethereumJsonRpcEndpoint != null,
-                "Field ethereum_json_rpc_endpoint is required");
         this.ethereumJsonRpcEndpoint = config.ethereumJsonRpcEndpoint;
         this.ipfsUrl = config.ipfsUrl;
         this.signerType = config.signerType;
         this.signerMnemonic = config.signerMnemonic;
         this.signerPrivateKeyBase64 = config.signerPrivateKeyBase64;
+        this.registryAddress = config.registryAddress;
+        this.multiPartyEscrowAddress = config.multiPartyEscrowAddress;
     }
 
     @Override
@@ -54,6 +56,16 @@ public class JsonConfiguration implements Configuration {
     @Override
     public byte[] getSignerPrivateKey() {
         return Utils.base64ToBytes(signerPrivateKeyBase64);
+    }
+
+    @Override
+    public Address getRegistryAddress() {
+        return new Address(registryAddress);
+    }
+
+    @Override
+    public Address getMultiPartyEscrowAddress() {
+        return new Address(multiPartyEscrowAddress);
     }
 
 }
