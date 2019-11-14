@@ -96,6 +96,38 @@
       </plugin>
 
       <plugin>
+        <groupId>io.singularitynet</groupId>
+        <artifactId>snet-sdk-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>example-service</id>
+            <configuration>
+              <orgId>snet</orgId>
+              <serviceId>example-service</serviceId>
+              <outputDir>${project.build.directory}/proto</outputDir>
+              <javaPackage>io.singularitynet.service.exampleservice</javaPackage>
+            </configuration>
+            <goals>
+              <goal>get</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>cntk-image-recon</id>
+            <configuration>
+              <orgId>snet</orgId>
+              <serviceId>cntk-image-recon</serviceId>
+              <outputDir>${project.build.directory}/proto</outputDir>
+              <javaPackage>io.singularitynet.service.cntkimagerecon</javaPackage>
+            </configuration>
+            <goals>
+              <goal>get</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
@@ -108,6 +140,7 @@
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
           <!-- to not recompile protobuf each time -->
           <checkStaleness>true</checkStaleness>
+          <protoSourceRoot>${project.build.directory}/proto</protoSourceRoot>
         </configuration>
         <executions>
           <execution>
