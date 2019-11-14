@@ -52,6 +52,9 @@ public class SnetServiceApiMojo extends AbstractMojo
     @Parameter(defaultValue = "${project.build.directory}/proto", property = "outputDir", required = true)
     private File outputDir;
 
+    @Parameter(property = "javaPackage", required = true)
+    private String javaPackage;
+
     @Parameter(defaultValue = "http://ipfs.singularitynet.io:80", property = "ipfsRpcEndpoint", required = true)
     private URL ipfsRpcEndpoint;
 
@@ -65,8 +68,8 @@ public class SnetServiceApiMojo extends AbstractMojo
     private String registryAddress;
 
     public void execute() throws MojoExecutionException {
-        log.info("Downloading API of orgId: {} serviceId: {} into: {}",
-                orgId, serviceId, outputDir);
+        log.info("Downloading API of orgId: {}, serviceId: {}, javaPackage: {}, into: {}",
+                orgId, serviceId, javaPackage, outputDir);
         log.debug("ethereumJsonRpcEndpoint: {}, ipfsRpcEndpoint: {}, " +
                 "getterEthereumAddress: {}, registryAddress: {}",
                 ethereumJsonRpcEndpoint, ipfsRpcEndpoint, getterEthereumAddress,
@@ -140,6 +143,10 @@ public class SnetServiceApiMojo extends AbstractMojo
                     }
                     try (OutputStream o = Files.newOutputStream(f.toPath())) {
                         IOUtils.copy(is, o);
+                        if (name.endsWith(".proto")) {
+                            log.debug("Adding package to protobuf file: {}", name);
+                            o.write(("\noption java_package = \"" + javaPackage + "\";").getBytes());
+                        }
                     }
                 }
             }

@@ -7,7 +7,10 @@ import org.junit.Rule;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 public class SnetServiceApiMojoTest
 {
@@ -36,10 +39,18 @@ public class SnetServiceApiMojoTest
 
         File outputDir = (File) rule.getVariableValueFromObject(mojo, "outputDir");
         assertNotNull(outputDir);
-        assertTrue(outputDir.exists());
+        assertTrue("Output dir doesn't exist", outputDir.exists());
 
-        File proto = new File(outputDir, "example_service.proto");
-        assertTrue(proto.exists());
+        File protoFile = new File(outputDir, "example_service.proto");
+        assertTrue("API is not downloaded", protoFile.exists());
+
+        BufferedInputStream is = new BufferedInputStream(new FileInputStream(protoFile));
+        try {
+            String protobuf = IOUtils.toString(is);
+            assertTrue("Java package is not added", protobuf.endsWith("option java_package = \"io.singularitynet.service\";"));
+        } finally {
+            is.close();
+        }
     }
 
 }

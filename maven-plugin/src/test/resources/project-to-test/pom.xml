@@ -19,6 +19,7 @@
           <orgId>snet</orgId>
           <serviceId>example-service</serviceId>
           <outputDir>target/proto</outputDir>
+          <javaPackage>io.singularitynet.service</javaPackage>
         </configuration>
       </plugin>
     </plugins>
