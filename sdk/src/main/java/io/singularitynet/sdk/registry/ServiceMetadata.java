@@ -13,6 +13,7 @@ import io.singularitynet.sdk.ethereum.Address;
 public class ServiceMetadata {
 
     private final String displayName;
+    private final String modelIpfsHash;
     private final String mpeAddress;
     @SerializedName("groups") private final List<EndpointGroup> endpointGroups;
 
@@ -26,12 +27,17 @@ public class ServiceMetadata {
 
     private ServiceMetadata(Builder builder) {
         this.displayName = builder.displayName;
+        this.modelIpfsHash = builder.modelIpfsHash;
         this.mpeAddress = builder.mpeAddress;
         this.endpointGroups = builder.endpointGroups;
     }
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getModelIpfsHash() {
+        return modelIpfsHash;
     }
 
     public Address getMpeAddress() {
@@ -45,6 +51,7 @@ public class ServiceMetadata {
     public static class Builder {
 
         private String displayName;
+        private String modelIpfsHash;
         private String mpeAddress;
         private List<EndpointGroup> endpointGroups = new ArrayList<>();
 
@@ -53,12 +60,18 @@ public class ServiceMetadata {
 
         private Builder(ServiceMetadata object) {
             this.displayName = object.displayName;
+            this.modelIpfsHash = object.modelIpfsHash;
             this.mpeAddress = object.mpeAddress;
             this.endpointGroups = object.endpointGroups;
         }
 
         public Builder setDisplayName(String displayName) {
             this.displayName = displayName;
+            return this;
+        }
+
+        public Builder setModelIpfsHash(String modelIpfsHash) {
+            this.modelIpfsHash = modelIpfsHash;
             return this;
         }
 
