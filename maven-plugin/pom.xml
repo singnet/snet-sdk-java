@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.singularitynet</groupId>
+  <parent>
+    <groupId>io.singularitynet</groupId>
+    <artifactId>snet-sdk-java-pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
   <artifactId>snet-sdk-maven-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>SingularityNet Java SDK Maven Plugin</name>
-
+  <name>snet-sdk-maven-plugin</name>
+  <description>SingularityNet Java SDK Maven Plugin</description>
   <!-- TODO change it to the project's website -->
   <url>http://www.example.com</url>
+
+  <properties>
+    <maven.version>3.3.9</maven.version>
+  </properties>
 
   <prerequisites>
     <maven>${maven.version}</maven>
   </prerequisites>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.version>3.3.9</maven.version>
-  </properties>
 
   <dependencies>
     <!-- maven plugin -->
@@ -55,11 +56,11 @@
       <version>3.6.0</version>
       <scope>provided</scope>
     </dependency>
-    <!-- end of maven plugin -->
+    <!-- maven plugin end -->
     <dependency>
       <groupId>io.singularitynet</groupId>
       <artifactId>snet-sdk-java</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -97,54 +98,10 @@
       <version>2.6</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_maven-plugin_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.6.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-          <configuration>
-            <trimStackTrace>false</trimStackTrace>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-invoker-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -170,6 +127,20 @@
         </executions>
       </plugin>
     </plugins>
+
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.6.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
   </build>
 
 </project>
