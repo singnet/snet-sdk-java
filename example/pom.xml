@@ -71,7 +71,6 @@
       <plugin>
         <groupId>io.singularitynet</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
-        <version>${project.version}</version>
         <executions>
           <execution>
             <id>example-service</id>
@@ -103,7 +102,6 @@
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
         <configuration>
           <!-- artifact to download binary protobuf compiler -->
           <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
@@ -129,7 +127,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.4.0</version>
       </plugin>
 
     </plugins>
