@@ -38,7 +38,7 @@ import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.registry.RegistryContract;
 
-@Mojo(name = "get", defaultPhase = LifecyclePhase.VALIDATE)
+@Mojo(name = "get", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class SnetServiceApiMojo extends AbstractMojo
 {
     private final static Logger log = LoggerFactory.getLogger(SnetServiceApiMojo.class);
