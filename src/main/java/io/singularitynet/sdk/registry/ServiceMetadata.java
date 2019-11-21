@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 
+import io.singularitynet.sdk.ethereum.Address;
+
 @EqualsAndHashCode
 @ToString
 public class ServiceMetadata {
@@ -32,8 +34,8 @@ public class ServiceMetadata {
         return displayName;
     }
 
-    public String getMpeAddress() {
-        return mpeAddress;
+    public Address getMpeAddress() {
+        return new Address(mpeAddress);
     }
 
     public List<EndpointGroup> getEndpointGroups() {
@@ -60,13 +62,18 @@ public class ServiceMetadata {
             return this;
         }
 
-        public Builder setMpeAddress(String mpeAddress) {
-            this.mpeAddress = mpeAddress;
+        public Builder setMpeAddress(Address mpeAddress) {
+            this.mpeAddress = mpeAddress.toString();
             return this;
         }
 
-        public Builder addEndpointGroups(EndpointGroup endpointGroup) {
+        public Builder addEndpointGroup(EndpointGroup endpointGroup) {
             this.endpointGroups.add(endpointGroup);
+            return this;
+        }
+
+        public Builder clearEndpointGroups() {
+            this.endpointGroups.clear();
             return this;
         }
 

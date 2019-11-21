@@ -8,7 +8,7 @@ import java.math.BigInteger;
 @ToString
 public class Pricing {
 
-    private final PriceModel priceModel;
+    private final String priceModel;
     private final BigInteger priceInCogs;
 
     public static Builder newBuilder() {
@@ -25,7 +25,9 @@ public class Pricing {
     }
 
     public PriceModel getPriceModel() {
-        return priceModel;
+        // TODO: remove additional conversion: either change
+        // priceModel type to enum or remove enum at all
+        return Enum.valueOf(PriceModel.class, priceModel.toUpperCase());
     }
 
     public BigInteger getPriceInCogs() {
@@ -34,7 +36,7 @@ public class Pricing {
 
     public static class Builder {
 
-        private PriceModel priceModel;
+        private String priceModel;
         private BigInteger priceInCogs;
 
         private Builder() {
@@ -46,10 +48,11 @@ public class Pricing {
         }
 
         public Builder setPriceModel(PriceModel priceModel) {
-            this.priceModel = priceModel;
+            this.priceModel = priceModel.toString();
             return this;
         }
 
+        // TODO: replace BigInteger by Price type
         public Builder setPriceInCogs(BigInteger priceInCogs) {
             this.priceInCogs = priceInCogs;
             return this;

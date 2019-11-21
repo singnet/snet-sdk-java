@@ -6,6 +6,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import io.singularitynet.sdk.common.Utils;
 
 @EqualsAndHashCode
 @ToString
@@ -14,6 +17,8 @@ public class EndpointGroup {
     private final String groupName;
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
+    // TODO: replace by GroupId class to implement toString() and seemless JSON
+    // conversion
     @SerializedName("group_id") private final String paymentGroupId;
 
     public static Builder newBuilder() {
@@ -43,8 +48,8 @@ public class EndpointGroup {
         return endpoints;
     }
 
-    public String getPaymentGroupId() {
-        return paymentGroupId;
+    public byte[] getPaymentGroupId() {
+        return Utils.base64ToBytes(paymentGroupId);
     }
 
     public static class Builder {
@@ -74,13 +79,19 @@ public class EndpointGroup {
             return this;
         }
 
-        public Builder setEndpoints(URL endpoint) {
+        public Builder clearPricing() {
+            this.pricing.clear();
+            return this;
+        } 
+
+        public Builder addEndpoint(URL endpoint) {
             this.endpoints.add(endpoint);
             return this;
         }
 
-        public Builder setPaymentGroupId(String paymentGroupId) {
-            this.paymentGroupId = paymentGroupId;
+        public Builder setPaymentGroupId(byte[] paymentGroupId) {
+            checkArgument(paymentGroupId.length == 32, "Payment group id should be 32 bytes length");
+            this.paymentGroupId = Utils.bytesToBase64(paymentGroupId);
             return this;
         }
 

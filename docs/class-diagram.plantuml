@@ -1,0 +1,152 @@
+@startuml
+
+title SingularityNet Java SDK
+
+package io.singularitynet.sdk.ethereum {
+
+    interface WithAddress {
+        Address getAddress();
+    }
+
+    interface Signer {
+        byte[] sign(byte[] message);
+    }
+    WithAddress <|-- Signer
+
+    class PrivateKeyIdentity
+    Signer <|.. PrivateKeyIdentity
+
+    class MnemonicIdentity
+    PrivateKeyIdentity <|-- MnemonicIdentity
+
+}
+
+
+package io.singularitynet.sdk.registry {
+
+    interface MetadataStorage {
+        byte[] get(URI uri);
+    }
+    class IpfsMetadataStorage
+    MetadataStorage <|.. IpfsMetadataStorage
+
+    class RegistryContract {
+        Optional<OrganizationRegistration> getOrganizationById(String orgId);
+        Optional<ServiceRegistration> getServiceRegistrationById(String orgId, String serviceId);
+    }
+
+    interface MetadataProvider {
+        ServiceMetadata getServiceMetadata();
+    }
+    class RegistryMetadataProvider
+    MetadataProvider <|.. RegistryMetadataProvider
+    RegistryMetadataProvider *-- RegistryContract
+    RegistryMetadataProvider *-- MetadataStorage
+
+}
+
+package io.singularitynet.sdk.daemon {
+    
+    interface DaemonConnection {
+        <T> T getGrpcStub(Function<Channel, T> constructor);
+        void setClientCallsInterceptor(ClientInterceptor interceptor);
+        void shutdownNow();
+    }
+
+    class FirstEndpointDaemonConnection
+    DaemonConnection <|.. FirstEndpointDaemonConnection
+    FirstEndpointDaemonConnection o-- MetadataProvider
+
+    class PaymentChannelStateService {
+        PaymentChannelStateReply getChannelState(BigInteger channelId);
+    }
+    PaymentChannelStateService o-- Signer
+    PaymentChannelStateService -- DaemonConnection
+
+    interface Payment {
+        void toMetadata(Metadata headers);
+    }
+
+}
+
+package io.singularitynet.sdk.mpe {
+    class MultiPartyEscrowContract {
+        Optional<PaymentChannel> getChannelById(BigInteger channelId);
+        Address getContractAddress();
+    }
+
+    interface PaymentChannelProvider {
+        PaymentChannel getChannelById(BigInteger channelId);
+    }
+
+    class AskDaemonFirstPaymentChannelProvider
+    PaymentChannelProvider <|.. AskDaemonFirstPaymentChannelProvider
+    AskDaemonFirstPaymentChannelProvider *-- MultiPartyEscrowContract
+    AskDaemonFirstPaymentChannelProvider *-- PaymentChannelStateService
+
+    class EscrowPayment
+    Payment ()- EscrowPayment
+
+}
+
+package io.singularitynet.sdk.client {
+
+    interface Configuration {
+        String getEthereumJsonRpcEndpoint();
+        URL getIpfsUrl();
+        SignerType getSignerType();
+        String getSignerMnemonic();
+        byte[] getSignerPrivateKey();
+    }
+
+    class JsonConfiguration
+    Configuration <|.. JsonConfiguration
+
+    interface DependencyFactory {
+        Web3j getWeb3j();
+        ContractGasProvider getContractGasProvider(Web3j web3j);
+        IPFS getIpfs();
+        Signer getSigner();
+    }
+
+    class ConfigurationDependencyFactory
+    DependencyFactory <|.. ConfigurationDependencyFactory
+
+    interface PaymentStrategy {
+        <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
+    }
+
+    class FixedPaymentChannelPaymentStrategy
+    PaymentStrategy <|.. FixedPaymentChannelPaymentStrategy
+
+    class Sdk {
+        Sdk(Configuration config);
+        Sdk(DependencyFactory factory);
+
+        ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
+        void shutdown();
+    }
+    Sdk -- Configuration
+    Sdk -- ServiceClient
+    Sdk -- DependencyFactory
+
+    interface ServiceClient {
+        MetadataProvider getMetadataProvider();
+        PaymentChannelProvider getPaymentChannelProvider();
+        Signer getSigner();
+        T getGrpcStub(Function<Channel, T> constructor);
+        void shutdownNow();
+    }
+
+    class BaseServiceClient
+    ServiceClient <|.. BaseServiceClient
+    BaseServiceClient *-- DaemonConnection
+    BaseServiceClient *-- MetadataProvider
+    BaseServiceClient *-- PaymentChannelProvider
+    BaseServiceClient *-- PaymentStrategy
+    BaseServiceClient *-- Signer
+
+}
+
+@enduml
+

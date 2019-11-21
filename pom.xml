@@ -84,6 +84,11 @@
       <version>1.2.1</version>
     </dependency>
     <!-- IPFS end -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>28.1-android</version>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
@@ -136,6 +141,13 @@
       </extension>
     </extensions>
 
+    <resources>
+      <resource>
+        <!-- resources unpacked from dependencies -->
+        <directory>${project.build.directory}/resources</directory>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
@@ -144,11 +156,14 @@
         <configuration>
           <!-- artifact to download binary protobuf compiler -->
           <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-          <!-- make maven using GRPC plugin for compile-custom and
-          test-compile-custom goals -->
+          <!-- make maven using GRPC plugin for compile-custom and test-compile-custom goals -->
           <pluginId>grpc-java</pluginId>
           <!-- artifact to download GRPC protobuf compiler plugin -->
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+          <!-- to not recompile protobuf each time -->
+          <checkStaleness>true</checkStaleness>
+          <!-- daemon protobuf unpacked from release artifact -->
+          <protoSourceRoot>${project.build.directory}/proto</protoSourceRoot>
         </configuration>
         <executions>
           <execution>
@@ -205,6 +220,12 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.1</version>
+      </plugin>
+
     </plugins>
 
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -233,6 +254,9 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
+          <configuration>
+            <trimStackTrace>false</trimStackTrace>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>

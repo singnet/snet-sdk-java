@@ -38,7 +38,7 @@ jobs:
           command: |
             curl -L https://get.web3j.io | bash
             source $HOME/.web3j/source.sh
-            ./get_contracts.sh
+            ./get_dependencies.sh
       # run tests!
       - run:
           name: Run tests
