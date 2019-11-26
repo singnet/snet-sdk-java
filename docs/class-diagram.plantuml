@@ -97,6 +97,8 @@ package io.singularitynet.sdk.client {
         SignerType getSignerType();
         String getSignerMnemonic();
         byte[] getSignerPrivateKey();
+        Address getRegistryAddress();
+        Address getMultiPartyEscrowAddress();
     }
 
     class JsonConfiguration
@@ -104,9 +106,10 @@ package io.singularitynet.sdk.client {
 
     interface DependencyFactory {
         Web3j getWeb3j();
-        ContractGasProvider getContractGasProvider(Web3j web3j);
         IPFS getIpfs();
         Signer getSigner();
+        Registry getRegistry();
+        MultiPartyEscrow getMultiPartyEscrow();
     }
 
     class ConfigurationDependencyFactory
