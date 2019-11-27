@@ -1,0 +1,76 @@
+<project default="get-dependencies">
+
+  <target name="get-dependencies" depends="generate-contract-stubs,get-daemon-proto"/>
+
+  <target name="check-contract-stubs">
+    <condition property="contract-stubs-present">
+      <and>
+        <available file="${project.build.directory}/generated-sources/sol/java/io/singularitynet/sdk/contracts/MultiPartyEscrow.java"/>
+        <available file="${project.build.directory}/generated-sources/sol/java/io/singularitynet/sdk/contracts/Registry.java"/>
+      </and>
+    </condition>
+    <echo message="Check contracts presence: ${contract-stubs-present}"/>
+  </target>
+
+  <target name="generate-contract-stubs" depends="check-contract-stubs" unless="contract-stubs-present">
+    <echo message="Downloading SingularityNet contracts"/>
+    <get src="https://registry.npmjs.org/singularitynet-platform-contracts/-/singularitynet-platform-contracts-${platform-contracts.version}.tgz"
+      dest="${project.build.directory}/singularitynet-platform-contracts.tgz"/>
+    <untar src="${project.build.directory}/singularitynet-platform-contracts.tgz"
+      dest="${project.build.directory}" compression="gzip"/>
+    <move file="${project.build.directory}/package"
+      tofile="${project.build.directory}/singularitynet-platform-contracts"/>
+    <mkdir dir="${project.build.directory}/resources"/>
+    <move file="${project.build.directory}/singularitynet-platform-contracts/networks"
+      todir="${project.build.directory}/resources"/>
+
+    <!-- TODO: replace by direct call to the web3j java class used
+       in web3j cli interface. Plugin would be better but it
+       doesn't support generation from ABI json -->
+    <echo message="Generating Java stubs for contracts"/>
+    <exec executable="web3j">
+      <arg value="solidity"/>
+      <arg value="generate"/>
+      <arg value="-a"/>
+      <arg value="${project.build.directory}/singularitynet-platform-contracts/abi/Registry.json"/>
+      <arg value="--outputDir"/>
+      <arg value="${project.build.directory}/generated-sources/sol/java"/>
+      <arg value="--package"/>
+      <arg value="io.singularitynet.sdk.contracts"/>
+    </exec>
+    <exec executable="web3j">
+      <arg value="solidity"/>
+      <arg value="generate"/>
+      <arg value="-a"/>
+      <arg value="${project.build.directory}/singularitynet-platform-contracts/abi/MultiPartyEscrow.json"/>
+      <arg value="--outputDir"/>
+      <arg value="${project.build.directory}/generated-sources/sol/java"/>
+      <arg value="--package"/>
+      <arg value="io.singularitynet.sdk.contracts"/>
+    </exec>
+  </target>
+
+  <target name="check-daemon-proto">
+    <condition property="daemon-proto-present">
+      <available file="${project.build.directory}/proto/state_service.proto"/>
+    </condition>
+    <echo message="Check deamon proto presence: ${daemon-proto-present}"/>
+  </target>
+
+  <target name="get-daemon-proto" depends="check-daemon-proto" unless="daemon-proto-present">
+    <echo message="Downloading snet-daemon API" />
+    <get src="https://github.com/singnet/snet-daemon/releases/download/v${snet-daemon.version}/snet-daemon-v${snet-daemon.version}-linux-amd64.tar.gz"
+      dest="${project.build.directory}/snet-daemon.tar.gz"/>
+    <untar src="${project.build.directory}/snet-daemon.tar.gz"
+      dest="${project.build.directory}" compression="gzip"/>
+    <move file="${project.build.directory}/snet-daemon-v${snet-daemon.version}-linux-amd64"
+      tofile="${project.build.directory}/snet-daemon"/>
+    <mkdir dir="${project.build.directory}/proto"/>
+    <move file="${project.build.directory}/snet-daemon/proto/state_service.proto"
+      todir="${project.build.directory}/proto" />
+    <!-- Next step should be removed when daemon v2.0.3 is released -->
+    <echo message='option java_package = "io.singularitynet.daemon.escrow";'
+      file="${project.build.directory}/proto/state_service.proto" append="true"/>
+  </target>
+
+</project>

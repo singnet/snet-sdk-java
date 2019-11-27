@@ -9,10 +9,10 @@ import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
-import example.service.CalculatorGrpc;
-import example.service.CalculatorGrpc.CalculatorBlockingStub;
-import example.service.ExampleService.Numbers;
-import example.service.ExampleService.Result;
+import io.singularitynet.service.exampleservice.CalculatorGrpc;
+import io.singularitynet.service.exampleservice.CalculatorGrpc.CalculatorBlockingStub;
+import io.singularitynet.service.exampleservice.ExampleService.Numbers;
+import io.singularitynet.service.exampleservice.ExampleService.Result;
 
 public class ExampleService {
 

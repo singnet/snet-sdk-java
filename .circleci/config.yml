@@ -18,31 +18,16 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: mvn dependency:go-offline
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-
       # get dependencies
       - run:
-          name: Get dependencies
-          command: |
-            curl -L https://get.web3j.io | bash
-            source $HOME/.web3j/source.sh
-            ./get_dependencies.sh
+          name: Get web3j
+          command: curl -L https://get.web3j.io | bash
       # run tests!
       - run:
-          name: Run tests
-          command: mvn test
+          name: Build and run tests
+          command: |
+            source $HOME/.web3j/source.sh
+            mvn install
       - run:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)

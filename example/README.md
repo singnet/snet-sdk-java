@@ -60,18 +60,43 @@ $ mvn exec:java -Dexec.mainClass="io.singularitynet.sdk.example.CntkImageRecogni
 
 1. Create new maven project, see https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
 
-2. Get service API
+2. Use `snet-sdk-maven-plugin` to get protobuf API:
 
-```sh
-$ mkdir -p src/main/proto
-$ snet service get-api-registry snet cntk-image-recon src/main/proto
+```
+  <build>
+    <plugins>
+    ...
+      <plugin>
+        <groupId>io.singularitynet</groupId>
+        <artifactId>snet-sdk-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+
+        <executions>
+          <execution>
+
+            <configuration>
+              <orgId>snet</orgId> <!-- organization id -->
+              <serviceId>example-service</serviceId> <!-- service id -->
+              <outputDir>${project.build.directory}/proto</outputDir> <!-- output dir -->
+              <javaPackage>io.singularitynet.service.exampleservice</javaPackage> <!-- java package for classes generated -->
+            </configuration>
+
+            <goals>
+              <goal>get</goal>
+            </goals>
+
+          </execution>
+        </executions>
+
+      </plugin>
+    ...
+    </plugins>
+  </build>
 ```
 
-3. Add Java package option
+3. Use `protobuf-maven-plugin` to generate Java stubs of service API:
+- [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
+- [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
 
-```sh
-$ echo 'option java_package = "recognition";' >> src/main/proto/image_recon.proto
-```
-
-4. Write Java client app using sdk, see CntkImageRecognition.java as example
+4. Write Java client app using sdk, see [CntkImageRecognition.java](./src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java) as example
 

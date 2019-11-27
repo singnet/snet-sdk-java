@@ -9,10 +9,10 @@ import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
-import recognition.RecognizerGrpc;
-import recognition.RecognizerGrpc.RecognizerBlockingStub;
-import recognition.ImageRecon.Input;
-import recognition.ImageRecon.Output;
+import io.singularitynet.service.cntkimagerecon.RecognizerGrpc;
+import io.singularitynet.service.cntkimagerecon.RecognizerGrpc.RecognizerBlockingStub;
+import io.singularitynet.service.cntkimagerecon.ImageRecon.Input;
+import io.singularitynet.service.cntkimagerecon.ImageRecon.Output;
 
 public class CntkImageRecognition {
 
