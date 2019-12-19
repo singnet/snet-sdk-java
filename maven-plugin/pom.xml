@@ -28,15 +28,12 @@
     <!-- compile scope -->
     <dependency>
       <groupId>io.singularitynet</groupId>
-      <artifactId>snet-sdk-java</artifactId>
+      <artifactId>snet-sdk-plugin-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
     <!-- maven plugin -->
     <dependency>

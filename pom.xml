@@ -26,6 +26,7 @@
 
   <modules>
     <module>sdk</module>
+    <module>plugin-core</module>
     <module>maven-plugin</module>
     <module>gradle-plugin</module>
     <module>example</module>
@@ -38,6 +39,11 @@
       <dependency>
         <groupId>io.singularitynet</groupId>
         <artifactId>snet-sdk-java</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.singularitynet</groupId>
+        <artifactId>snet-sdk-plugin-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- protobuf + grpc begin -->
