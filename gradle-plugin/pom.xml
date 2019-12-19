@@ -20,9 +20,9 @@
 
   <repositories>
     <repository>
-			<id>gradle</id>
-			<url>https://repo.gradle.org/gradle/libs-releases-local</url>
-		</repository>
+      <id>gradle</id>
+      <url>https://repo.gradle.org/gradle/libs-releases-local</url>
+    </repository>
   </repositories>
 
   <properties>
