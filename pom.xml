@@ -27,6 +27,7 @@
   <modules>
     <module>sdk</module>
     <module>maven-plugin</module>
+    <module>gradle-plugin</module>
     <module>example</module>
   </modules>
 
