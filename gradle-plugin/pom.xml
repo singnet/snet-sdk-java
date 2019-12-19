@@ -28,6 +28,8 @@
   <properties>
     <!-- pom's of the higher versions doesn't contain dependencies, so they
          require importing more artifacts than simple `gradle-core` -->
+    <!-- see also Spring Boot example of using Maven to call Gradle 
+         https://github.com/spring-projects/spring-boot/commit/9b15e6b5a3c0fc18372f532063bb43f25abcf984 -->
     <gradle.version>3.4</gradle.version>
   </properties>
 
