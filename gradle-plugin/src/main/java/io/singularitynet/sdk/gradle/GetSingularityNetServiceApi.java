@@ -32,10 +32,10 @@ public class GetSingularityNetServiceApi extends DefaultTask implements ServiceA
 
     public GetSingularityNetServiceApi() {
         try {
-            ipfsRpcEndpoint = new URL("http://ipfs.singularitynet.io:80");
-            ethereumJsonRpcEndpoint = new URL( "https://mainnet.infura.io");
-            getterEthereumAddress = "0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5";
-            registryAddress = "";
+            ipfsRpcEndpoint = new URL(ServiceApiGetter.DEFAULT_IPFS_ENDPOINT);
+            ethereumJsonRpcEndpoint = new URL(ServiceApiGetter.DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT);
+            getterEthereumAddress = ServiceApiGetter.DEFAULT_GETTER_ETHEREUM_ADDRESS;
+            registryAddress = ServiceApiGetter.DEFAULT_REGISTRY_ADDRESS;
         } catch (java.net.MalformedURLException e) {
             throw new IllegalStateException("Unexpected error", e);
         }

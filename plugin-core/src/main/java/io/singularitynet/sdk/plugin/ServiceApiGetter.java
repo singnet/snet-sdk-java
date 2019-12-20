@@ -30,6 +30,24 @@ import io.singularitynet.sdk.registry.RegistryContract;
 
 public class ServiceApiGetter {
 
+    public static interface Parameters {
+
+        String getOrgId();
+        String getServiceId();
+        File getOutputDir();
+        String getJavaPackage();
+        URL getIpfsRpcEndpoint();
+        URL getEthereumJsonRpcEndpoint();
+        String getGetterEthereumAddress();
+        String getRegistryAddress();
+
+    }
+
+    public static final String DEFAULT_IPFS_ENDPOINT = "http://ipfs.singularitynet.io:80";
+    public static final String DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT = "https://mainnet.infura.io";
+    public static final String DEFAULT_GETTER_ETHEREUM_ADDRESS = "0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5";
+    public static final String DEFAULT_REGISTRY_ADDRESS = "";
+
     private final static Logger log = LoggerFactory.getLogger(ServiceApiGetter.class);
 
     private final Parameters parameters;
@@ -136,19 +154,6 @@ public class ServiceApiGetter {
                 throw new PluginException("Could not close archive unpacked", e);
             }
         }
-    }
-
-    public static interface Parameters {
-
-        String getOrgId();
-        String getServiceId();
-        File getOutputDir();
-        String getJavaPackage();
-        URL getIpfsRpcEndpoint();
-        URL getEthereumJsonRpcEndpoint();
-        String getGetterEthereumAddress();
-        String getRegistryAddress();
-
     }
 
 }

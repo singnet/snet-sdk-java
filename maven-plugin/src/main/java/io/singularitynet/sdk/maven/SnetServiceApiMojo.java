@@ -34,19 +34,19 @@ public class SnetServiceApiMojo extends AbstractMojo implements ServiceApiGetter
     private String javaPackage;
 
     @Getter
-    @Parameter(defaultValue = "http://ipfs.singularitynet.io:80", property = "ipfsRpcEndpoint", required = true)
+    @Parameter(defaultValue = ServiceApiGetter.DEFAULT_IPFS_ENDPOINT, property = "ipfsRpcEndpoint", required = true)
     private URL ipfsRpcEndpoint;
 
     @Getter
-    @Parameter(defaultValue = "https://mainnet.infura.io", property = "ethereumJsonRpcEndpoint", required = true)
+    @Parameter(defaultValue = ServiceApiGetter.DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT, property = "ethereumJsonRpcEndpoint", required = true)
     private URL ethereumJsonRpcEndpoint;
 
     @Getter
-    @Parameter(defaultValue = "0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5", property = "getterEthereumAddress", required = true)
+    @Parameter(defaultValue = ServiceApiGetter.DEFAULT_GETTER_ETHEREUM_ADDRESS, property = "getterEthereumAddress", required = true)
     private String getterEthereumAddress;
 
     @Getter
-    @Parameter(property = "registryAddress", required = false)
+    @Parameter(defaultValue = ServiceApiGetter.DEFAULT_REGISTRY_ADDRESS, property = "registryAddress", required = false)
     private String registryAddress;
 
     public void execute() throws MojoExecutionException {
