@@ -60,11 +60,6 @@ tasks.register('getExampleServiceApi', GetSingularityNetServiceApi) {
     serviceId = 'example-service'
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.exampleservice'
-
-    ipfsRpcEndpoint = new java.net.URL('http://ipfs.singularitynet.io:80')
-    ethereumJsonRpcEndpoint = new java.net.URL('https://mainnet.infura.io')
-    getterEthereumAddress = '0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5'
-    registryAddress = ''
 }
 tasks.preBuild.dependsOn('getExampleServiceApi')
 
