@@ -1,7 +1,9 @@
 package io.singularitynet.sdk.gradle;
 
+import org.gradle.api.Task;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -39,6 +41,10 @@ public class GetSingularityNetServiceApi extends DefaultTask implements ServiceA
         } catch (java.net.MalformedURLException e) {
             throw new IllegalStateException("Unexpected error", e);
         }
+
+        for (Task task : getProject().getTasksByName("preBuild", false)) {
+            task.dependsOn(this);
+        }
     }
 
     @Input
@@ -51,7 +57,7 @@ public class GetSingularityNetServiceApi extends DefaultTask implements ServiceA
         return serviceId;
     }
 
-    @Input
+    @OutputDirectory
     public File getOutputDir() {
         return outputDir;
     }
