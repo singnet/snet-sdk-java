@@ -36,6 +36,16 @@
   <dependencies>
     <!-- compile scope -->
     <dependency>
+      <groupId>io.singularitynet</groupId>
+      <artifactId>snet-sdk-plugin-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- gradle start -->
+    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
       <version>2.5.8</version>
@@ -47,6 +57,7 @@
       <version>${gradle.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- gradle stop -->
 
     <!-- test scope -->
     <dependency>

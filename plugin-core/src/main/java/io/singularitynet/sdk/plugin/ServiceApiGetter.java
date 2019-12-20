@@ -76,7 +76,7 @@ public class ServiceApiGetter {
         ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
                 web3j, new Address(parameters.getGetterEthereumAddress()).toString());
         String registryAddress = parameters.getRegistryAddress();
-        if (registryAddress == null) {
+        if (registryAddress == null || registryAddress.isEmpty()) {
             registryAddress = ContractUtils.readContractAddress(networkId, "Registry").toString();
         }
         Registry registry = Registry.load(new Address(registryAddress).toString(),
