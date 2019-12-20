@@ -1,6 +1,6 @@
 package io.singularitynet.sdk.ethereum;
 
-import static com.google.common.base.Preconditions.checkState;
+import static io.singularitynet.sdk.common.Preconditions.checkState;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import org.web3j.crypto.Keys;

@@ -1,7 +1,7 @@
 package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import com.google.common.base.Preconditions;
+import io.singularitynet.sdk.common.Preconditions;
 import java.util.concurrent.Callable;
 import java.util.Base64;
 import java.math.BigInteger;

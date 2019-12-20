@@ -1,7 +1,7 @@
 package io.singularitynet.sdk.mpe;
 
 import java.math.BigInteger;
-import static com.google.common.base.Preconditions.checkState;
+import static io.singularitynet.sdk.common.Preconditions.checkState;
 
 import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;

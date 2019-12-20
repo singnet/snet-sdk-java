@@ -7,7 +7,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.ReadonlyTransactionManager;
 import io.ipfs.api.IPFS;
-import com.google.common.base.Preconditions;
+import io.singularitynet.sdk.common.Preconditions;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.contracts.Registry;
