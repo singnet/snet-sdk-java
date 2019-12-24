@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.client;
 
 import java.net.URL;
+import java.util.Optional;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.FieldNamingPolicy;
@@ -59,13 +60,19 @@ public class JsonConfiguration implements Configuration {
     }
 
     @Override
-    public Address getRegistryAddress() {
-        return registryAddress == null ? null : new Address(registryAddress);
+    public Optional<Address> getRegistryAddress() {
+        if (registryAddress == null) {
+            return Optional.<Address>empty();
+        }
+        return Optional.of(new Address(registryAddress));
     }
 
     @Override
-    public Address getMultiPartyEscrowAddress() {
-        return multiPartyEscrowAddress == null ? null : new Address(multiPartyEscrowAddress);
+    public Optional<Address> getMultiPartyEscrowAddress() {
+        if (multiPartyEscrowAddress == null) {
+            return Optional.<Address>empty();
+        }
+        return Optional.of(new Address(multiPartyEscrowAddress));
     }
 
 }
