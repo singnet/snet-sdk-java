@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.client;
 
 import java.net.URL;
+import java.util.Optional;
 
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signer;
@@ -17,7 +18,7 @@ public interface Configuration {
     SignerType getSignerType();
     String getSignerMnemonic();
     byte[] getSignerPrivateKey();
-    Address getRegistryAddress();
-    Address getMultiPartyEscrowAddress();
+    Optional<Address> getRegistryAddress();
+    Optional<Address> getMultiPartyEscrowAddress();
 
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.Optional;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
@@ -59,7 +60,16 @@ public class JsonConfigurationTest {
 
         Configuration config = new JsonConfiguration(json);
 
-        assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress());
+        assertEquals("Registry address", Optional.of(new Address(registryAddress)), config.getRegistryAddress());
+    }
+
+    @Test
+    public void configureDefaultRegistryAddress() {
+        String json = "{}";
+
+        Configuration config = new JsonConfiguration(json);
+
+        assertEquals("Registry address", Optional.<Address>empty(), config.getRegistryAddress());
     }
 
     @Test
@@ -71,7 +81,16 @@ public class JsonConfigurationTest {
 
         Configuration config = new JsonConfiguration(json);
 
-        assertEquals("MultiPartyEscrow address", new Address(mpeAddress), config.getMultiPartyEscrowAddress());
+        assertEquals("MultiPartyEscrow address", Optional.of(new Address(mpeAddress)), config.getMultiPartyEscrowAddress());
+    }
+
+    @Test
+    public void configureDefaultMultiPartyEscrowAddress() {
+        String json = "{}";
+
+        Configuration config = new JsonConfiguration(json);
+
+        assertEquals("MultiPartyEscrow address", Optional.<Address>empty(), config.getMultiPartyEscrowAddress());
     }
 
 }

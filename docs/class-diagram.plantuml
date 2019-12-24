@@ -97,8 +97,8 @@ package io.singularitynet.sdk.client {
         SignerType getSignerType();
         String getSignerMnemonic();
         byte[] getSignerPrivateKey();
-        Address getRegistryAddress();
-        Address getMultiPartyEscrowAddress();
+        Optional<Address> getRegistryAddress();
+        Optional<Address> getMultiPartyEscrowAddress();
     }
 
     class JsonConfiguration
