@@ -65,7 +65,7 @@ public class JsonConfiguration implements Configuration {
 
     @Override
     public Address getMultiPartyEscrowAddress() {
-        return new Address(multiPartyEscrowAddress);
+        return multiPartyEscrowAddress == null ? null : new Address(multiPartyEscrowAddress);
     }
 
 }
