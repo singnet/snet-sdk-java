@@ -63,6 +63,15 @@ public class JsonConfigurationTest {
     }
 
     @Test
+    public void configureNoRegistryAddress() {
+        String json = "{}";
+
+        Configuration config = new JsonConfiguration(json);
+
+        assertNull("Registry address", config.getRegistryAddress());
+    }
+
+    @Test
     public void configureMultiPartyEscrowAddress() {
         String mpeAddress = "0x8FB1dC8df86b388C7e00689d1eCb533A160B4D0C";
         String json = "{" +

@@ -60,7 +60,7 @@ public class JsonConfiguration implements Configuration {
 
     @Override
     public Address getRegistryAddress() {
-        return new Address(registryAddress);
+        return registryAddress == null ? null : new Address(registryAddress);
     }
 
     @Override
