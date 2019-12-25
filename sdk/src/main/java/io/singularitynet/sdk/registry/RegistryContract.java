@@ -21,9 +21,9 @@ public class RegistryContract {
             Tuple7<Boolean, byte[], byte[], String, List<String>, List<byte[]>, List<byte[]>> result =
                 registry.getOrganizationById(strToBytes32(orgId)).send();
             OrganizationRegistration.Builder builder = OrganizationRegistration.newBuilder()
-                .setOrgId(bytes32ToStr(result.component2()))
-                .setMetadataUri(new URI(bytesToStr(result.component3())));
-            for (byte[] serviceId : result.component6()) {
+                .setOrgId(bytes32ToStr(result.getValue2()))
+                .setMetadataUri(new URI(bytesToStr(result.getValue3())));
+            for (byte[] serviceId : result.getValue6()) {
                 builder.addServiceId(bytes32ToStr(serviceId));
             }
             // TODO: empty result case
@@ -37,8 +37,8 @@ public class RegistryContract {
                 registry.getServiceRegistrationById(strToBytes32(orgId), strToBytes32(serviceId)).send();
             // TODO: empty result case
             return Optional.of(ServiceRegistration.newBuilder()
-                    .setServiceId(bytes32ToStr(result.component2()))
-                    .setMetadataUri(new URI(bytesToStr(result.component3())))
+                    .setServiceId(bytes32ToStr(result.getValue2()))
+                    .setMetadataUri(new URI(bytesToStr(result.getValue3())))
                     .build());
         });
     }

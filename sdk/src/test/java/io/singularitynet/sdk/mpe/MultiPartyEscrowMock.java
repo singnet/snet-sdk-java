@@ -19,7 +19,7 @@ public class MultiPartyEscrowMock {
 
     public void addPaymentChannel(PaymentChannel paymentChannel) {
         when(mpe.channels(eq(paymentChannel.getChannelId()))).
-                thenReturn(new RemoteFunctionCall<>(null, () -> {
+                thenReturn(new RemoteCall<>(() -> {
                     return new Tuple7<>(paymentChannel.getNonce(),
                             paymentChannel.getSender().toString(),
                             paymentChannel.getSigner().toString(),

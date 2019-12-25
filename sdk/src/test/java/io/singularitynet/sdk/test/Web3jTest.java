@@ -39,7 +39,7 @@ public class Web3jTest {
             registry.getServiceRegistrationById(Utils.strToBytes32("snet"),
                     Utils.strToBytes32("speech-recognition")).send();
 
-        assertTrue(result.component1());
+        assertTrue(result.getValue1());
     }
 
     @Test

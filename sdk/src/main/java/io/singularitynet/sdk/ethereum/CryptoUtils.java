@@ -32,7 +32,7 @@ public class CryptoUtils {
             bytes.read(r, 0, 32);
             bytes.read(s, 0, 32);
             bytes.read(v, 0, 1);
-            return new Sign.SignatureData(v, r, s);
+            return new Sign.SignatureData(v[0], r, s);
         });
     }
 }

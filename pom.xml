@@ -15,7 +15,7 @@
     <snet-daemon.version>2.0.2</snet-daemon.version>
     <protobuf.version>3.5.1</protobuf.version>
     <grpc.version>1.20.0</grpc.version>
-    <web3j.version>4.5.5</web3j.version>
+    <web3j.version>4.2.0-android</web3j.version>
   </properties>
 
   <repositories>

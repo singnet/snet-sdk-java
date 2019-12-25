@@ -21,7 +21,7 @@ public class RegistryMock {
             ServiceRegistration registration) {
         when(registry.getServiceRegistrationById(eq(Utils.strToBytes32(orgId)),
                     eq(Utils.strToBytes32(serviceId))))
-            .thenReturn(new RemoteFunctionCall<>(null,
+            .thenReturn(new RemoteCall<>(
                         () -> {
                             return new Tuple4<>(true,
                                     Utils.strToBytes32(registration.getServiceId()),
@@ -34,7 +34,7 @@ public class RegistryMock {
     public void addOrganizationRegistration(String orgId,
             OrganizationRegistration registration) {
         when(registry.getOrganizationById(eq(Utils.strToBytes32(orgId))))
-            .thenReturn(new RemoteFunctionCall<>(null,
+            .thenReturn(new RemoteCall<>(
                         () -> {
                             return new Tuple7<>(true,
                                     Utils.strToBytes32(registration.getOrgId()),
