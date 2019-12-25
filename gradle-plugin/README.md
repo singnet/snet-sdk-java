@@ -39,6 +39,8 @@ repositories {
 
 Add SingularityNet Java SDK into `dependencies` section:
 ```
+implementation 'io.grpc:grpc-okhttp:1.20.0'
+implementation 'org.slf4j:slf4j-android:1.7.30'
 implementation 'io.singularitynet:snet-sdk-java:1.0-SNAPSHOT'
 ```
 
@@ -56,7 +58,7 @@ tasks.register('getExampleServiceApi', io.singularitynet.sdk.gradle.GetSingulari
 ```
 
 Add dir which was used to unpack service API protobuf on the previous step into
-set of source dirs.
+set of source dirs. Turn on support of Java 8 features.
 ```
 android {
     sourceSets {
@@ -65,6 +67,10 @@ android {
                 srcDir "$buildDir/proto"
             }
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }
 ```
