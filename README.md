@@ -10,12 +10,6 @@
 
 ## How to build
 
-Install web3j for the first time:
-```
-curl -L https://get.web3j.io | bash
-source $HOME/.web3j/source.sh
-```
-
 Build and test:
 ```
 mvn test

@@ -50,6 +50,10 @@
       <groupId>org.web3j</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.web3j</groupId>
+      <artifactId>codegen</artifactId>
+    </dependency>
     <!-- IPFS begin -->
     <dependency>
       <groupId>com.github.ipfs</groupId>
@@ -111,6 +115,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <target>
+                <property name="maven.compile.classpath.for.ant" refid="maven.compile.classpath"/>
                 <ant antfile="${project.basedir}/get-dependencies.xml"/>
               </target>
             </configuration>
