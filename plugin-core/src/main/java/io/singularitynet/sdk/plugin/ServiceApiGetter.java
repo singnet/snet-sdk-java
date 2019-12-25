@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -43,6 +44,33 @@ public class ServiceApiGetter {
 
     }
 
+    public static abstract class DefaultParameters implements Parameters {
+
+        public URL getIpfsRpcEndpoint() {
+            return asURL(DEFAULT_IPFS_ENDPOINT);
+        }
+
+        public URL getEthereumJsonRpcEndpoint() {
+            return asURL(DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT);
+        }
+
+        public String getGetterEthereumAddress() {
+            return DEFAULT_GETTER_ETHEREUM_ADDRESS;
+        }
+
+        public String getRegistryAddress() {
+            return DEFAULT_REGISTRY_ADDRESS;
+        }
+
+        private static URL asURL(String url) {
+            try {
+                return new URL(url);
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException("Unexpected exception", e);
+            }
+        }
+    }
+
     public static final String DEFAULT_IPFS_ENDPOINT = "http://ipfs.singularitynet.io:80";
     public static final String DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT = "https://mainnet.infura.io";
     public static final String DEFAULT_GETTER_ETHEREUM_ADDRESS = "0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5";
@@ -52,7 +80,16 @@ public class ServiceApiGetter {
 
     private final Parameters parameters;
 
+    private Registry registry;
+    private IPFS ipfs;
+
     public ServiceApiGetter(Parameters parameters) {
+        this(null, null, parameters);
+    }
+
+    ServiceApiGetter(Registry registry, IPFS ipfs, Parameters parameters) {
+        this.registry = registry;
+        this.ipfs = ipfs;
         this.parameters = parameters;
     }
 
@@ -66,24 +103,33 @@ public class ServiceApiGetter {
                 parameters.getGetterEthereumAddress(),
                 (parameters.getRegistryAddress() == null ? "<network default>" : parameters.getRegistryAddress()));
 
-        Web3j web3j = Web3j.build(new HttpService(parameters.getEthereumJsonRpcEndpoint().toExternalForm()));
-        try {
-            RegistryContract registryContract = getRegistryContract(web3j);
-            IPFS ipfs = new IPFS(parameters.getIpfsRpcEndpoint().getHost(),
-                    parameters.getIpfsRpcEndpoint().getPort());
-            IpfsMetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
-            RegistryMetadataProvider metadataProvider = new RegistryMetadataProvider(
-                    parameters.getOrgId(), parameters.getServiceId(),
-                    registryContract, metadataStorage);
-            ServiceMetadata metadata = metadataProvider.getServiceMetadata();
-            log.debug("service metadata: {}", metadata);
-            loadAndUnpackApi(metadataStorage, metadata.getModelIpfsHash());
-        } finally {
-            web3j.shutdown();
+        if (ipfs == null) {
+            Web3j web3j = Web3j.build(new HttpService(parameters.getEthereumJsonRpcEndpoint().toExternalForm()));
+            try {
+                registry = getRegistryContract(web3j);
+                ipfs = new IPFS(parameters.getIpfsRpcEndpoint().getHost(),
+                        parameters.getIpfsRpcEndpoint().getPort());
+                runInternal();
+            } finally {
+                web3j.shutdown();
+            }
+        } else {
+            runInternal();
         }
     }
 
-    private RegistryContract getRegistryContract(Web3j web3j) throws PluginException {
+    private void runInternal() throws PluginException {
+        RegistryContract registryContract = new RegistryContract(registry);
+        IpfsMetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
+        RegistryMetadataProvider metadataProvider = new RegistryMetadataProvider(
+                parameters.getOrgId(), parameters.getServiceId(),
+                registryContract, metadataStorage);
+        ServiceMetadata metadata = metadataProvider.getServiceMetadata();
+        log.debug("service metadata: {}", metadata);
+        loadAndUnpackApi(metadataStorage, metadata.getModelIpfsHash());
+    }
+
+    private Registry getRegistryContract(Web3j web3j) throws PluginException {
         String networkId;
         try {
             networkId = web3j.netVersion().send().getNetVersion();
@@ -99,7 +145,7 @@ public class ServiceApiGetter {
         }
         Registry registry = Registry.load(new Address(registryAddress).toString(),
                 web3j, transactionManager, gasProvider);
-        return new RegistryContract(registry);
+        return registry;
     }
 
     private void loadAndUnpackApi(IpfsMetadataStorage metadataStorage, String ipfsHash) throws PluginException {
@@ -140,7 +186,7 @@ public class ServiceApiGetter {
                         IOUtils.copy(is, o);
                         if (name.endsWith(".proto")) {
                             log.debug("Adding package to protobuf file: {}", name);
-                            o.write(("\noption java_package = \"" + parameters.getJavaPackage() + "\";").getBytes());
+                            o.write(("\noption java_package = \"" + parameters.getJavaPackage() + "\";\n").getBytes());
                         }
                     }
                 }
