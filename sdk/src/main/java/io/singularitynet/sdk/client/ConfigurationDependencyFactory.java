@@ -60,15 +60,19 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
                 // TODO: add unit test on prefix adding
                 web3j, signer.getAddress().toString());
 
-        Address registryAddress = config.getRegistryAddress();
-        if (registryAddress == null) {
+        Address registryAddress;
+        if (config.getRegistryAddress().isPresent()) {
+            registryAddress = config.getRegistryAddress().get();
+        } else {
             registryAddress = ContractUtils.readContractAddress(networkId, "Registry");
         }
         this.registry = Registry.load(registryAddress.toString(), web3j,
                 transactionManager, gasProvider);
 
-        Address mpeAddress = config.getMultiPartyEscrowAddress();
-        if (mpeAddress == null) {
+        Address mpeAddress;
+        if (config.getMultiPartyEscrowAddress().isPresent()) {
+            mpeAddress = config.getMultiPartyEscrowAddress().get();
+        } else {
             mpeAddress = ContractUtils.readContractAddress(networkId, "MultiPartyEscrow");
         }
         this.mpe = MultiPartyEscrow.load(mpeAddress.toString(), web3j,
