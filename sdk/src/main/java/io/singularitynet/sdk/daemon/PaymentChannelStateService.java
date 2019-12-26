@@ -14,6 +14,7 @@ import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc.*;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 
 public class PaymentChannelStateService {
@@ -43,7 +44,7 @@ public class PaymentChannelStateService {
 
         if (grpcReply.getCurrentSignedAmount() != ByteString.EMPTY) {
             builder.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
-            builder.setCurrentSignature(grpcReply.getCurrentSignature().toByteArray());
+            builder.setCurrentSignature(new Signature(grpcReply.getCurrentSignature().toByteArray()));
         }
 
         PaymentChannelStateReply reply = builder.build();

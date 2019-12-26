@@ -4,16 +4,17 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.math.BigInteger;
 
+import io.singularitynet.sdk.ethereum.Signature;
+
 @EqualsAndHashCode
 @ToString
 public class PaymentChannelStateReply {
 
     private final BigInteger currentNonce;
     private final BigInteger currentSignedAmount;
-    // TODO: replace by Signature class to implement toString()
-    private final byte[] currentSignature;
+    private final Signature currentSignature;
     private final BigInteger oldNonceSignedAmount;
-    private final byte[] oldNonceSignature;
+    private final Signature oldNonceSignature;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -43,7 +44,7 @@ public class PaymentChannelStateReply {
         return currentSignedAmount != null;
     }
 
-    public byte[] getCurrentSignature() {
+    public Signature getCurrentSignature() {
         return currentSignature;
     }
 
@@ -51,7 +52,7 @@ public class PaymentChannelStateReply {
         return oldNonceSignedAmount;
     }
 
-    public byte[] getOldNonceSignature() {
+    public Signature getOldNonceSignature() {
         return oldNonceSignature;
     }
 
@@ -59,9 +60,9 @@ public class PaymentChannelStateReply {
 
         private BigInteger currentNonce;
         private BigInteger currentSignedAmount;
-        private byte[] currentSignature;
+        private Signature currentSignature;
         private BigInteger oldNonceSignedAmount;
-        private byte[] oldNonceSignature;
+        private Signature oldNonceSignature;
 
         private Builder() {
         }
@@ -84,7 +85,7 @@ public class PaymentChannelStateReply {
             return this;
         }
 
-        public Builder setCurrentSignature(byte[] currentSignature) {
+        public Builder setCurrentSignature(Signature currentSignature) {
             this.currentSignature = currentSignature;
             return this;
         }
@@ -94,7 +95,7 @@ public class PaymentChannelStateReply {
             return this;
         }
 
-        public Builder setOldNonceSignature(byte[] oldNonceSignature) {
+        public Builder setOldNonceSignature(Signature oldNonceSignature) {
             this.oldNonceSignature = oldNonceSignature;
             return this;
         }

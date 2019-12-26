@@ -14,9 +14,9 @@ public class CryptoUtils {
     private CryptoUtils() {
     }
 
-    public static Address getSignerAddress(byte[] message, byte[] signature) {
+    public static Address getSignerAddress(byte[] message, Signature signature) {
         return Utils.wrapExceptions(() -> {
-            Sign.SignatureData signatureData = bytesToSignature(signature);
+            Sign.SignatureData signatureData = bytesToSignature(signature.getBytes());
             BigInteger publicKey = Sign.signedPrefixedMessageToKey(Hash.sha3(message), signatureData);
             return new Address(Keys.getAddress(publicKey));
         });

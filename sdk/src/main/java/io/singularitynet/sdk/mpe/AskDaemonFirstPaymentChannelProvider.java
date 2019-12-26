@@ -9,6 +9,7 @@ import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Signature;
 
 public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
 
@@ -74,7 +75,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
     }
 
     private static void verifySignature(PaymentChannel channel, BigInteger amount,
-            byte[] signature, String type) {
+            Signature signature, String type) {
         byte[] payment = EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
             .setAmount(amount)
