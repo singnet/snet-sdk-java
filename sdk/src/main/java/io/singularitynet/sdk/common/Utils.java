@@ -5,8 +5,12 @@ import io.singularitynet.sdk.common.Preconditions;
 import java.util.concurrent.Callable;
 import java.math.BigInteger;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils {
+
+    private final static Logger log = LoggerFactory.getLogger(Utils.class);
 
     private Utils() {
     }
@@ -95,6 +99,7 @@ public class Utils {
         try {
             return callable.call();
         } catch (Exception e) {
+            log.error("Unexpected exception", e);
             throw new RuntimeException(e);
         }
     }

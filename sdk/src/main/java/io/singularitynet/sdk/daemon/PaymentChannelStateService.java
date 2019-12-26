@@ -3,6 +3,8 @@ package io.singularitynet.sdk.daemon;
 import java.math.BigInteger;
 import java.io.ByteArrayOutputStream;
 import com.google.protobuf.ByteString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.Ethereum;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 
@@ -16,6 +18,8 @@ import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 
 public class PaymentChannelStateService {
 
+    private final static Logger log = LoggerFactory.getLogger(PaymentChannelStateService.class);
+
     private final MessageSigningHelper signingHelper;
     private final PaymentChannelStateServiceBlockingStub stub;
 
@@ -26,24 +30,25 @@ public class PaymentChannelStateService {
     }
 
     public PaymentChannelStateReply getChannelState(BigInteger channelId) {
+        log.info("Requesting payment channel state from daemon");
+
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(toBytesString(channelId));
 
         signingHelper.signChannelStateRequest(request); 
 
         ChannelStateReply grpcReply = stub.getChannelState(request.build());
-
-        PaymentChannelStateReply.Builder reply = PaymentChannelStateReply.newBuilder()
+        PaymentChannelStateReply.Builder builder = PaymentChannelStateReply.newBuilder()
             .setCurrentNonce(toBigInt(grpcReply.getCurrentNonce()));
 
-        if (grpcReply.getCurrentSignedAmount() == ByteString.EMPTY) {
-            return reply.build();
+        if (grpcReply.getCurrentSignedAmount() != ByteString.EMPTY) {
+            builder.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
+            builder.setCurrentSignature(grpcReply.getCurrentSignature().toByteArray());
         }
 
-        reply.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
-        reply.setCurrentSignature(grpcReply.getCurrentSignature().toByteArray());
-
-        return reply.build();
+        PaymentChannelStateReply reply = builder.build();
+        log.info("Payment channel state received: {}", reply);
+        return reply;
     }
 
     private static ByteString toBytesString(BigInteger value) {

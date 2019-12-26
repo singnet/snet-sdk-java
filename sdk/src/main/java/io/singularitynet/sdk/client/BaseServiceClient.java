@@ -3,6 +3,8 @@ package io.singularitynet.sdk.client;
 import java.util.function.Function;
 import java.util.function.Consumer;
 import io.grpc.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.Payment;
@@ -16,6 +18,8 @@ import io.singularitynet.sdk.ethereum.Signer;
  * a platform service.
  */
 public class BaseServiceClient implements ServiceClient {
+
+    private final static Logger log = LoggerFactory.getLogger(BaseServiceClient.class);
 
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
@@ -68,6 +72,7 @@ public class BaseServiceClient implements ServiceClient {
     @Override
     public void shutdownNow() {
         daemonConnection.shutdownNow();
+        log.info("Service client shutdown");
     }
 
     /**
@@ -77,6 +82,8 @@ public class BaseServiceClient implements ServiceClient {
      * gRPC metadata.
      */
     private static class PaymentClientInterceptor implements ClientInterceptor {
+
+        private final static Logger log = LoggerFactory.getLogger(PaymentClientInterceptor.class);
 
         private final ServiceClient serviceClient;
         private final PaymentStrategy paymentStrategy;
@@ -91,9 +98,11 @@ public class BaseServiceClient implements ServiceClient {
                 MethodDescriptor<ReqT,RespT> method,
                 CallOptions callOptions,
                 Channel next) {
+            log.debug("Calculating payment");
             final Payment payment = paymentStrategy.getPayment(
                     new GrpcCallParameters<>(method, callOptions, next),
                     serviceClient);
+            log.debug("Payment calculated: {}", payment);
             return new ClientCallWrapper<>(next.newCall(method, callOptions),
                     headers -> payment.toMetadata(headers));
         }

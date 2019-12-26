@@ -2,6 +2,7 @@ package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import lombok.ToString;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.daemon.Payment;
@@ -13,6 +14,7 @@ import io.singularitynet.sdk.registry.*;
  * The class is responsible for providing a payment for the client call using
  * the specified payment channel.
  */
+@ToString
 public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         
     private final BigInteger channelId;
@@ -51,7 +53,8 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         Pricing price = group.getPricing().stream()
             .filter(pr -> PriceModel.FIXED_PRICE.equals(pr.getPriceModel()))
             .findFirst().get();
-        return price.getPriceInCogs();
+        BigInteger priceInCogs = price.getPriceInCogs();
+        return priceInCogs;
     }
 
 }

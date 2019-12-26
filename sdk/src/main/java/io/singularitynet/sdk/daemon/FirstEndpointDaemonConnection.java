@@ -3,11 +3,15 @@ package io.singularitynet.sdk.daemon;
 import io.grpc.*;
 import java.net.URL;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 
 public class FirstEndpointDaemonConnection implements DaemonConnection {
+
+    private final static Logger log = LoggerFactory.getLogger(FirstEndpointDaemonConnection.class);
 
     private final String groupName;
     private final MetadataProvider metadataProvider;
@@ -34,6 +38,7 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
     @Override
     public void shutdownNow() {
         channel.shutdownNow();
+        log.info("gRPC channel to daemon closed");
     }
 
     private ManagedChannel getChannelLazy() {
@@ -56,11 +61,15 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
         if ("http".equals(url.getProtocol())) {
             builder.usePlaintext();
         }
-        return builder.build();
+        ManagedChannel channel = builder.build();
+        log.info("gRPC channel created, channel: {}", channel);
+        return channel;
     }
 
     // ThreadSafe
     private static class ClientInterceptorProxy implements ClientInterceptor {
+
+        private final static Logger log = LoggerFactory.getLogger(ClientInterceptorProxy.class);
 
         private volatile ClientInterceptor delegate;
 
@@ -77,9 +86,11 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
                 Channel next) {
 
             if (PAYMENT_CHANNEL_STATE_SERVICE.equals(getServiceName(method))) {
+                log.debug("Skip processing for PaymentChannelStateService call");
                 return next.newCall(method, callOptions);
             }
 
+            log.debug("New gRPC call intercepted, method: {}, callOptions: {}", method, callOptions);
             return delegate.interceptCall(method, callOptions, next);
         }
 

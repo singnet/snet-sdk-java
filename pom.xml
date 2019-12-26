@@ -229,6 +229,9 @@
           <version>2.22.1</version>
           <configuration>
             <trimStackTrace>false</trimStackTrace>
+            <systemPropertyVariables>
+              <org.slf4j.simpleLogger.log.io.singularitynet>debug</org.slf4j.simpleLogger.log.io.singularitynet>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
