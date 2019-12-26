@@ -11,7 +11,7 @@ import io.singularitynet.sdk.common.Utils;
 public class PaymentGroup {
 
     private final String groupName;
-    @SerializedName("group_id") private final GroupId paymentGroupId;
+    @SerializedName("group_id") private final PaymentGroupId paymentGroupId;
     @SerializedName("payment") private final PaymentDetails paymentDetails;
 
     public static Builder newBuilder() {
@@ -32,7 +32,7 @@ public class PaymentGroup {
         return groupName;
     }
 
-    public GroupId getPaymentGroupId() {
+    public PaymentGroupId getPaymentGroupId() {
         return paymentGroupId;
     }
 
@@ -43,7 +43,7 @@ public class PaymentGroup {
     public static class Builder {
 
         private String groupName;
-        private GroupId paymentGroupId;
+        private PaymentGroupId paymentGroupId;
         private PaymentDetails paymentDetails;
 
         private Builder() {
@@ -60,7 +60,7 @@ public class PaymentGroup {
             return this;
         }
 
-        public Builder setPaymentGroupId(GroupId paymentGroupId) {
+        public Builder setPaymentGroupId(PaymentGroupId paymentGroupId) {
             this.paymentGroupId = paymentGroupId;
             return this;
         }

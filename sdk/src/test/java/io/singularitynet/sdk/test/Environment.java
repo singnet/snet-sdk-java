@@ -122,10 +122,10 @@ public class Environment {
         return signer;
     }
 
-    private Map<GroupId, PaymentGroup.Builder> paymentGroupById = new HashMap<>();
+    private Map<PaymentGroupId, PaymentGroup.Builder> paymentGroupById = new HashMap<>();
 
     public PaymentGroup.Builder newPaymentGroup() {
-        GroupId groupId = GroupId.fromBytes(randomUint256());
+        PaymentGroupId groupId = new PaymentGroupId(randomUint256());
         PaymentGroup.Builder paymentGroup = PaymentGroup.newBuilder()
             .setGroupName("default_group")
             .setPaymentGroupId(groupId)
@@ -177,7 +177,7 @@ public class Environment {
 
     public EndpointGroup.Builder newEndpointGroup(String orgId) {
         OrganizationMetadata.Builder org = organizationMetadataById.get(orgId);
-        GroupId paymentGroupId = org.build().getPaymentGroups().get(0).getPaymentGroupId();
+        PaymentGroupId paymentGroupId = org.build().getPaymentGroups().get(0).getPaymentGroupId();
         return EndpointGroup.newBuilder()
             .setGroupName("default_group")
             .addPricing(newPricing().build())
@@ -222,7 +222,7 @@ public class Environment {
         }
     }
 
-    public PaymentChannel.Builder newPaymentChannel(GroupId groupId, Signer signer) {
+    public PaymentChannel.Builder newPaymentChannel(PaymentGroupId groupId, Signer signer) {
         BigInteger channelId = BigInteger.valueOf((long)(Math.random() * 100));
         PaymentGroup group = paymentGroupById.get(groupId).build();
         PaymentChannel.Builder paymentChannel = PaymentChannel.newBuilder()

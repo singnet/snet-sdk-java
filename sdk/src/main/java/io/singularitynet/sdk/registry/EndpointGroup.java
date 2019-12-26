@@ -14,7 +14,7 @@ public class EndpointGroup {
     private final String groupName;
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
-    @SerializedName("group_id") private final GroupId paymentGroupId;
+    @SerializedName("group_id") private final PaymentGroupId paymentGroupId;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -43,7 +43,7 @@ public class EndpointGroup {
         return endpoints;
     }
 
-    public GroupId getPaymentGroupId() {
+    public PaymentGroupId getPaymentGroupId() {
         return paymentGroupId;
     }
 
@@ -52,7 +52,7 @@ public class EndpointGroup {
         private String groupName;
         private List<Pricing> pricing = new ArrayList<>();
         private List<URL> endpoints = new ArrayList<>();
-        private GroupId paymentGroupId;
+        private PaymentGroupId paymentGroupId;
 
         private Builder() {
         }
@@ -94,7 +94,7 @@ public class EndpointGroup {
             return this;
         }
 
-        public Builder setPaymentGroupId(GroupId paymentGroupId) {
+        public Builder setPaymentGroupId(PaymentGroupId paymentGroupId) {
             this.paymentGroupId = paymentGroupId;
             return this;
         }

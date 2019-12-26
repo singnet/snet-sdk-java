@@ -5,7 +5,7 @@ import lombok.ToString;
 import java.math.BigInteger;
 
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.registry.GroupId;
+import io.singularitynet.sdk.registry.PaymentGroupId;
 
 @EqualsAndHashCode
 @ToString
@@ -17,7 +17,7 @@ public class PaymentChannel {
     private final Address sender;
     private final Address signer;
     private final Address recipient;
-    private final GroupId paymentGroupId;
+    private final PaymentGroupId paymentGroupId;
     private final BigInteger value;
     private final BigInteger expiration;
     private final BigInteger spentAmount;
@@ -67,7 +67,7 @@ public class PaymentChannel {
         return recipient;
     }
 
-    public GroupId getPaymentGroupId() {
+    public PaymentGroupId getPaymentGroupId() {
         return paymentGroupId;
     }
 
@@ -91,7 +91,7 @@ public class PaymentChannel {
         private Address sender;
         private Address signer;
         private Address recipient;
-        private GroupId paymentGroupId;
+        private PaymentGroupId paymentGroupId;
         private BigInteger value;
         private BigInteger expiration;
         private BigInteger spentAmount;
@@ -142,7 +142,7 @@ public class PaymentChannel {
             return this;
         }
 
-        public Builder setPaymentGroupId(GroupId paymentGroupId) {
+        public Builder setPaymentGroupId(PaymentGroupId paymentGroupId) {
             this.paymentGroupId = paymentGroupId;
             return this;
         }

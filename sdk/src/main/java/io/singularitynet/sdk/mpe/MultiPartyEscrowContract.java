@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.registry.GroupId;
+import io.singularitynet.sdk.registry.PaymentGroupId;
 
 public class MultiPartyEscrowContract {
 
@@ -34,7 +34,7 @@ public class MultiPartyEscrowContract {
                 .setSender(new Address(result.getValue2()))
                 .setSigner(new Address(result.getValue3()))
                 .setRecipient(new Address(result.getValue4()))
-                .setPaymentGroupId(GroupId.fromBytes(result.getValue5()))
+                .setPaymentGroupId(new PaymentGroupId(result.getValue5()))
                 .setValue(result.getValue6())
                 .setExpiration(result.getValue7())
                 .setSpentAmount(BigInteger.ZERO)

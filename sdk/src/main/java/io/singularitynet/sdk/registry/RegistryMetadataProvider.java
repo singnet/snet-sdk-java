@@ -54,7 +54,7 @@ public class RegistryMetadataProvider implements MetadataProvider {
                             Utils.parameterizedType(List.class, null, Pricing.class)))
                 .setEndpoints(context.deserialize(jsonObject.get("endpoints"),
                             Utils.parameterizedType(List.class, null, URL.class)))
-                .setPaymentGroupId(new GroupId(paymentGroupId))
+                .setPaymentGroupId(new PaymentGroupId(paymentGroupId))
                 .build();
         }
 
