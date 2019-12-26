@@ -6,9 +6,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
-import static io.singularitynet.sdk.common.Preconditions.checkArgument;
-
-import io.singularitynet.sdk.common.Utils;
 
 @EqualsAndHashCode
 @ToString
@@ -17,9 +14,7 @@ public class EndpointGroup {
     private final String groupName;
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
-    // TODO: replace by GroupId class to implement toString() and seemless JSON
-    // conversion
-    @SerializedName("group_id") private final String paymentGroupId;
+    private final GroupId paymentGroupId;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -48,8 +43,8 @@ public class EndpointGroup {
         return endpoints;
     }
 
-    public byte[] getPaymentGroupId() {
-        return Utils.base64ToBytes(paymentGroupId);
+    public GroupId getPaymentGroupId() {
+        return paymentGroupId;
     }
 
     public static class Builder {
@@ -57,7 +52,7 @@ public class EndpointGroup {
         private String groupName;
         private List<Pricing> pricing = new ArrayList<>();
         private List<URL> endpoints = new ArrayList<>();
-        private String paymentGroupId;
+        private GroupId paymentGroupId;
 
         private Builder() {
         }
@@ -74,6 +69,11 @@ public class EndpointGroup {
             return this;
         }
 
+        public Builder setPricing(List<Pricing> pricing) {
+            this.pricing = pricing;
+            return this;
+        }
+
         public Builder addPricing(Pricing pricing) {
             this.pricing.add(pricing);
             return this;
@@ -84,14 +84,18 @@ public class EndpointGroup {
             return this;
         } 
 
+        public Builder setEndpoints(List<URL> endpoints) {
+            this.endpoints = endpoints;
+            return this;
+        }
+
         public Builder addEndpoint(URL endpoint) {
             this.endpoints.add(endpoint);
             return this;
         }
 
-        public Builder setPaymentGroupId(byte[] paymentGroupId) {
-            checkArgument(paymentGroupId.length == 32, "Payment group id should be 32 bytes length");
-            this.paymentGroupId = Utils.bytesToBase64(paymentGroupId);
+        public Builder setPaymentGroupId(GroupId paymentGroupId) {
+            this.paymentGroupId = paymentGroupId;
             return this;
         }
 

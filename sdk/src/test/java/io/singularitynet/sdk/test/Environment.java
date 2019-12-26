@@ -182,7 +182,7 @@ public class Environment {
             .setGroupName("default_group")
             .addPricing(newPricing().build())
             .addEndpoint(server.getEndpoint())
-            .setPaymentGroupId(paymentGroupId);
+            .setPaymentGroupId(GroupId.fromBytes(paymentGroupId));
     }
 
     private Map<String, ServiceMetadata.Builder> serviceMetadataById = new HashMap<>();
