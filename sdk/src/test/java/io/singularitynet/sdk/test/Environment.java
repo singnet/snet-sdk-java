@@ -251,7 +251,7 @@ public class Environment {
         return PaymentChannelStateReply.newBuilder()
             .setCurrentNonce(payment.getChannelNonce())
             .setCurrentSignedAmount(payment.getAmount())
-            .setCurrentSignature(payment.getSignature());
+            .setCurrentSignature(payment.getSignature().getBytes());
     }
 
 }

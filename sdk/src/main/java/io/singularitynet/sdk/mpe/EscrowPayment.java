@@ -9,6 +9,7 @@ import lombok.ToString;
 import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.daemon.PaymentSerializer;
 import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.common.Utils;
 
 @EqualsAndHashCode
@@ -33,8 +34,7 @@ public class EscrowPayment implements Payment {
     private final BigInteger channelId;
     private final BigInteger channelNonce;
     private final BigInteger amount;
-    // TODO: replace by Signature class to implement toString()
-    private final byte[] signature;
+    private final Signature signature;
 
     @Override
     public void toMetadata(Metadata headers) {
@@ -42,7 +42,7 @@ public class EscrowPayment implements Payment {
         headers.put(SNET_PAYMENT_CHANNEL_ID, channelId);
         headers.put(SNET_PAYMENT_CHANNEL_NONCE, channelNonce);
         headers.put(SNET_PAYMENT_CHANNEL_AMOUNT, amount);
-        headers.put(SNET_PAYMENT_CHANNEL_SIGNATURE, signature);
+        headers.put(SNET_PAYMENT_CHANNEL_SIGNATURE, signature.getBytes());
     }
 
     public static EscrowPayment fromMetadata(Metadata headers) {
@@ -50,11 +50,11 @@ public class EscrowPayment implements Payment {
         BigInteger channelNonce = headers.get(SNET_PAYMENT_CHANNEL_NONCE);
         BigInteger amount = headers.get(SNET_PAYMENT_CHANNEL_AMOUNT);
         byte[] signature = headers.get(SNET_PAYMENT_CHANNEL_SIGNATURE);
-        return new EscrowPayment(channelId, channelNonce, amount, signature);
+        return new EscrowPayment(channelId, channelNonce, amount, new Signature(signature));
     }
 
     public EscrowPayment(BigInteger channelId, BigInteger channelNonce,
-            BigInteger amount, byte[] signature) {
+            BigInteger amount, Signature signature) {
         this.channelId = channelId;
         this.channelNonce = channelNonce;
         this.amount = amount;
@@ -77,7 +77,7 @@ public class EscrowPayment implements Payment {
         return amount;
     }
 
-    public byte[] getSignature() {
+    public Signature getSignature() {
         return signature;
     }
 
@@ -106,7 +106,7 @@ public class EscrowPayment implements Payment {
         }
     
         public EscrowPayment build() {
-            byte[] signature = signer.sign(getMessage());
+            Signature signature = signer.sign(getMessage());
             return new EscrowPayment(paymentChannel.getChannelId(),
                     paymentChannel.getNonce(), amount, signature);
         }

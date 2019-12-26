@@ -86,7 +86,7 @@ public class PaymentChannelStateService {
 
                 return request
                     .setCurrentBlock(block)
-                    .setSignature(ByteString.copyFrom(signer.sign(bytes.toByteArray())));
+                    .setSignature(ByteString.copyFrom(signer.sign(bytes.toByteArray()).getBytes()));
             });
         }
 

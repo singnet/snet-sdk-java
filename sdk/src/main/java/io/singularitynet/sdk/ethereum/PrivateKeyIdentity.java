@@ -27,8 +27,9 @@ public class PrivateKeyIdentity implements Signer {
     }
 
     @Override
-    public byte[] sign(byte[] message) {
-        return signatureToBytes(Sign.signPrefixedMessage(Hash.sha3(message), key));
+    public Signature sign(byte[] message) {
+        Sign.SignatureData signature = Sign.signPrefixedMessage(Hash.sha3(message), key);
+        return new Signature(signatureToBytes(signature));
     }
 
     @Override
