@@ -48,7 +48,7 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         // TODO: this can contradict to failover strategy:
         // how to align endpoint group selected by failover and payment group?
         EndpointGroup group = serviceMetadata.getEndpointGroups().stream()
-            .filter(grp -> Arrays.equals(channel.getPaymentGroupId(), grp.getPaymentGroupId().getBytes()))
+            .filter(grp -> channel.getPaymentGroupId().equals(grp.getPaymentGroupId()))
             .findFirst().get();
         Pricing price = group.getPricing().stream()
             .filter(pr -> PriceModel.FIXED_PRICE.equals(pr.getPriceModel()))

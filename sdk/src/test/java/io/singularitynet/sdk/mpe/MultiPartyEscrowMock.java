@@ -24,7 +24,7 @@ public class MultiPartyEscrowMock {
                             paymentChannel.getSender().toString(),
                             paymentChannel.getSigner().toString(),
                             paymentChannel.getRecipient().toString(),
-                            paymentChannel.getPaymentGroupId(),
+                            paymentChannel.getPaymentGroupId().getBytes(),
                             paymentChannel.getValue(),
                             paymentChannel.getExpiration());
                 }));

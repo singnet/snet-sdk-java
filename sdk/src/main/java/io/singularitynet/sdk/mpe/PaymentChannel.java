@@ -3,9 +3,9 @@ package io.singularitynet.sdk.mpe;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.math.BigInteger;
-import static io.singularitynet.sdk.common.Preconditions.checkArgument;
 
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.registry.GroupId;
 
 @EqualsAndHashCode
 @ToString
@@ -17,7 +17,7 @@ public class PaymentChannel {
     private final Address sender;
     private final Address signer;
     private final Address recipient;
-    private final byte[] paymentGroupId;
+    private final GroupId paymentGroupId;
     private final BigInteger value;
     private final BigInteger expiration;
     private final BigInteger spentAmount;
@@ -67,7 +67,7 @@ public class PaymentChannel {
         return recipient;
     }
 
-    public byte[] getPaymentGroupId() {
+    public GroupId getPaymentGroupId() {
         return paymentGroupId;
     }
 
@@ -91,7 +91,7 @@ public class PaymentChannel {
         private Address sender;
         private Address signer;
         private Address recipient;
-        private byte[] paymentGroupId;
+        private GroupId paymentGroupId;
         private BigInteger value;
         private BigInteger expiration;
         private BigInteger spentAmount;
@@ -142,8 +142,7 @@ public class PaymentChannel {
             return this;
         }
 
-        public Builder setPaymentGroupId(byte[] paymentGroupId) {
-            checkArgument(paymentGroupId.length == 32, "Payment group id should be 32 bytes length");
+        public Builder setPaymentGroupId(GroupId paymentGroupId) {
             this.paymentGroupId = paymentGroupId;
             return this;
         }

@@ -232,7 +232,7 @@ public class Environment {
             .setSender(new Address("0xC4f3BFE7D69461B7f363509393D44357c084404c"))
             .setSigner(signer.getAddress())
             .setRecipient(group.getPaymentDetails().getPaymentAddress())
-            .setPaymentGroupId(group.getPaymentGroupId().getBytes())
+            .setPaymentGroupId(group.getPaymentGroupId())
             .setValue(BigInteger.valueOf(41))
             .setExpiration(BigInteger.valueOf(125))
             .setSpentAmount(BigInteger.valueOf(0));
