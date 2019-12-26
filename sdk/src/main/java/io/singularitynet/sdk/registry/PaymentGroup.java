@@ -3,7 +3,6 @@ package io.singularitynet.sdk.registry;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import com.google.gson.annotations.SerializedName;
-import static io.singularitynet.sdk.common.Preconditions.checkArgument;
 
 import io.singularitynet.sdk.common.Utils;
 
@@ -12,7 +11,7 @@ import io.singularitynet.sdk.common.Utils;
 public class PaymentGroup {
 
     private final String groupName;
-    @SerializedName("group_id") private final String paymentGroupId;
+    @SerializedName("group_id") private final GroupId paymentGroupId;
     @SerializedName("payment") private final PaymentDetails paymentDetails;
 
     public static Builder newBuilder() {
@@ -33,8 +32,8 @@ public class PaymentGroup {
         return groupName;
     }
 
-    public byte[] getPaymentGroupId() {
-        return Utils.base64ToBytes(paymentGroupId);
+    public GroupId getPaymentGroupId() {
+        return paymentGroupId;
     }
 
     public PaymentDetails getPaymentDetails() {
@@ -44,7 +43,7 @@ public class PaymentGroup {
     public static class Builder {
 
         private String groupName;
-        private String paymentGroupId;
+        private GroupId paymentGroupId;
         private PaymentDetails paymentDetails;
 
         private Builder() {
@@ -61,9 +60,8 @@ public class PaymentGroup {
             return this;
         }
 
-        public Builder setPaymentGroupId(byte[] paymentGroupId) {
-            checkArgument(paymentGroupId.length == 32, "Payment group id should be 32 bytes length");
-            this.paymentGroupId = Utils.bytesToBase64(paymentGroupId);
+        public Builder setPaymentGroupId(GroupId paymentGroupId) {
+            this.paymentGroupId = paymentGroupId;
             return this;
         }
 

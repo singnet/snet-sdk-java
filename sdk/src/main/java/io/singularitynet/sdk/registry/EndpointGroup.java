@@ -14,7 +14,7 @@ public class EndpointGroup {
     private final String groupName;
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
-    private final GroupId paymentGroupId;
+    @SerializedName("group_id") private final GroupId paymentGroupId;
 
     public static Builder newBuilder() {
         return new Builder();

@@ -44,7 +44,7 @@ public class SingleServiceSingleClientTest {
 
         Signer signer = env.newSigner();
 
-        paymentChannel = env.newPaymentChannel(endpointGroup.getPaymentGroupId().getBytes(), signer).build();
+        paymentChannel = env.newPaymentChannel(endpointGroup.getPaymentGroupId(), signer).build();
         env.daemon().setChannelStateIsAbsent(paymentChannel);
 
         env.updateMocks();
