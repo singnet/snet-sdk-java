@@ -22,7 +22,7 @@ public class IpfsMetadataStorage implements MetadataStorage {
     @Override
     public byte[] get(URI uri) {
         return Utils.wrapExceptions(() -> {
-            log.info("Getting metadata from IPFS, uri: {}", uri);
+            log.info("Get data from IPFS, uri: {}", uri);
             Multihash filePointer = Multihash.fromBase58(uri.getAuthority());
             byte[] metadata = ipfs.cat(filePointer);
             log.info("{} bytes received", metadata.length);
