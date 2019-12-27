@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
-import static com.google.common.base.Preconditions.checkArgument;
+import static io.singularitynet.sdk.common.Preconditions.checkArgument;
 
 import io.singularitynet.sdk.common.Utils;
 

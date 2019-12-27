@@ -3,7 +3,7 @@ package io.singularitynet.sdk.mpe;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.math.BigInteger;
-import static com.google.common.base.Preconditions.checkArgument;
+import static io.singularitynet.sdk.common.Preconditions.checkArgument;
 
 import io.singularitynet.sdk.ethereum.Address;
 

@@ -15,6 +15,7 @@
     <snet-daemon.version>2.0.2</snet-daemon.version>
     <protobuf.version>3.5.1</protobuf.version>
     <grpc.version>1.20.0</grpc.version>
+    <web3j.version>4.2.0-android</web3j.version>
   </properties>
 
   <repositories>
@@ -26,7 +27,9 @@
 
   <modules>
     <module>sdk</module>
+    <module>plugin-core</module>
     <module>maven-plugin</module>
+    <module>gradle-plugin</module>
     <module>example</module>
   </modules>
 
@@ -37,6 +40,11 @@
       <dependency>
         <groupId>io.singularitynet</groupId>
         <artifactId>snet-sdk-java</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.singularitynet</groupId>
+        <artifactId>snet-sdk-plugin-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- protobuf + grpc begin -->
@@ -58,11 +66,19 @@
         <version>1.3.2</version>
       </dependency>
       <!-- protobuf + grpc end -->
+      <!-- web3j begin -->
       <dependency>
         <groupId>org.web3j</groupId>
         <artifactId>core</artifactId>
-        <version>4.5.5</version>
+        <version>${web3j.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>codegen</artifactId>
+        <version>${web3j.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- web3j end -->
       <!-- IPFS begin -->
       <dependency>
         <groupId>com.github.ipfs</groupId>
@@ -75,11 +91,6 @@
         <version>1.2.1</version>
       </dependency>
       <!-- IPFS end -->
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>28.1-android</version>
-      </dependency>
       <!-- apache commons -->
       <dependency>
         <groupId>org.apache.commons</groupId>

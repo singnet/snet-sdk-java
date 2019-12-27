@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <groupId>io.singularitynet</groupId>
+    <artifactId>snet-sdk-java-pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>snet-sdk-gradle-plugin</artifactId>
+  <packaging>jar</packaging>
+
+  <name>snet-sdk-gradle-plugin</name>
+  <description>SingularityNet Java SDK Gradle Plugin</description>
+  <!-- TODO change it to the project's website -->
+  <url>http://dev.singularitynet.io</url>
+
+  <repositories>
+    <repository>
+      <id>gradle</id>
+      <url>https://repo.gradle.org/gradle/libs-releases-local</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <!-- pom's of the higher versions doesn't contain dependencies, so they
+         require importing more artifacts than simple `gradle-core` -->
+    <!-- see also Spring Boot example of using Maven to call Gradle 
+         https://github.com/spring-projects/spring-boot/commit/9b15e6b5a3c0fc18372f532063bb43f25abcf984 -->
+    <gradle.version>3.4</gradle.version>
+  </properties>
+
+  <dependencies>
+    <!-- compile scope -->
+    <dependency>
+      <groupId>io.singularitynet</groupId>
+      <artifactId>snet-sdk-plugin-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- gradle start -->
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>2.5.8</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-core</artifactId>
+      <version>${gradle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- gradle stop -->
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <!-- attached to Maven test phase -->
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

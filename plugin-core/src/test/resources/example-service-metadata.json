@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "display_name": "Example Service",
+    "encoding": "proto",
+    "service_type": "grpc",
+    "model_ipfs_hash": "QmPKvg2rMmACYJsVQfAa4uLB5rVV7fXF3xuet95Zinxct9",
+    "mpe_address": "0x5C7a4290F6F8FF64c69eEffDFAFc8644A4Ec3a4E",
+    "groups": [
+        {
+            "group_name": "default_group",
+            "endpoints": [
+                "http://10.0.2.2:7000"
+            ],
+            "pricing": [
+                {
+                    "price_model": "fixed_price",
+                    "price_in_cogs": 1,
+                    "default": true
+                }
+            ],
+            "group_id": "VyU5M1oBscOPbOhSBnh4k/CfNYmJJ6oH+8I3WBHCCkI="
+        }
+    ],
+    "assets": {},
+    "service_description": {
+        "description": "Example service description",
+        "url": "https://example.service.users.guide"
+    }
+}
+

@@ -1,7 +1,7 @@
 package io.singularitynet.sdk.ethereum;
 
 import lombok.EqualsAndHashCode;
-import com.google.common.base.Preconditions;
+import io.singularitynet.sdk.common.Preconditions;
 
 import io.singularitynet.sdk.common.Utils;
 

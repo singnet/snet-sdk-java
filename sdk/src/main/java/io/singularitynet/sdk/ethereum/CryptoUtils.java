@@ -1,6 +1,6 @@
 package io.singularitynet.sdk.ethereum;
 
-import static com.google.common.base.Preconditions.checkState;
+import static io.singularitynet.sdk.common.Preconditions.checkState;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import org.web3j.crypto.Keys;
@@ -32,7 +32,7 @@ public class CryptoUtils {
             bytes.read(r, 0, 32);
             bytes.read(s, 0, 32);
             bytes.read(v, 0, 1);
-            return new Sign.SignatureData(v, r, s);
+            return new Sign.SignatureData(v[0], r, s);
         });
     }
 }

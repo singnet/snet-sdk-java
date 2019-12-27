@@ -47,7 +47,7 @@ public class SnetServiceApiMojoTest
         BufferedInputStream is = new BufferedInputStream(new FileInputStream(protoFile));
         try {
             String protobuf = IOUtils.toString(is);
-            assertTrue("Java package is not added", protobuf.endsWith("option java_package = \"io.singularitynet.service\";"));
+            assertTrue("Java package is not added", protobuf.endsWith("option java_package = \"io.singularitynet.service\";\n"));
         } finally {
             is.close();
         }

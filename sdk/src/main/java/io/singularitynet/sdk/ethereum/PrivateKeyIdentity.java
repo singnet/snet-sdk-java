@@ -6,7 +6,7 @@ import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Hash;
-import static com.google.common.base.Preconditions.checkState;
+import static io.singularitynet.sdk.common.Preconditions.checkState;
 
 import io.singularitynet.sdk.common.Utils;
 

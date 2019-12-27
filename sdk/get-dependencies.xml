@@ -24,11 +24,8 @@
     <move file="${project.build.directory}/singularitynet-platform-contracts/networks"
       todir="${project.build.directory}/resources"/>
 
-    <!-- TODO: replace by direct call to the web3j java class used
-       in web3j cli interface. Plugin would be better but it
-       doesn't support generation from ABI json -->
     <echo message="Generating Java stubs for contracts"/>
-    <exec executable="web3j">
+    <java classname="org.web3j.codegen.SolidityFunctionWrapperGenerator" classpath="${maven.compile.classpath.for.ant}">
       <arg value="solidity"/>
       <arg value="generate"/>
       <arg value="-a"/>
@@ -37,8 +34,8 @@
       <arg value="${project.build.directory}/generated-sources/sol/java"/>
       <arg value="--package"/>
       <arg value="io.singularitynet.sdk.contracts"/>
-    </exec>
-    <exec executable="web3j">
+    </java>
+    <java classname="org.web3j.codegen.SolidityFunctionWrapperGenerator" classpath="${maven.compile.classpath.for.ant}">
       <arg value="solidity"/>
       <arg value="generate"/>
       <arg value="-a"/>
@@ -47,7 +44,7 @@
       <arg value="${project.build.directory}/generated-sources/sol/java"/>
       <arg value="--package"/>
       <arg value="io.singularitynet.sdk.contracts"/>
-    </exec>
+    </java>
   </target>
 
   <target name="check-daemon-proto">
