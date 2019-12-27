@@ -48,6 +48,9 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
         }
         return channel;
     }
+    
+    // TODO: make this part of the configuration
+    private static int MAX_GRPC_INBOUND_MESSAGE_SIZE = 1 << 24;
 
     private ManagedChannel getChannel() {
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
@@ -56,6 +59,7 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
             .findFirst().get().getEndpoints().get(0);
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
+            .maxInboundMessageSize(MAX_GRPC_INBOUND_MESSAGE_SIZE)
             .intercept(interceptorProxy);
         // TODO: test HTTPS connections
         if ("http".equals(url.getProtocol())) {
