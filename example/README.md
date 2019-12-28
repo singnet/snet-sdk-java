@@ -69,7 +69,7 @@ $ mvn exec:java -Dexec.mainClass="io.singularitynet.sdk.example.CntkImageRecogni
       <plugin>
         <groupId>io.singularitynet</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1.0</version>
 
         <executions>
           <execution>
