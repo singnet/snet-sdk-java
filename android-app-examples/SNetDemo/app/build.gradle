@@ -1,0 +1,95 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.singularitynet.sdk'
+apply plugin: 'com.google.protobuf'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.example.snetdemo"
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+    implementation 'io.grpc:grpc-okhttp:1.20.0'
+    implementation 'org.slf4j:slf4j-android:1.7.30'
+
+    implementation 'io.grpc:grpc-okhttp:1.20.0'
+    implementation 'org.slf4j:slf4j-android:1.7.30'
+    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
+
+}
+
+tasks.register('getStyleTransferApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+    orgId = 'snet'
+    serviceId = 'style-transfer'
+    outputDir = file("$buildDir/proto")
+    javaPackage = 'io.singularitynet.service.styletransfer'
+}
+
+tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+    orgId = 'snet'
+    serviceId = 'semantic-segmentation'
+    outputDir = file("$buildDir/proto")
+    javaPackage = 'io.singularitynet.service.semanticsegmentation'
+}
+
+def grpcVersion = '1.20.0'
+def protobufVersion = '3.5.1'
+def protocVersion = protobufVersion
+
+android {
+    sourceSets {
+        main {
+            proto {
+                //srcDir "$buildDir/proto"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+    generateProtoTasks {
+        all()*.builtins { remove java }
+        all()*.plugins {
+            grpc {}
+            java {}
+        }
+    }
+}
