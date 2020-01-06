@@ -1,11 +1,13 @@
 package com.example.snetdemo;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -84,6 +86,9 @@ public class StyleTransferActivity extends AppCompatActivity
     private int mFinalImgViewHeight;
 
     private RelativeLayout loadingPanel;
+
+    private String mErrorMessage = "";
+    private boolean isExceptionCaught = false;
 
 
     private int mChannelID;
@@ -279,16 +284,13 @@ public class StyleTransferActivity extends AppCompatActivity
     public void sendGrabCameraImageMessage(View view)
     {
         if(mIsDeviceWithCamera)
-        {;
+        {
             File photoFile = null;
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(getPackageManager()) != null)
             {
-                // Create the File where the photo should go
-
                 try
                 {
                     photoFile = createImageFile("input_image_");
@@ -296,10 +298,8 @@ public class StyleTransferActivity extends AppCompatActivity
                 }
                 catch (IOException e)
                 {
-                    // Error occurred while creating the File
                     Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN IMAGE FILE CREATION: " + e.toString());
                 }
-                // Continue only if the File was successfully created
                 if (photoFile != null)
                 {
                     mCameraImageURI = FileProvider.getUriForFile(this,
@@ -327,6 +327,7 @@ public class StyleTransferActivity extends AppCompatActivity
                     loadingPanel.setVisibility(View.VISIBLE);
 
                     btn_UploadImageInput.setEnabled(false);
+                    btn_UploadImageStyle.setEnabled(false);
                     btn_RunStyleTransfer.setEnabled(false);
                     btn_GrabCameraImage.setEnabled(false);
 
@@ -350,6 +351,10 @@ public class StyleTransferActivity extends AppCompatActivity
                     {
                         Log.e("ERROR IN LOADING BITMAP", Calendar.getInstance().getTime().toString() + e.toString());
                         e.printStackTrace();
+
+                        mErrorMessage = e.toString();
+                        isExceptionCaught = true;
+
                         return null;
                     }
 
@@ -372,8 +377,11 @@ public class StyleTransferActivity extends AppCompatActivity
                     }
                     catch (Exception e)
                     {
-                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN SERVICE CALLING: " + e.toString());
+                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN SERVICE CALL: " + e.toString());
                         e.printStackTrace();
+
+                        mErrorMessage = e.toString();
+                        isExceptionCaught = true;
                         return null;
                     }
 
@@ -396,6 +404,8 @@ public class StyleTransferActivity extends AppCompatActivity
                     {
                         Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN BITMAP SAVING: " + e.toString());
                         e.printStackTrace();
+                        mErrorMessage = e.toString();
+                        isExceptionCaught = true;
                     }
 
                     publishProgress(PROGRESS_FINISHED);
@@ -428,11 +438,12 @@ public class StyleTransferActivity extends AppCompatActivity
                 protected void onPostExecute(Object obj)
                 {
                     loadingPanel.setVisibility(View.INVISIBLE);
-
+                    textViewProgress.setVisibility(View.INVISIBLE);
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
                     btn_UploadImageInput.setEnabled(true);
-                    btn_RunStyleTransfer.setEnabled(false);
+                    btn_UploadImageStyle.setEnabled(true);
+                    btn_RunStyleTransfer.setEnabled(true);
 
                     mServiceResponseTime /= 1e6;
                     textViewResponseTime.setText("Service response time (ms): " + String.valueOf(mServiceResponseTime));
@@ -442,12 +453,37 @@ public class StyleTransferActivity extends AppCompatActivity
                         btn_GrabCameraImage.setEnabled(true);
                     }
 
-                    Intent intent = new Intent(StyleTransferActivity.this, ImageShowActivity.class);
 
-                    intent.putExtra("img_path", mImageResultPath);
-                    intent.putExtra("response_time", mServiceResponseTime);
+                    if (!isExceptionCaught)
+                    {
+                        Intent intent = new Intent(StyleTransferActivity.this, ImageShowActivity.class);
 
-                    startActivityForResult(intent, REQUEST_CODE_SHOW_IMAGE);
+                        intent.putExtra("img_path", mImageResultPath);
+                        intent.putExtra("response_time", mServiceResponseTime);
+
+                        startActivityForResult(intent, REQUEST_CODE_SHOW_IMAGE);
+                    }
+                    else
+                    {
+                        isExceptionCaught = false;
+                        new AlertDialog.Builder(StyleTransferActivity.this)
+                                .setTitle("Error in service call")
+                                .setMessage(mErrorMessage)
+
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Continue with delete operation
+                                    }
+                                })
+
+//                                // A null listener allows the button to dismiss the dialog and take no further action.
+//                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                    }
+
                 }
 
             };
