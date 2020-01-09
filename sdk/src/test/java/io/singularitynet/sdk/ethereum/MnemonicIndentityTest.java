@@ -16,7 +16,7 @@ public class MnemonicIndentityTest {
 
         MnemonicIdentity actual = new MnemonicIdentity(mnemonic, 0);
 
-        assertArrayEquals("Signature", expected.sign(message), actual.sign(message));
+        assertEquals("Signature", expected.sign(message), actual.sign(message));
     }
 
     @Test
@@ -25,7 +25,7 @@ public class MnemonicIndentityTest {
 
         MnemonicIdentity actual = new MnemonicIdentity(mnemonic, 42);
 
-        assertArrayEquals("Signature", expected.sign(message), actual.sign(message));
+        assertEquals("Signature", expected.sign(message), actual.sign(message));
     }
 
     private static PrivateKeyIdentity fromBase64Key(String key) {

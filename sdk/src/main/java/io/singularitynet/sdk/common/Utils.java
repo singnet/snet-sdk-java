@@ -1,12 +1,17 @@
 package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import io.singularitynet.sdk.common.Preconditions;
 import java.util.concurrent.Callable;
 import java.math.BigInteger;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 
 public class Utils {
+
+    private final static Logger log = LoggerFactory.getLogger(Utils.class);
 
     private Utils() {
     }
@@ -86,7 +91,7 @@ public class Utils {
         byte[] bytes = new byte[str.length() / 2]; 
         for (int i = 0; i < str.length(); i += 2) {
             bytes[i / 2] = (byte) ((Character.digit(str.charAt(i), 16) << 4) +
-                Character.digit(str.charAt(i + 1), 16));
+                    Character.digit(str.charAt(i + 1), 16));
         }
         return bytes;
     }
@@ -95,8 +100,26 @@ public class Utils {
         try {
             return callable.call();
         } catch (Exception e) {
+            log.error("Unexpected exception", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public static Type parameterizedType(Type rawType, Type ownerType, Type... args) {
+        return new ParameterizedType() {
+            @Override
+            public Type getRawType() {
+                return rawType;
+            }
+            @Override
+            public Type getOwnerType() {
+                return ownerType;
+            }
+            @Override
+            public Type[] getActualTypeArguments() {
+                return args;
+            }
+        };
     }
 
 }

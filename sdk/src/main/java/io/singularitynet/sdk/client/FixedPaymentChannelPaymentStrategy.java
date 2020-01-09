@@ -2,6 +2,7 @@ package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import lombok.ToString;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.daemon.Payment;
@@ -13,6 +14,7 @@ import io.singularitynet.sdk.registry.*;
  * The class is responsible for providing a payment for the client call using
  * the specified payment channel.
  */
+@ToString
 public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         
     private final BigInteger channelId;
@@ -46,12 +48,13 @@ public class FixedPaymentChannelPaymentStrategy implements PaymentStrategy {
         // TODO: this can contradict to failover strategy:
         // how to align endpoint group selected by failover and payment group?
         EndpointGroup group = serviceMetadata.getEndpointGroups().stream()
-            .filter(grp -> Arrays.equals(channel.getPaymentGroupId(), grp.getPaymentGroupId()))
+            .filter(grp -> channel.getPaymentGroupId().equals(grp.getPaymentGroupId()))
             .findFirst().get();
         Pricing price = group.getPricing().stream()
             .filter(pr -> PriceModel.FIXED_PRICE.equals(pr.getPriceModel()))
             .findFirst().get();
-        return price.getPriceInCogs();
+        BigInteger priceInCogs = price.getPriceInCogs();
+        return priceInCogs;
     }
 
 }
