@@ -39,8 +39,6 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
-    implementation 'io.grpc:grpc-okhttp:1.20.0'
-    implementation 'org.slf4j:slf4j-android:1.7.30'
 
     implementation 'io.grpc:grpc-okhttp:1.20.0'
     implementation 'org.slf4j:slf4j-android:1.7.30'
@@ -48,18 +46,25 @@ dependencies {
 
 }
 
-tasks.register('getStyleTransferApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
-    orgId = 'snet'
-    serviceId = 'style-transfer'
-    outputDir = file("$buildDir/proto")
-    javaPackage = 'io.singularitynet.service.styletransfer'
-}
+//tasks.register('getStyleTransferApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+//    orgId = 'snet'
+//    serviceId = 'style-transfer'
+//    outputDir = file("$buildDir/proto")
+//    javaPackage = 'io.singularitynet.service.styletransfer'
+//}
 
 tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
     orgId = 'snet'
     serviceId = 'semantic-segmentation'
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.semanticsegmentation'
+}
+
+tasks.register('getMinecraftizingApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+    orgId = 'snet'
+    serviceId = 'minecraftizing-service'
+    outputDir = file("$buildDir/proto")
+    javaPackage = 'io.singularitynet.service.minecraftizing'
 }
 
 def grpcVersion = '1.20.0'
@@ -70,7 +75,7 @@ android {
     sourceSets {
         main {
             proto {
-                //srcDir "$buildDir/proto"
+                srcDir "$buildDir/proto"
             }
         }
     }
