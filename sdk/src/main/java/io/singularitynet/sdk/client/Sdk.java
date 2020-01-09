@@ -2,6 +2,8 @@ package io.singularitynet.sdk.client;
 
 import org.web3j.protocol.Web3j;
 import io.ipfs.api.IPFS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
@@ -22,6 +24,8 @@ import io.singularitynet.sdk.client.BaseServiceClient;
 import io.singularitynet.sdk.ethereum.Signer;
 
 public class Sdk {
+
+    private final static Logger log = LoggerFactory.getLogger(Sdk.class);
 
     private final Web3j web3j;
     private final IPFS ipfs;
@@ -52,6 +56,8 @@ public class Sdk {
 
     public ServiceClient newServiceClient(String orgId, String serviceId,
             String endpointGroupName, PaymentStrategy paymentStrategy) {
+        log.info("Start service client, orgId: {}, serviceId: {}, endpointGroupName: {}, paymentStrategy: {}",
+                orgId, serviceId, endpointGroupName, paymentStrategy);
 
         RegistryContract registryContract = new RegistryContract(registry);
         MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(mpe);
@@ -73,6 +79,7 @@ public class Sdk {
 
     public void shutdown() {
         web3j.shutdown();
+        log.info("SDK shutdown");
     }
 
 }

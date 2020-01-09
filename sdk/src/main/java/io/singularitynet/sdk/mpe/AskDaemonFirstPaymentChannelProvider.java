@@ -1,14 +1,19 @@
 package io.singularitynet.sdk.mpe;
 
 import java.math.BigInteger;
-import static io.singularitynet.sdk.common.Preconditions.checkState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Signature;
 
 public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
+
+    private final static Logger log = LoggerFactory.getLogger(AskDaemonFirstPaymentChannelProvider.class);
 
     private final MultiPartyEscrowContract mpe;
     private final PaymentChannelStateService stateService;
@@ -21,56 +26,62 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
 
     @Override
     public PaymentChannel getChannelById(BigInteger channelId) {
+        log.debug("Getting the channel state, channelId: {}", channelId);
         PaymentChannel channel = mpe.getChannelById(channelId).get();
         PaymentChannelStateReply reply = stateService.getChannelState(channelId);
         if (!reply.hasCurrentSignedAmount()) {
-            checkState(channel.getNonce().compareTo(reply.getCurrentNonce()) >= 0,
+            log.info("No payments on the channel in the daemon");
+            Preconditions.checkState(channel.getNonce().compareTo(reply.getCurrentNonce()) >= 0,
                     "Daemon sent channel state which is newer then blockchain one. " +
                     "Channel id: %s", channel.getChannelId());
-            return channel;
+        } else {
+            channel = mergeChannelState(channel, reply);
         }
-        return mergeChannelState(channel, reply);
+        log.debug("Channel state, channel: {}", channel);
+        return channel;
     }
 
     private static final BigInteger ONE = BigInteger.valueOf(1);
 
-    private static PaymentChannel mergeChannelState(PaymentChannel channel,
+    private static PaymentChannel mergeChannelState(PaymentChannel blockchainState,
             PaymentChannelStateReply daemonState) {
 
         BigInteger spentAmount;
 
-        if (channel.getNonce().equals(daemonState.getCurrentNonce())) {
-            verifySignature(channel, daemonState.getCurrentSignedAmount(),
+        if (blockchainState.getNonce().equals(daemonState.getCurrentNonce())) {
+            verifySignature(blockchainState, daemonState.getCurrentSignedAmount(),
                     daemonState.getCurrentSignature(), "last current nonce");
             spentAmount = daemonState.getCurrentSignedAmount();
         } else {
+            log.info("The channel nonce is different for the daemon and blockchain, blockchainState: {}, daemonState: {}",
+                    blockchainState, daemonState);
             // TODO: test this case
-            checkState(daemonState.getCurrentNonce().subtract(channel.getNonce())
+            Preconditions.checkState(daemonState.getCurrentNonce().subtract(blockchainState.getNonce())
                     .equals(ONE), "Difference between current channel nonce " +
                     "and daemon channel nonce is bigger than 1. Channel id: %s",
-                    channel.getChannelId());
-            verifySignature(channel, daemonState.getOldNonceSignedAmount(),
+                    blockchainState.getChannelId());
+            verifySignature(blockchainState, daemonState.getOldNonceSignedAmount(),
                     daemonState.getOldNonceSignature(), "last old nonce");
-            verifySignature(channel.toBuilder().setNonce(daemonState.getCurrentNonce()).build(),
+            verifySignature(blockchainState.toBuilder().setNonce(daemonState.getCurrentNonce()).build(),
                     daemonState.getCurrentSignedAmount(),
                     daemonState.getCurrentSignature(), "last current nonce");
             spentAmount = daemonState.getCurrentSignedAmount().add(
                     daemonState.getOldNonceSignedAmount());
         }
 
-        return channel.toBuilder()
+        return blockchainState.toBuilder()
             .setSpentAmount(daemonState.getCurrentSignedAmount())
             .build();
     }
 
     private static void verifySignature(PaymentChannel channel, BigInteger amount,
-            byte[] signature, String type) {
+            Signature signature, String type) {
         byte[] payment = EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
             .setAmount(amount)
             .getMessage();
         Address address = CryptoUtils.getSignerAddress(payment, signature);
-        checkState(channel.getSigner().equals(address) ||
+        Preconditions.checkState(channel.getSigner().equals(address) ||
                 channel.getSender().equals(address), 
                 "Signature signer is not sender not signer. " + 
                 "Daemon returned incorrect signature of the %s payment. " +

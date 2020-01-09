@@ -53,7 +53,7 @@ public class DaemonMock extends PaymentChannelStateServiceGrpc.PaymentChannelSta
         channelStates.put(channelId, StateService.ChannelStateReply.newBuilder()
                 .setCurrentNonce(ByteString.copyFrom(Utils.bigIntToBytes32(reply.getCurrentNonce())))
                 .setCurrentSignedAmount(ByteString.copyFrom(Utils.bigIntToBytes32(reply.getCurrentSignedAmount())))
-                .setCurrentSignature(ByteString.copyFrom(reply.getCurrentSignature()))
+                .setCurrentSignature(ByteString.copyFrom(reply.getCurrentSignature().getBytes()))
                 .build());
     }
 

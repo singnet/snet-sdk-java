@@ -9,7 +9,7 @@ package io.singularitynet.sdk.ethereum {
     }
 
     interface Signer {
-        byte[] sign(byte[] message);
+        Signature sign(byte[] message);
     }
     WithAddress <|-- Signer
 

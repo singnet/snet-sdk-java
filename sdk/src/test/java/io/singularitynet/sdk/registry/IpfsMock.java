@@ -49,7 +49,7 @@ public class IpfsMock {
                 endpointsBuilder.add(endpoint.toString());
             }
             groupBuilder.add("endpoints", endpointsBuilder)
-                .add("group_id", bytesToBase64(group.getPaymentGroupId()));
+                .add("group_id", group.getPaymentGroupId().toString());
             groupsBuilder.add(groupBuilder);
         }
         rootBuilder.add("groups", groupsBuilder)
@@ -77,7 +77,7 @@ public class IpfsMock {
             PaymentDetails paymentDetails = group.getPaymentDetails();
             JsonObjectBuilder groupBuilder = Json.createObjectBuilder()
                 .add("group_name", group.getGroupName())
-                .add("group_id", bytesToBase64(group.getPaymentGroupId()))
+                .add("group_id", group.getPaymentGroupId().toString())
                 .add("payment", Json.createObjectBuilder()
                         .add("payment_address", paymentDetails.getPaymentAddress().toString())
                         .add("payment_expiration_threshold", paymentDetails.getPaymentExpirationThreshold().toString())
