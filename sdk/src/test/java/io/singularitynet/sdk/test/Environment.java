@@ -122,10 +122,10 @@ public class Environment {
         return signer;
     }
 
-    private Map<String, PaymentGroup.Builder> paymentGroupById = new HashMap<>();
+    private Map<PaymentGroupId, PaymentGroup.Builder> paymentGroupById = new HashMap<>();
 
     public PaymentGroup.Builder newPaymentGroup() {
-        byte[] groupId = randomUint256();
+        PaymentGroupId groupId = new PaymentGroupId(randomUint256());
         PaymentGroup.Builder paymentGroup = PaymentGroup.newBuilder()
             .setGroupName("default_group")
             .setPaymentGroupId(groupId)
@@ -133,7 +133,7 @@ public class Environment {
                     .setPaymentAddress(new Address("0xfA8a01E837c30a3DA3Ea862e6dB5C6232C9b800A"))
                     .setPaymentExpirationThreshold(BigInteger.valueOf(100))
                     .build());
-        paymentGroupById.put(Utils.bytesToBase64(groupId), paymentGroup);
+        paymentGroupById.put(groupId, paymentGroup);
         return paymentGroup;
     }
 
@@ -177,7 +177,7 @@ public class Environment {
 
     public EndpointGroup.Builder newEndpointGroup(String orgId) {
         OrganizationMetadata.Builder org = organizationMetadataById.get(orgId);
-        byte[] paymentGroupId = org.build().getPaymentGroups().get(0).getPaymentGroupId();
+        PaymentGroupId paymentGroupId = org.build().getPaymentGroups().get(0).getPaymentGroupId();
         return EndpointGroup.newBuilder()
             .setGroupName("default_group")
             .addPricing(newPricing().build())
@@ -222,9 +222,9 @@ public class Environment {
         }
     }
 
-    public PaymentChannel.Builder newPaymentChannel(byte[] groupId, Signer signer) {
+    public PaymentChannel.Builder newPaymentChannel(PaymentGroupId groupId, Signer signer) {
         BigInteger channelId = BigInteger.valueOf((long)(Math.random() * 100));
-        PaymentGroup group = paymentGroupById.get(Utils.bytesToBase64(groupId)).build();
+        PaymentGroup group = paymentGroupById.get(groupId).build();
         PaymentChannel.Builder paymentChannel = PaymentChannel.newBuilder()
             .setChannelId(channelId)
             .setMpeContractAddress(mpeAddress)

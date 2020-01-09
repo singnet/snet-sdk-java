@@ -2,6 +2,7 @@ package io.singularitynet.sdk.client;
 
 import java.net.URL;
 import java.util.Optional;
+import lombok.ToString;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.FieldNamingPolicy;
