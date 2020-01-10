@@ -63,11 +63,5 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void sendMinecraftizingAppMessage(View view)
-    {
-        Intent intent = new Intent(this, MinecraftizingActivity.class);
-        startActivity(intent);
-    }
-
 
 }

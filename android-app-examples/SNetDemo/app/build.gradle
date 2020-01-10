@@ -42,7 +42,7 @@ dependencies {
 
     implementation 'io.grpc:grpc-okhttp:1.20.0'
     implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
+    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:master-SNAPSHOT'
 
 }
 
@@ -58,13 +58,6 @@ tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingul
     serviceId = 'semantic-segmentation'
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.semanticsegmentation'
-}
-
-tasks.register('getMinecraftizingApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
-    orgId = 'snet'
-    serviceId = 'minecraftizing-service'
-    outputDir = file("$buildDir/proto")
-    javaPackage = 'io.singularitynet.service.minecraftizing'
 }
 
 def grpcVersion = '1.20.0'
