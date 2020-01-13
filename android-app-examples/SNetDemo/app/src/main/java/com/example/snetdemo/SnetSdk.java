@@ -17,6 +17,7 @@ public class SnetSdk implements Closeable
     public SnetSdk(Context context)
     {
         Resources res = context.getResources();
+        // See README.md on how to set channel signer private key via resources
         String privateKey = res.getString(R.string.channel_key);
 
         String json = "{" +
