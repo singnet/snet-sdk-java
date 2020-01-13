@@ -55,7 +55,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
     final int PROGRESS_LOADING_IMAGE = 4;
     final int PROGRESS_FINISHED = 5;
 
-    private boolean mIsInputImageUploaded = false;
+    private boolean isInputImageUploaded = false;
 
     private Button btn_UploadImageInput;
     private Button btn_RunImageSegmentation;
@@ -66,20 +66,20 @@ public class ImageSegmentationActivity extends AppCompatActivity
     private TextView textViewProgress;
     private TextView textViewResponseTime;
 
-    private Bitmap mDecodedBitmap = null;
+    private Bitmap decodedBitmap = null;
 
     private RelativeLayout loadingPanel;
 
-    private long mServiceResponseTime = 0;
-    private boolean mIsDeviceWithCamera = true;
+    private long serviceResponseTime = 0;
+    private boolean isDeviceWithCamera = true;
 
-    String mCurrentPhotoPath = "";
-    Uri mCameraImageURI;
+    String currentPhotoPath = "";
+    Uri cameraImageURI;
 
-    String mImageInputPath = null;
-    String mImageSegmentedPath = null;
+    String imageInputPath = null;
+    String imageSegmentedPath = null;
 
-    private String mErrorMessage = "";
+    private String errorMessage = "";
     private boolean isExceptionCaught = false;
 
     private int channelID;
@@ -135,7 +135,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
         PackageManager pm = this.getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
         {
-            mIsDeviceWithCamera = false;
+            isDeviceWithCamera = false;
             btn_GrabCameraImage.setEnabled(false);
         }
 
@@ -181,7 +181,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
     public void sendRunImageSegmentationMessage(View view)
     {
-        if(this.mIsInputImageUploaded)
+        if(this.isInputImageUploaded)
         {
             AsyncTask task = new AsyncTask<Object, Integer, Object>()
             {
@@ -208,14 +208,14 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     Bitmap bitmap = null;
                     try
                     {
-                        bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this, Uri.fromFile(new File(mImageInputPath)));
+                        bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this, Uri.fromFile(new File(imageInputPath)));
                     }
                     catch (IOException e)
                     {
                         Log.e("ERROR IN LOADING BITMAP ", Calendar.getInstance().getTime().toString() + e.toString());
                         e.printStackTrace();
 
-                        mErrorMessage = e.toString();
+                        errorMessage = e.toString();
                         isExceptionCaught = true;
 
                         return null;
@@ -244,13 +244,13 @@ public class ImageSegmentationActivity extends AppCompatActivity
                         Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN SERVICE CALL: " + e.toString());
                         e.printStackTrace();
 
-                        mErrorMessage = e.toString();
+                        errorMessage = e.toString();
                         isExceptionCaught = true;
 
                         return null;
                     }
 
-                    mServiceResponseTime = System.nanoTime() - startTime;
+                    serviceResponseTime = System.nanoTime() - startTime;
 
                     publishProgress(new Integer(PROGRESS_DECODING_SERIVCE_RESPONSE));
 
@@ -258,19 +258,19 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     byte[] decodedBytes = dbgImage.getContent().toByteArray();
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
 
-                    mDecodedBitmap = decodedBitmap;
+                    ImageSegmentationActivity.this.decodedBitmap = decodedBitmap;
                     File fr = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), BuildConfig.APPLICATION_ID + "/segmented_image.jpg");
-                    mImageSegmentedPath = fr.getAbsolutePath();
+                    imageSegmentedPath = fr.getAbsolutePath();
                     try (FileOutputStream out = new FileOutputStream(fr))
                     {
-                        mDecodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                        ImageSegmentationActivity.this.decodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
                     } catch (IOException e)
                     {
                         Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN BITMAP SAVING: " + e.toString());
                         e.printStackTrace();
 
-                        mErrorMessage = e.toString();
+                        errorMessage = e.toString();
                         isExceptionCaught = true;
 
                         return null;
@@ -312,15 +312,15 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                     btn_UploadImageInput.setEnabled(true);
 
-                    imv_Input.setImageBitmap(mDecodedBitmap);
+                    imv_Input.setImageBitmap(decodedBitmap);
 
-                    mServiceResponseTime /= 1e6;
-                    textViewResponseTime.setText("Service response time (ms): " + String.valueOf(mServiceResponseTime));
+                    serviceResponseTime /= 1e6;
+                    textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
                     textViewResponseTime.setVisibility(View.VISIBLE);
 
                     btn_RunImageSegmentation.setEnabled(false);
 
-                    if(mIsDeviceWithCamera) {
+                    if(isDeviceWithCamera) {
                         btn_GrabCameraImage.setEnabled(true);
                     }
 
@@ -329,7 +329,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                         isExceptionCaught = false;
                         new AlertDialog.Builder(ImageSegmentationActivity.this)
                                 .setTitle("Error in service call")
-                                .setMessage(mErrorMessage)
+                                .setMessage(errorMessage)
 
                                 // Specifying a listener allows you to take an action before dismissing the dialog.
                                 // The dialog is automatically dismissed when a dialog button is clicked.
@@ -348,7 +348,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
             };
 
             task.execute();
-            mIsInputImageUploaded = false;
+            isInputImageUploaded = false;
         }
     }
 
@@ -379,9 +379,9 @@ public class ImageSegmentationActivity extends AppCompatActivity
         {
             if(resultCode==RESULT_OK)
             {
-                mIsInputImageUploaded = true;
+                isInputImageUploaded = true;
                 loadImageFromFileToImageView(imv_Input, data.getData());
-                mImageInputPath = getPathFromUri(this, data.getData());
+                imageInputPath = getPathFromUri(this, data.getData());
 
                 btn_RunImageSegmentation.setEnabled(true);
 
@@ -392,12 +392,12 @@ public class ImageSegmentationActivity extends AppCompatActivity
         {
             if(resultCode==RESULT_OK)
             {
-                mIsInputImageUploaded = true;
-                galleryAddPic(this, mCurrentPhotoPath);
+                isInputImageUploaded = true;
+                galleryAddPic(this, currentPhotoPath);
 
-                File f = new File(mCurrentPhotoPath);
+                File f = new File(currentPhotoPath);
                 loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-                mImageInputPath = mCurrentPhotoPath;
+                imageInputPath = currentPhotoPath;
                 btn_RunImageSegmentation.setEnabled(true);
             }
         }
@@ -405,7 +405,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
     public void sendGrabCameraImageMessage(View view)
     {
-        if(mIsDeviceWithCamera)
+        if(isDeviceWithCamera)
         {
             textViewResponseTime.setVisibility(View.INVISIBLE);
             File photoFile = null;
@@ -417,7 +417,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 try
                 {
                     photoFile = createImageFile("input_image_");
-                    mCurrentPhotoPath = photoFile.getAbsolutePath();
+                    currentPhotoPath = photoFile.getAbsolutePath();
                 }
                 catch (IOException e)
                 {
@@ -426,11 +426,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                 if (photoFile != null)
                 {
-                    mCameraImageURI = FileProvider.getUriForFile(this,
+                    cameraImageURI = FileProvider.getUriForFile(this,
                             BuildConfig.APPLICATION_ID,
                             photoFile);
 
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraImageURI);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI);
                     startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
                 }
             }
