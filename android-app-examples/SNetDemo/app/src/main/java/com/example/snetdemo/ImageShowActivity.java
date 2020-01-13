@@ -1,8 +1,5 @@
 package com.example.snetdemo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -10,11 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.bumptech.glide.Glide;
 
 import java.io.File;
-
-import static com.example.snetdemo.ImageUtils.*;
 
 public class ImageShowActivity extends AppCompatActivity
 {

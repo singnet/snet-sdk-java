@@ -28,6 +28,10 @@ repositories {
     }
 }
 
+def grpcVersion = '1.20.0'
+def protobufVersion = '3.5.1'
+def protocVersion = protobufVersion
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -40,7 +44,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 
-    implementation 'io.grpc:grpc-okhttp:${grpcVersion}'
+    implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation 'org.slf4j:slf4j-android:1.7.30'
     implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
 
@@ -59,10 +63,6 @@ tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingul
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.semanticsegmentation'
 }
-
-def grpcVersion = '1.20.0'
-def protobufVersion = '3.5.1'
-def protocVersion = protobufVersion
 
 android {
     sourceSets {

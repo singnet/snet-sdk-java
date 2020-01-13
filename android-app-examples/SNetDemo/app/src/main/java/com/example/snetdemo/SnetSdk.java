@@ -3,7 +3,6 @@ package com.example.snetdemo;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
 
 import java.io.Closeable;
 

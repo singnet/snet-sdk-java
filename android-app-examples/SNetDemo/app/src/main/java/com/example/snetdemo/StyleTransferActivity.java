@@ -1,11 +1,5 @@
 package com.example.snetdemo;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,15 +22,27 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Calendar;
-import java.io.*;
 
 import io.singularitynet.service.styletransfer.StyleTransferOuterClass;
 
-import static com.example.snetdemo.ImageUtils.*;
+import static com.example.snetdemo.ImageUtils.BitmapToJPEGBase64String;
+import static com.example.snetdemo.ImageUtils.createImageFile;
+import static com.example.snetdemo.ImageUtils.galleryAddPic;
+import static com.example.snetdemo.ImageUtils.getPathFromUri;
+import static com.example.snetdemo.ImageUtils.handleSamplingAndRotationBitmap;
 
 
 public class StyleTransferActivity extends AppCompatActivity
