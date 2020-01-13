@@ -33,9 +33,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Calendar;
 
+import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.service.semanticsegmentation.Segmentation;
+import io.singularitynet.service.semanticsegmentation.SemanticSegmentationGrpc;
 
 import static com.example.snetdemo.ImageUtils.BitmapToJPEGByteArray;
 import static com.example.snetdemo.ImageUtils.createImageFile;
@@ -46,6 +49,7 @@ import static com.example.snetdemo.ImageUtils.handleSamplingAndRotationBitmap;
 
 public class ImageSegmentationActivity extends AppCompatActivity
 {
+    private final String TAG = "ImageSegmentationActivity";
 
     final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
     final int REQUEST_CODE_IMAGE_CAPTURE = 11;
@@ -83,11 +87,12 @@ public class ImageSegmentationActivity extends AppCompatActivity
     private boolean isExceptionCaught = false;
 
     private int channelID;
-    private SemanticSegmentationService semanticSegmentationService;
+    private ServiceClient serviceClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_segmentation);
@@ -113,15 +118,15 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
         setTitle("Image Segmentation Demo");
 
-        btn_UploadImageInput = (Button) findViewById(R.id.btn_uploadImageForSegmentation);
-        btn_RunImageSegmentation = (Button) findViewById(R.id.btn_runImageSegmentation);
+        btn_UploadImageInput = findViewById(R.id.btn_uploadImageForSegmentation);
+        btn_RunImageSegmentation = findViewById(R.id.btn_runImageSegmentation);
         btn_RunImageSegmentation.setEnabled(false);
 
-        btn_GrabCameraImage = (Button) findViewById(R.id.btn_grabCameraImage);
+        btn_GrabCameraImage = findViewById(R.id.btn_grabCameraImage);
 
-        imv_Input = (ImageView)findViewById(R.id.imageViewInput);
+        imv_Input = findViewById(R.id.imageViewInput);
 
-        loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
+        loadingPanel = findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.INVISIBLE);
 
         textViewProgress = findViewById(R.id.textViewProgress);
@@ -147,31 +152,29 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
             protected void onPreExecute()
             {
+                Log.i("SegmentationActivity", "entering onCreate() onPreExecute() method");
                 super.onPreExecute();
-
-                textViewProgress.setVisibility(View.VISIBLE);
                 textViewProgress.setText("Opening service channel");
-                loadingPanel.setVisibility(View.VISIBLE);
 
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-
+                disableActivityGUI();
             }
 
             @Override
             protected Object doInBackground(Object... param)
             {
+                Log.i("SegmentationActivity", "entering onCreate() doInBackground() method");
                 SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
-                semanticSegmentationService = new SemanticSegmentationService(sdk, BigInteger.valueOf(channelID));
+                PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
+                serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
+                        "default_group", paymentStrategy);
                 return null;
             }
 
             protected void onPostExecute(Object obj)
             {
-                textViewProgress.setVisibility(View.INVISIBLE);
-                loadingPanel.setVisibility(View.INVISIBLE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Log.i("SegmentationActivity", "entering onCreate() onPostExecute() method");
+
+                enableActivityGUI();
             }
 
 
@@ -179,6 +182,52 @@ public class ImageSegmentationActivity extends AppCompatActivity
         task.execute();
 
     }
+
+    @Override
+    protected void onDestroy()
+    {
+        new AsyncTask<Object, Object, Object>() {
+
+            @Override
+            protected Object doInBackground(Object... objects)
+            {
+                serviceClient.shutdownNow();
+                return null;
+            }
+
+        }.execute();
+        super.onDestroy();
+    }
+
+    private void disableActivityGUI()
+    {
+        textViewProgress.setVisibility(View.VISIBLE);
+        loadingPanel.setVisibility(View.VISIBLE);
+
+        btn_UploadImageInput.setEnabled(false);
+        btn_RunImageSegmentation.setEnabled(false);
+
+        btn_GrabCameraImage.setEnabled(false);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void enableActivityGUI()
+    {
+        loadingPanel.setVisibility(View.INVISIBLE);
+        textViewProgress.setVisibility(View.INVISIBLE);
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+        btn_UploadImageInput.setEnabled(true);
+        btn_RunImageSegmentation.setEnabled(false);
+        if(isDeviceWithCamera) {
+            btn_GrabCameraImage.setEnabled(true);
+        }
+
+    }
+
 
     public void sendRunImageSegmentationMessage(View view)
     {
@@ -188,23 +237,16 @@ public class ImageSegmentationActivity extends AppCompatActivity
             {
                 protected void onPreExecute()
                 {
+                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() onPreExecute() method");
                     super.onPreExecute();
-                    textViewProgress.setVisibility(View.VISIBLE);
-                    loadingPanel.setVisibility(View.VISIBLE);
 
-                    btn_UploadImageInput.setEnabled(false);
-                    btn_RunImageSegmentation.setEnabled(false);
-
-                    btn_GrabCameraImage.setEnabled(false);
-
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
+                    disableActivityGUI();
 
                 }
 
                 protected Void doInBackground(Object... param)
                 {
+                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() doInBackground() method");
                     publishProgress(new Integer(PROGRESS_LOADING_IMAGE));
                     Bitmap bitmap = null;
                     try
@@ -213,8 +255,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     }
                     catch (IOException e)
                     {
-                        Log.e("ERROR IN LOADING BITMAP ", Calendar.getInstance().getTime().toString() + e.toString());
-                        e.printStackTrace();
+                        Log.e(TAG, "Exception on loading bitmap", e);
 
                         errorMessage = e.toString();
                         isExceptionCaught = true;
@@ -238,12 +279,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                     try
                     {
-                        response = semanticSegmentationService.getStub().segment(request);
+                        response = serviceClient.getGrpcStub(SemanticSegmentationGrpc::newBlockingStub).segment(request);
                     }
                     catch (Exception e)
                     {
-                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN SERVICE CALL: " + e.toString());
-                        e.printStackTrace();
+                        Log.e(TAG, "Exception on service call", e);
 
                         errorMessage = e.toString();
                         isExceptionCaught = true;
@@ -268,9 +308,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                     } catch (IOException e)
                     {
-                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN BITMAP SAVING: " + e.toString());
-                        e.printStackTrace();
-
+                        Log.e(TAG, "Exception on saving bitmap", e);
                         errorMessage = e.toString();
                         isExceptionCaught = true;
 
@@ -306,12 +344,9 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                 protected void onPostExecute(Object obj)
                 {
-                    loadingPanel.setVisibility(View.INVISIBLE);
-                    textViewProgress.setVisibility(View.INVISIBLE);
+                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() onPostExecute() method");
 
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                    btn_UploadImageInput.setEnabled(true);
+                    enableActivityGUI();
 
                     imv_Input.setImageBitmap(decodedBitmap);
 
@@ -319,11 +354,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
                     textViewResponseTime.setVisibility(View.VISIBLE);
 
-                    btn_RunImageSegmentation.setEnabled(false);
-
-                    if(isDeviceWithCamera) {
-                        btn_GrabCameraImage.setEnabled(true);
-                    }
 
                     if (isExceptionCaught)
                     {
@@ -356,7 +386,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
     public void sendUploadInputImageMessage(View view)
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        fileIntent.setType("*/*");
+        fileIntent.setType("image/*");
         startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_INPUT_IMAGE);
 
         textViewResponseTime.setVisibility(View.INVISIBLE);
@@ -422,7 +452,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 }
                 catch (IOException e)
                 {
-                    Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN IMAGE FILE CREATION: " + e.toString());
+                    Log.e(TAG, "Exception on image file creation", e);
                 }
 
                 if (photoFile != null)

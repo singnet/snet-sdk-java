@@ -34,8 +34,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Calendar;
 
+import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.service.styletransfer.StyleTransferGrpc;
 import io.singularitynet.service.styletransfer.StyleTransferOuterClass;
 
 import static com.example.snetdemo.ImageUtils.BitmapToJPEGBase64String;
@@ -47,7 +50,7 @@ import static com.example.snetdemo.ImageUtils.handleSamplingAndRotationBitmap;
 
 public class StyleTransferActivity extends AppCompatActivity
 {
-
+    final String TAG = "StyleTransferActivity";
     final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
     final int REQUEST_CODE_UPLOAD_STYLE_IMAGE = 11;
     final int REQUEST_CODE_IMAGE_CAPTURE = 12;
@@ -93,8 +96,9 @@ public class StyleTransferActivity extends AppCompatActivity
     private boolean isExceptionCaught = false;
 
 
-    private int mChannelID;
-    private StyleTransferService styleTransferService;
+    private int channelID;
+    private ServiceClient serviceClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -123,23 +127,23 @@ public class StyleTransferActivity extends AppCompatActivity
 
         setTitle("Style Transfer Demo");
 
-        btn_UploadImageStyle = (Button) findViewById(R.id.btn_uploadImageStyle);
-        btn_UploadImageInput = (Button) findViewById(R.id.btn_uploadImageInput);
-        btn_GrabCameraImage = (Button) findViewById(R.id.btn_grabCameraImage);
-        btn_RunStyleTransfer = (Button) findViewById(R.id.btn_runStyleTransfer);
+        btn_UploadImageStyle = findViewById(R.id.btn_uploadImageStyle);
+        btn_UploadImageInput = findViewById(R.id.btn_uploadImageInput);
+        btn_GrabCameraImage = findViewById(R.id.btn_grabCameraImage);
+        btn_RunStyleTransfer = findViewById(R.id.btn_runStyleTransfer);
 
-        textViewResponseTime = (TextView) findViewById(R.id.textViewResponseTime);
+        textViewResponseTime = findViewById(R.id.textViewResponseTime);
         textViewResponseTime.setVisibility(View.INVISIBLE);
 
-        textViewProgress = (TextView) findViewById(R.id.textViewProgress);
+        textViewProgress = findViewById(R.id.textViewProgress);
         textViewProgress.setVisibility(View.INVISIBLE);
 
         btn_RunStyleTransfer.setEnabled(false);
 
-        imv_Style = (ImageView)findViewById(R.id.imageViewStyle);
-        imv_Input = (ImageView)findViewById(R.id.imageViewInput);
+        imv_Style = findViewById(R.id.imageViewStyle);
+        imv_Input = findViewById(R.id.imageViewInput);
 
-        loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
+        loadingPanel = findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.INVISIBLE);
 
         PackageManager pm = this.getPackageManager();
@@ -149,22 +153,18 @@ public class StyleTransferActivity extends AppCompatActivity
             btn_GrabCameraImage.setEnabled(false);
         }
 
-        mChannelID = this.getResources().getInteger(R.integer.channel_id);
+        channelID = this.getResources().getInteger(R.integer.channel_id);
 
         AsyncTask task = new AsyncTask<Object, Object, Object>()
         {
 
             protected void onPreExecute()
             {
+
                 super.onPreExecute();
 
                 textViewProgress.setText("Opening service channel");
-                textViewProgress.setVisibility(View.VISIBLE);
-                loadingPanel.setVisibility(View.VISIBLE);
-
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
+                disableActivityGUI();
 
             }
 
@@ -172,20 +172,69 @@ public class StyleTransferActivity extends AppCompatActivity
             protected Object doInBackground(Object... param)
             {
                 SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
-                styleTransferService = new StyleTransferService(sdk, BigInteger.valueOf(mChannelID));
+                PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
+                serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
+                        "default_group", paymentStrategy);
+
                 return null;
             }
 
             protected void onPostExecute(Object obj)
             {
-                textViewProgress.setVisibility(View.INVISIBLE);
-                loadingPanel.setVisibility(View.INVISIBLE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                enableActivityGUI();
             }
 
 
         };
         task.execute();
+
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        new AsyncTask<Object, Object, Object>() {
+
+            @Override
+            protected Object doInBackground(Object... objects)
+            {
+                serviceClient.shutdownNow();
+                return null;
+            }
+
+        }.execute();
+        super.onDestroy();
+    }
+
+
+    private void disableActivityGUI()
+    {
+        textViewProgress.setVisibility(View.VISIBLE);
+        loadingPanel.setVisibility(View.VISIBLE);
+
+        btn_UploadImageInput.setEnabled(false);
+        btn_UploadImageStyle.setEnabled(false);
+        btn_RunStyleTransfer.setEnabled(false);
+
+        btn_GrabCameraImage.setEnabled(false);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void enableActivityGUI()
+    {
+        loadingPanel.setVisibility(View.INVISIBLE);
+        textViewProgress.setVisibility(View.INVISIBLE);
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+        btn_UploadImageInput.setEnabled(true);
+        btn_UploadImageStyle.setEnabled(true);
+        btn_RunStyleTransfer.setEnabled(false);
+        if(isDeviceWithCamera) {
+            btn_GrabCameraImage.setEnabled(true);
+        }
 
     }
 
@@ -218,14 +267,14 @@ public class StyleTransferActivity extends AppCompatActivity
     public void sendUploadInputImageMessage(View view)
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        fileIntent.setType("*/*");
+        fileIntent.setType("image/*");
         startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_INPUT_IMAGE);
     }
 
     public void sendUploadStyleImageMessage(View view)
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        fileIntent.setType("*/*");
+        fileIntent.setType("image/*");
         startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_STYLE_IMAGE);
     }
 
@@ -301,7 +350,7 @@ public class StyleTransferActivity extends AppCompatActivity
                 }
                 catch (IOException e)
                 {
-                    Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN IMAGE FILE CREATION: " + e.toString());
+                    Log.e(TAG, "Exception on image file creation", e);
                 }
                 if (photoFile != null)
                 {
@@ -320,7 +369,7 @@ public class StyleTransferActivity extends AppCompatActivity
     {
         if(this.isInputImageUploaded && this.isStyleImageUploaded)
         {
-            AsyncTask task = new AsyncTask<Object, Integer, Object>()
+            AsyncTask<Object, Integer, Object> task = new AsyncTask<Object, Integer, Object>()
             {
 
                 protected void onPreExecute()
@@ -352,9 +401,7 @@ public class StyleTransferActivity extends AppCompatActivity
                     }
                     catch (IOException e)
                     {
-                        Log.e("ERROR IN LOADING BITMAP", Calendar.getInstance().getTime().toString() + e.toString());
-                        e.printStackTrace();
-
+                        Log.e(TAG, "Exception on loading bitmap", e);
                         errorMessage = e.toString();
                         isExceptionCaught = true;
 
@@ -376,13 +423,11 @@ public class StyleTransferActivity extends AppCompatActivity
 
                     try
                     {
-                        response = styleTransferService.getStub().transferImageStyle(request);
+                        response = serviceClient.getGrpcStub(StyleTransferGrpc::newBlockingStub).transferImageStyle(request);
                     }
                     catch (Exception e)
                     {
-                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN SERVICE CALL: " + e.toString());
-                        e.printStackTrace();
-
+                        Log.e(TAG, "Exception on service call", e);
                         errorMessage = e.toString();
                         isExceptionCaught = true;
                         return null;
@@ -405,8 +450,7 @@ public class StyleTransferActivity extends AppCompatActivity
 
                     } catch (IOException e)
                     {
-                        Log.e("ERROR", Calendar.getInstance().getTime().toString() + " ERROR IN BITMAP SAVING: " + e.toString());
-                        e.printStackTrace();
+                        Log.e(TAG, "Exception on saving bitmap", e);
                         errorMessage = e.toString();
                         isExceptionCaught = true;
                     }
