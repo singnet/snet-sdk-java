@@ -139,6 +139,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
             btn_GrabCameraImage.setEnabled(false);
         }
 
+        // See README.md on how to initialize channel ID via resources
         channelID = this.getResources().getInteger(R.integer.channel_id);
 
         AsyncTask task = new AsyncTask<Object, Object, Object>()
@@ -439,7 +440,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
     }
 
 }
-
 
 
 
