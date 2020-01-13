@@ -42,7 +42,7 @@ dependencies {
 
     implementation 'io.grpc:grpc-okhttp:1.20.0'
     implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:master-SNAPSHOT'
+    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
 
 }
 
