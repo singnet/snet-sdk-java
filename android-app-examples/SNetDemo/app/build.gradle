@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 
-    implementation 'io.grpc:grpc-okhttp:1.20.0'
+    implementation 'io.grpc:grpc-okhttp:${grpcVersion}'
     implementation 'org.slf4j:slf4j-android:1.7.30'
     implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
 
