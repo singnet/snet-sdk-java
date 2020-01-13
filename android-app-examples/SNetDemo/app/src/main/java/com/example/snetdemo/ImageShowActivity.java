@@ -16,8 +16,8 @@ import java.io.File;
 
 public class ImageShowActivity extends AppCompatActivity
 {
-    private String mImagePath;
-    private ImageView mImageView;
+    private String imagePath;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,7 +25,7 @@ public class ImageShowActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_show);
 
-        mImageView = (ImageView)findViewById(R.id.imageViewToShow);
+        imageView = (ImageView)findViewById(R.id.imageViewToShow);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -35,9 +35,9 @@ public class ImageShowActivity extends AppCompatActivity
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
 
-        mImagePath = getIntent().getExtras().getString("img_path");
+        imagePath = getIntent().getExtras().getString("img_path");
 
-        loadImageFromFileToImageView(mImageView, Uri.fromFile(new File(mImagePath)));
+        loadImageFromFileToImageView(imageView, Uri.fromFile(new File(imagePath)));
     }
 
     private void loadImageFromFileToImageView(ImageView imgView, Uri fileURI)
