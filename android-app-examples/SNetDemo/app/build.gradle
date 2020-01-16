@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.singularitynet.sdk'
-apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion 28
@@ -29,8 +28,6 @@ repositories {
 }
 
 def grpcVersion = '1.20.0'
-def protobufVersion = '3.5.1'
-def protocVersion = protobufVersion
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -53,29 +50,9 @@ dependencies {
 }
 
 android {
-    sourceSets {
-        main {
-            proto {
-                srcDir "$buildDir/proto"
-            }
-        }
-    }
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
-    }
-}
-
-protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
-    plugins {
-        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
-    }
-    generateProtoTasks {
-        all()*.builtins { remove java }
-        all()*.plugins {
-            grpc {}
-            java {}
-        }
     }
 }
