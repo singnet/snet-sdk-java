@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':style-transfer-api'
 rootProject.name='SNetDemo'
