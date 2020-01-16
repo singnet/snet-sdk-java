@@ -73,6 +73,9 @@ public class StyleTransferActivity extends AppCompatActivity
     private ImageView imv_Style;
     private ImageView imv_Input;
 
+    int maxImageHeight = 640;
+    int maxImageWidth = 640;
+
     private Bitmap decodedBitmap = null;
 
     String imageInputPath = null;
@@ -206,7 +209,6 @@ public class StyleTransferActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-
     private void disableActivityGUI()
     {
         textViewProgress.setVisibility(View.VISIBLE);
@@ -231,7 +233,11 @@ public class StyleTransferActivity extends AppCompatActivity
 
         btn_UploadImageInput.setEnabled(true);
         btn_UploadImageStyle.setEnabled(true);
-        btn_RunStyleTransfer.setEnabled(false);
+
+        if (isInputImageUploaded && isStyleImageUploaded) {
+            btn_RunStyleTransfer.setEnabled(true);
+        }
+
         if(isDeviceWithCamera) {
             btn_GrabCameraImage.setEnabled(true);
         }
@@ -293,6 +299,8 @@ public class StyleTransferActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if ( requestCode == REQUEST_CODE_UPLOAD_INPUT_IMAGE)
         {
             if (resultCode == RESULT_OK)
@@ -323,6 +331,14 @@ public class StyleTransferActivity extends AppCompatActivity
                 loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
                 imageInputPath = currentPhotoPath;
 
+            }
+            else if(resultCode==RESULT_CANCELED)
+            {
+                File f = new File(currentPhotoPath);
+                if (f.exists())
+                {
+                    f.delete();
+                }
             }
         }
 
@@ -375,17 +391,8 @@ public class StyleTransferActivity extends AppCompatActivity
                 protected void onPreExecute()
                 {
                     super.onPreExecute();
-                    textViewProgress.setVisibility(View.VISIBLE);
-                    loadingPanel.setVisibility(View.VISIBLE);
 
-                    btn_UploadImageInput.setEnabled(false);
-                    btn_UploadImageStyle.setEnabled(false);
-                    btn_RunStyleTransfer.setEnabled(false);
-                    btn_GrabCameraImage.setEnabled(false);
-
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
+                    disableActivityGUI();
                 }
 
                 @Override
@@ -396,8 +403,10 @@ public class StyleTransferActivity extends AppCompatActivity
                     Bitmap bitmapStyle = null;
                     try
                     {
-                        bitmapInput = handleSamplingAndRotationBitmap(StyleTransferActivity.this, Uri.fromFile(new File(imageInputPath)));
-                        bitmapStyle = handleSamplingAndRotationBitmap(StyleTransferActivity.this, Uri.fromFile(new File(imageStylePath)));
+                        bitmapInput = handleSamplingAndRotationBitmap(StyleTransferActivity.this,
+                                Uri.fromFile(new File(imageInputPath)), maxImageWidth, maxImageHeight);
+                        bitmapStyle = handleSamplingAndRotationBitmap(StyleTransferActivity.this,
+                                Uri.fromFile(new File(imageStylePath)), maxImageWidth, maxImageHeight);
                     }
                     catch (IOException e)
                     {
@@ -442,7 +451,19 @@ public class StyleTransferActivity extends AppCompatActivity
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                     StyleTransferActivity.this.decodedBitmap = decodedBitmap;
-                    File fr = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), BuildConfig.APPLICATION_ID + "/segmented_image.jpg");
+                    File fr = null;
+                    try {
+                        fr = createImageFile("styled_image_");
+                    }
+                    catch (IOException e)
+                    {
+                        Log.e(TAG, "Exception on file creation", e);
+                        errorMessage = e.toString();
+                        isExceptionCaught = true;
+
+                        return null;
+                    }
+
                     imageResultPath = fr.getAbsolutePath();
                     try (FileOutputStream out = new FileOutputStream(fr))
                     {
@@ -484,22 +505,11 @@ public class StyleTransferActivity extends AppCompatActivity
 
                 protected void onPostExecute(Object obj)
                 {
-                    loadingPanel.setVisibility(View.INVISIBLE);
-                    textViewProgress.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                    btn_UploadImageInput.setEnabled(true);
-                    btn_UploadImageStyle.setEnabled(true);
-                    btn_RunStyleTransfer.setEnabled(true);
+                    enableActivityGUI();
 
                     serviceResponseTime /= 1e6;
                     textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
 //                    textViewResponseTime.setVisibility(View.VISIBLE);
-
-                    if(isDeviceWithCamera) {
-                        btn_GrabCameraImage.setEnabled(true);
-                    }
-
 
                     if (!isExceptionCaught)
                     {
@@ -509,12 +519,14 @@ public class StyleTransferActivity extends AppCompatActivity
                         intent.putExtra("response_time", serviceResponseTime);
 
                         startActivityForResult(intent, REQUEST_CODE_SHOW_IMAGE);
+
+                        galleryAddPic(StyleTransferActivity.this, imageResultPath);
                     }
                     else
                     {
                         isExceptionCaught = false;
                         new AlertDialog.Builder(StyleTransferActivity.this)
-                                .setTitle("Error in service call")
+                                .setTitle("ERROR")
                                 .setMessage(errorMessage)
 
                                 // Specifying a listener allows you to take an action before dismissing the dialog.

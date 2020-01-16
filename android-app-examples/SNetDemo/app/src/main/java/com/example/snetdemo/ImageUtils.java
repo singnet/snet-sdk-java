@@ -151,19 +151,19 @@ public class ImageUtils
         return image;
     }
 
+
     /**
      * This method is responsible for solving the rotation issue if exist. Also scale the images to
-     * 1024x1024 resolution
+     * maxImageWidth x maxImageHeight resolution
      *
      * @param context       The current context
      * @param selectedImage The Image URI
      * @return Bitmap image results
      * @throws IOException
      */
-    public static Bitmap handleSamplingAndRotationBitmap(Context context, Uri selectedImage)
+    public static Bitmap handleSamplingAndRotationBitmap(Context context, Uri selectedImage,
+                                                         int maxImageWidth, int maxImageHeight)
             throws IOException {
-        int MAX_HEIGHT = 1024;
-        int MAX_WIDTH = 1024;
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -173,7 +173,7 @@ public class ImageUtils
         imageStream.close();
 
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, MAX_WIDTH, MAX_HEIGHT);
+        options.inSampleSize = calculateInSampleSize(options, maxImageWidth, maxImageHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;

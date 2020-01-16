@@ -25,7 +25,7 @@ public class ImageShowActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_show);
 
-        imageView = (ImageView)findViewById(R.id.imageViewToShow);
+        imageView = findViewById(R.id.imageViewToShow);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 

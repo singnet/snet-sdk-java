@@ -65,6 +65,9 @@ public class ImageSegmentationActivity extends AppCompatActivity
     private Button btn_RunImageSegmentation;
     private Button btn_GrabCameraImage;
 
+    int maxImageHeight = 1024;
+    int maxImageWidth = 1024;
+
     private ImageView imv_Input;
 
     private TextView textViewProgress;
@@ -152,7 +155,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
             protected void onPreExecute()
             {
-                Log.i("SegmentationActivity", "entering onCreate() onPreExecute() method");
                 super.onPreExecute();
                 textViewProgress.setText("Opening service channel");
 
@@ -162,7 +164,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
             @Override
             protected Object doInBackground(Object... param)
             {
-                Log.i("SegmentationActivity", "entering onCreate() doInBackground() method");
                 SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
                 PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
                 serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
@@ -172,8 +173,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
             protected void onPostExecute(Object obj)
             {
-                Log.i("SegmentationActivity", "entering onCreate() onPostExecute() method");
-
                 enableActivityGUI();
             }
 
@@ -221,7 +220,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         btn_UploadImageInput.setEnabled(true);
-        btn_RunImageSegmentation.setEnabled(false);
+
+        if (isInputImageUploaded) {
+            btn_RunImageSegmentation.setEnabled(true);
+        }
+
         if(isDeviceWithCamera) {
             btn_GrabCameraImage.setEnabled(true);
         }
@@ -237,7 +240,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
             {
                 protected void onPreExecute()
                 {
-                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() onPreExecute() method");
                     super.onPreExecute();
 
                     disableActivityGUI();
@@ -246,12 +248,13 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                 protected Void doInBackground(Object... param)
                 {
-                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() doInBackground() method");
                     publishProgress(new Integer(PROGRESS_LOADING_IMAGE));
                     Bitmap bitmap = null;
                     try
                     {
-                        bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this, Uri.fromFile(new File(imageInputPath)));
+                        bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this,
+                                Uri.fromFile(new File(imageInputPath)),
+                                maxImageWidth, maxImageHeight);
                     }
                     catch (IOException e)
                     {
@@ -300,7 +303,18 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
 
                     ImageSegmentationActivity.this.decodedBitmap = decodedBitmap;
-                    File fr = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), BuildConfig.APPLICATION_ID + "/segmented_image.jpg");
+                    File fr = null;
+                    try {
+                         fr = createImageFile("segmented_image_");
+                    }
+                    catch (IOException e)
+                    {
+                        Log.e(TAG, "Exception on file creation", e);
+                        errorMessage = e.toString();
+                        isExceptionCaught = true;
+
+                        return null;
+                    }
                     imageSegmentedPath = fr.getAbsolutePath();
                     try (FileOutputStream out = new FileOutputStream(fr))
                     {
@@ -344,22 +358,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
                 protected void onPostExecute(Object obj)
                 {
-                    Log.i("SegmentationActivity", "entering sendRunImageSegmentationMessage() onPostExecute() method");
-
-                    enableActivityGUI();
-
-                    imv_Input.setImageBitmap(decodedBitmap);
-
-                    serviceResponseTime /= 1e6;
-                    textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
-                    textViewResponseTime.setVisibility(View.VISIBLE);
-
-
                     if (isExceptionCaught)
                     {
                         isExceptionCaught = false;
                         new AlertDialog.Builder(ImageSegmentationActivity.this)
-                                .setTitle("Error in service call")
+                                .setTitle("ERROR")
                                 .setMessage(errorMessage)
 
                                 // Specifying a listener allows you to take an action before dismissing the dialog.
@@ -375,6 +378,21 @@ public class ImageSegmentationActivity extends AppCompatActivity
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 .show();
                     }
+                    else
+                    {
+                        imv_Input.setImageBitmap(decodedBitmap);
+                        galleryAddPic(ImageSegmentationActivity.this, imageSegmentedPath);
+
+                        serviceResponseTime /= 1e6;
+                        textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
+                        textViewResponseTime.setVisibility(View.VISIBLE);
+
+                        isInputImageUploaded = false;
+
+                    }
+
+                    enableActivityGUI();
+
                 }
             };
 
@@ -406,6 +424,8 @@ public class ImageSegmentationActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if ( requestCode == REQUEST_CODE_UPLOAD_INPUT_IMAGE)
         {
             if(resultCode==RESULT_OK)
@@ -430,6 +450,14 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
                 imageInputPath = currentPhotoPath;
                 btn_RunImageSegmentation.setEnabled(true);
+            }
+            else if(resultCode==RESULT_CANCELED)
+            {
+                File f = new File(currentPhotoPath);
+                if (f.exists())
+                {
+                    f.delete();
+                }
             }
         }
     }
