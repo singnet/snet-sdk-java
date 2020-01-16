@@ -38,8 +38,7 @@ For example
 </integer>
 
 <string
-    name="channel_key">s4k8uivl7c3sxxkcm9if603wbqgevyqx1ijrguue4lxn3s8gqrs03s2qoy914ypd
+    name="channel_key">000102030405060708090A0B0C0D0E0F102132435465768798A9BACBDCEDFE0F
 </string>
 
 ```
-
