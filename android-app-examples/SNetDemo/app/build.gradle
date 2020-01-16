@@ -49,13 +49,7 @@ dependencies {
     implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
 
     implementation project(":style-transfer-api")
-}
-
-tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
-    orgId = 'snet'
-    serviceId = 'semantic-segmentation'
-    outputDir = file("$buildDir/proto")
-    javaPackage = 'io.singularitynet.service.semanticsegmentation'
+    implementation project(":semantic-segmentation-api")
 }
 
 android {

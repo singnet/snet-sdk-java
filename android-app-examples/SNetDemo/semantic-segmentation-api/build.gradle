@@ -29,6 +29,7 @@ android {
     }
 
 }
+
 repositories {
     mavenCentral()
     maven {
@@ -49,12 +50,13 @@ dependencies {
     implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.1.0'
 }
 
-tasks.register('getStyleTransferApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
     orgId = 'snet'
-    serviceId = 'style-transfer'
+    serviceId = 'semantic-segmentation'
     outputDir = file("$buildDir/proto")
-    javaPackage = 'io.singularitynet.service.styletransfer'
+    javaPackage = 'io.singularitynet.service.semanticsegmentation'
 }
+
 
 android {
     sourceSets {
@@ -83,3 +85,4 @@ protobuf {
         }
     }
 }
+

@@ -1,2 +1,2 @@
-include ':app', ':style-transfer-api'
+include ':app', ':style-transfer-api', ':semantic-segmentation', ':semantic-segmentation-api'
 rootProject.name='SNetDemo'

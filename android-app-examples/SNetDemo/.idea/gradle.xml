@@ -9,6 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/semantic-segmentation" />
+            <option value="$PROJECT_DIR$/semantic-segmentation-api" />
             <option value="$PROJECT_DIR$/style-transfer-api" />
           </set>
         </option>
