@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!--    <external-path ... is used when you want Environment.getExternalStorageDirectory(). -->
+    <!--    and use <files-path ... if you need Context.getFilesDir()-->
+<!--    https://developer.android.com/reference/androidx/core/content/FileProvider-->
+    <cache-path name="cache" path="/" />
+    <files-path name="files" path="/" />
+    <external-files-path name="my_images" path="/" />
+    <external-path name="external_files" path="." />
+</paths>
