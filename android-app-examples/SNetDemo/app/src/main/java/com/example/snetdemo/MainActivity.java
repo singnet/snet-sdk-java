@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -25,26 +26,21 @@ public class MainActivity extends AppCompatActivity
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        btn_StyleTransfer = (Button) findViewById(R.id.btn_styleTransfer);
-//        btn_StyleTransfer.setEnabled(false);
-
-
-        btn_ImageSegmentation = (Button) findViewById(R.id.btn_imageSegmentation);
+        btn_StyleTransfer = findViewById(R.id.btn_styleTransfer);
+        btn_ImageSegmentation = findViewById(R.id.btn_imageSegmentation);
 
 
     }
 
     private void requestStoragePermission()
     {
-        if(ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
 
-        if(ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
     }
@@ -61,6 +57,5 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, ImageSegmentationActivity.class);
         startActivity(intent);
     }
-
 
 }

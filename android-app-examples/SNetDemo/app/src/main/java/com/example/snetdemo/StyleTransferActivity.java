@@ -174,17 +174,44 @@ public class StyleTransferActivity extends AppCompatActivity
             @Override
             protected Object doInBackground(Object... param)
             {
-                SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
-                PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
-                serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
-                        "default_group", paymentStrategy);
+                try
+                {
+                    SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
+                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
+                    serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
+                            "default_group", paymentStrategy);
+                }
+                catch (Exception e)
+                {
+                    Log.e(TAG, "Client connection error", e);
 
+                    errorMessage = e.toString();
+                    isExceptionCaught = true;
+                }
                 return null;
             }
 
             protected void onPostExecute(Object obj)
             {
-                enableActivityGUI();
+                if (isExceptionCaught)
+                {
+                    isExceptionCaught = false;
+                    new AlertDialog.Builder(StyleTransferActivity.this)
+                            .setTitle("ERROR")
+                            .setMessage(errorMessage)
+
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    StyleTransferActivity.this.finish();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+                }
+                else {
+                    enableActivityGUI();
+                }
             }
 
 
@@ -201,7 +228,9 @@ public class StyleTransferActivity extends AppCompatActivity
             @Override
             protected Object doInBackground(Object... objects)
             {
-                serviceClient.shutdownNow();
+                if (serviceClient != null) {
+                    serviceClient.shutdownNow();
+                }
                 return null;
             }
 

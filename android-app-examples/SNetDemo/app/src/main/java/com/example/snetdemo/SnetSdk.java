@@ -21,6 +21,7 @@ public class SnetSdk implements Closeable
         String privateKey = res.getString(R.string.channel_key);
 
         String json = "{" +
+//                "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io/v3/ef71e4a2b27c4a94b696be87bcb48f9d\", " +
                 "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io\", " +
                 "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
                 "\"signer_type\": \"PRIVATE_KEY\"," +
