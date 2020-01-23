@@ -22,7 +22,6 @@ public class SnetSdk implements Closeable
         String infuraID = res.getString(R.string.infura_id);
         String json = "{" +
                 "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io/v3/" + infuraID + "\", " +
-//                "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io\", " +
                 "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
                 "\"signer_type\": \"PRIVATE_KEY\"," +
                 "\"signer_private_key_base64\": \"" + hexToBase64(privateKey) + "\"" +
