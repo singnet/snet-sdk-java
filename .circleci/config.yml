@@ -22,6 +22,7 @@ jobs:
       - run:
           name: Build and run tests
           command: |
+            ./integration/build.sh
             mvn install
       - run:
           name: Upload coverage

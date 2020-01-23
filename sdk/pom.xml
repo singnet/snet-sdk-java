@@ -212,4 +212,78 @@
 
   </build>
 
+  <profiles>
+    <profile>
+      <id>run-integration-tests</id>
+
+      <activation>
+        <property><name>!skipITs</name></property>
+      </activation>
+      <build>
+        <plugins>
+
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-snet-local-env</id>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+                <configuration>
+                  <images>
+                    <image>
+                      <alias>sdk-integration-test-env</alias>
+                      <name>singularitynet/java-sdk-integration-test-env</name>
+                      <run>
+                        <cmd>start_example_service.sh</cmd>
+                        <ports>
+                          <port>5002:5002</port>
+                          <port>8545:8545</port>
+                          <port>7000:7000</port>
+                        </ports>
+                        <wait>
+                          <tcp>
+                            <mode>direct</mode>
+                            <ports>
+                              <port>5002</port>
+                              <port>8545</port>
+                              <port>7000</port>
+                            </ports>
+                          </tcp>
+                          <time>10000</time>
+                        </wait>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-snet-local-env</id>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

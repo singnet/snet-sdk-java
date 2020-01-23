@@ -10,8 +10,20 @@
 
 ## How to build
 
-Build and test:
+Integration testing is enabled by default. But running integration tests is a
+time consuming process so to make fast build running unit tests only use:
 ```
-mvn test
+mvn install -DskipITs
+```
+
+In order to build and run integration test the environment docker should be
+built first:
+```
+./integration/build.sh
+```
+
+Then run the full build using:
+```
+mvn install
 ```
 
