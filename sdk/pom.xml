@@ -184,6 +184,19 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <executions>
@@ -214,7 +227,7 @@
 
   <profiles>
     <profile>
-      <id>run-integration-tests</id>
+      <id>run-integration-environment-container</id>
 
       <activation>
         <property><name>!skipITs</name></property>
@@ -235,7 +248,7 @@
                   <images>
                     <image>
                       <alias>sdk-integration-test-env</alias>
-                      <name>singularitynet/java-sdk-integration-test-env</name>
+                      <name>singularitynet/java-sdk-integration-test-env:${java-sdk-integration-test-env.version}</name>
                       <run>
                         <cmd>start_example_service.sh</cmd>
                         <ports>
@@ -263,19 +276,6 @@
                 <id>stop-snet-local-env</id>
                 <goals>
                   <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
                 </goals>
               </execution>
             </executions>

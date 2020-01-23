@@ -8,6 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
+      - image: singularitynet/java-sdk-integration-test-env:2.0.2
 
     working_directory: ~/repo
 
@@ -17,14 +18,12 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
 
       # run tests!
       - run:
           name: Build and run tests
           command: |
-            ./integration/build.sh
-            mvn install
+            mvn -P !run-integration-environment-container install
       - run:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)

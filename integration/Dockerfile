@@ -1,4 +1,5 @@
-FROM singularitynet/snet-local-env:2.0.2
+ARG TAG
+FROM singularitynet/snet-local-env:${TAG}
 
 ENV ROOT /opt/singnet
 ENV BIN ${ROOT}/bin
