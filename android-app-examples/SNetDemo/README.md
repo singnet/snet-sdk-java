@@ -13,7 +13,7 @@ To run a compiled app on Ethereum main network you should have a channel with ap
 A channel can be created with [snet-cli](https://github.com/singnet/snet-cli).
 
 In order to compile the SNetDemo app you should provide a channel ID and a 32 byte long private key written as 64 characters hex number. 
-We use [Infura API] (https://infura.io/product) suite to get access over HTTPS to the Ethereum network, so you should provide Infura ID for your project as well.
+We use [Infura API](https://infura.io/product) suite to get access over HTTPS to the Ethereum network, so you should provide Infura ID for your project as well.
 Go to SNetDemo/app/src/main/res/values/ directory and create the following channel_key.xml file:
 
 ```
