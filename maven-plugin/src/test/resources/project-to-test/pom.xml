@@ -16,7 +16,10 @@
         <groupId>io.singularitynet</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
         <configuration>
-          <orgId>snet</orgId>
+          <ipfsRpcEndpoint>http://localhost:5002</ipfsRpcEndpoint>
+          <ethereumJsonRpcEndpoint>http://localhost:8545</ethereumJsonRpcEndpoint>
+          <registryAddress>0x4e74fefa82e83e0964f0d9f53c68e03f7298a8b2</registryAddress>
+          <orgId>example-org</orgId>
           <serviceId>example-service</serviceId>
           <outputDir>target/proto</outputDir>
           <javaPackage>io.singularitynet.service</javaPackage>

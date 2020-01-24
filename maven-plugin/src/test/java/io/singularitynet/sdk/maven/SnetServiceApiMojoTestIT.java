@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-public class SnetServiceApiMojoTest
+public class SnetServiceApiMojoTestIT
 {
     // TODO: use org.junit.Assume to run tests on local Ethereum environment
     // when it is started
