@@ -2,16 +2,12 @@ package io.singularitynet.sdk.client;
 
 import java.net.URL;
 import java.util.Optional;
-import lombok.ToString;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.FieldNamingPolicy;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.ethereum.Signer;
-import io.singularitynet.sdk.ethereum.MnemonicIdentity;
-import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 
 public class JsonConfiguration implements Configuration {
 
