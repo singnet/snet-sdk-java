@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.test;
+package io.singularitynet.sdk.integration;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -16,7 +16,7 @@ import org.web3j.tuples.generated.*;
 import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.common.Utils;
 
-public class Web3jTest {
+public class Web3jTestIT {
 
     private Web3j web3j;
     private ReadonlyTransactionManager roTransactionManager;
@@ -24,7 +24,7 @@ public class Web3jTest {
 
     @Before
     public void setUp() {
-        web3j = Web3j.build(new HttpService("https://ropsten.infura.io"));
+        web3j = Web3j.build(new HttpService("http://localhost:8545"));
         roTransactionManager = new ReadonlyTransactionManager(
                 web3j, "0x008f312C5635a66c0fB49952D7C431D765bb3D3c");
         gasProvider = new DefaultGasProvider();
@@ -32,12 +32,12 @@ public class Web3jTest {
 
     @Test
     public void getServiceRegistrationById() throws Exception {
-        Registry registry = Registry.load("0x663422c6999Ff94933DBCb388623952CF2407F6f", web3j,
+        Registry registry = Registry.load("0x4e74fefa82e83e0964f0d9f53c68e03f7298a8b2", web3j,
                 roTransactionManager, gasProvider);
 
         Tuple4<Boolean, byte[], byte[], List<byte[]>> result = 
-            registry.getServiceRegistrationById(Utils.strToBytes32("snet"),
-                    Utils.strToBytes32("speech-recognition")).send();
+            registry.getServiceRegistrationById(Utils.strToBytes32("example-org"),
+                    Utils.strToBytes32("example-service")).send();
 
         assertTrue(result.getValue1());
     }

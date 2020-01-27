@@ -10,8 +10,14 @@
 
 ## How to build
 
-Build and test:
+Integration testing is enabled by default. To run full build including
+integration tests use:
 ```
-mvn test
+mvn install
 ```
 
+Running integration tests is a time consuming process so to make fast build
+running unit tests only use:
+```
+mvn install -DskipITs
+```
