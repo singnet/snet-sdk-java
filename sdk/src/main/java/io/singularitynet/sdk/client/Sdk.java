@@ -27,11 +27,13 @@ public class Sdk {
 
     private final static Logger log = LoggerFactory.getLogger(Sdk.class);
 
-    private final Web3j web3j;
+    // FIXME: find out correct way to share it with PaymentStrategy
+    final Web3j web3j;
     private final IPFS ipfs;
     private final Signer signer;
     private final Registry registry;
-    private final MultiPartyEscrow mpe;
+    // FIXME: find out correct way to share it with PaymentStrategy
+    final MultiPartyEscrow mpe;
 
     public Sdk(Configuration config) {
         this(new ConfigurationDependencyFactory(config));

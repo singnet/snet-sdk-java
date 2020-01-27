@@ -22,6 +22,9 @@ public interface DaemonConnection {
      */
     void setClientCallsInterceptor(ClientInterceptor interceptor);
 
+    //FIXME: add javadoc
+    String getEndpointGroupName();
+
     /**
      * Closes platform service connection. This call causes calling
      * shutdownNow() on each stub returned by getGrpcStub() method.

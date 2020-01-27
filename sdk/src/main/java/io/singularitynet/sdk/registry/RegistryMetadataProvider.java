@@ -27,6 +27,38 @@ public class RegistryMetadataProvider implements MetadataProvider {
     }
 
     @Override
+    public OrganizationMetadata getOrganizationMetadata() {
+        log.debug("Get organization metadata, orgId: {}", orgId);
+        OrganizationRegistration registration = registryContract.getOrganizationById(orgId).get();
+        byte[] metadataBytes = metadataStorage.get(registration.getMetadataUri());
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(PaymentGroup.class, new PaymentGroupDeserializer());
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
+        Gson gson = gsonBuilder.create();
+
+        OrganizationMetadata metadata = gson.fromJson(Utils.bytesToStr(metadataBytes), OrganizationMetadata.class);
+        log.debug("Metadata received: {}", metadata);
+        return metadata;
+    }
+
+    private static class PaymentGroupDeserializer implements JsonDeserializer<PaymentGroup> {
+
+        @Override
+        public PaymentGroup deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            String paymentGroupId = context.deserialize(jsonObject.get("group_id"), String.class);
+            return PaymentGroup.newBuilder()
+                .setGroupName(jsonObject.get("group_name").getAsString())
+                .setPaymentGroupId(new PaymentGroupId(paymentGroupId))
+                .setPaymentDetails(context.deserialize(jsonObject.get("payment"),
+                            PaymentDetails.class))
+                .build();
+        }
+
+    }
+
+    @Override
     public ServiceMetadata getServiceMetadata() {
         log.debug("Get service metadata, orgId: {}, serviceId: {}", orgId, serviceId);
         ServiceRegistration registration = registryContract.getServiceRegistrationById(orgId, serviceId).get();

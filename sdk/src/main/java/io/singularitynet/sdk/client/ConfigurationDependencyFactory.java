@@ -5,7 +5,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
-import org.web3j.tx.ReadonlyTransactionManager;
+import org.web3j.tx.RawTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.ipfs.api.IPFS;
@@ -28,7 +28,8 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    private final Signer signer;
+    //FIXME: how to implement remote signer (Signer) without credentials use case?
+    private final PrivateKeyIdentity signer;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -66,9 +67,9 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         });
         log.info("Ethereum network id, networkId: {}", networkId);
         DefaultGasProvider gasProvider = new DefaultGasProvider();
-        ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
+        RawTransactionManager transactionManager = new RawTransactionManager(
                 // TODO: add unit test on prefix adding
-                web3j, signer.getAddress().toString());
+                web3j, signer.getCredentials());
 
         Address registryAddress;
         if (config.getRegistryAddress().isPresent()) {

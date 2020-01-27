@@ -5,6 +5,7 @@ import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Hash;
+import org.web3j.crypto.Credentials;
 
 import io.singularitynet.sdk.common.Utils;
 
@@ -33,6 +34,10 @@ public class PrivateKeyIdentity implements Signer {
     @Override
     public Address getAddress() {
         return new Address(Keys.getAddress(key.getPublicKey()));
+    }
+
+    public Credentials getCredentials() {
+        return Credentials.create(key);
     }
 
 }

@@ -36,6 +36,11 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
     }
 
     @Override
+    public String getEndpointGroupName() {
+        return groupName;
+    }
+
+    @Override
     public void shutdownNow() {
         channel.shutdownNow();
         log.info("gRPC channel to daemon closed");
