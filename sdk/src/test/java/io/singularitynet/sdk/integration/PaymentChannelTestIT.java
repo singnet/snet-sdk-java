@@ -12,7 +12,7 @@ import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.PropertiesConfiguration;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.PaymentStrategy;
-import io.singularitynet.sdk.client.UpdatePaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
 import io.singularitynet.sdk.test.CalculatorGrpc;
@@ -48,7 +48,7 @@ public class PaymentChannelTestIT {
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy = new UpdatePaymentChannelPaymentStrategy(sdk);
+            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
             ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
                     TEST_SERVICE_ID, "default_group", paymentStrategy); 
             try {

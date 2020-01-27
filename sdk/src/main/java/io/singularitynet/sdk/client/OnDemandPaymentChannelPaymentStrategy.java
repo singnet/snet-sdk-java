@@ -12,16 +12,15 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.registry.*;
 
-// FIXME: rename to OnDemandPaymentChannelPaymentStrategy
 @ToString
-public class UpdatePaymentChannelPaymentStrategy extends PaymentChannelPaymentStrategy {
+public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPaymentStrategy {
 
     private final MultiPartyEscrow mpe;
     private final Ethereum ethereum;
     private final BigInteger expirationAdvance;
     private final BigInteger callsAdvance;
         
-    public UpdatePaymentChannelPaymentStrategy(Sdk sdk) {
+    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
         this.mpe = sdk.mpe; 
         this.ethereum = sdk.web3j;
         this.expirationAdvance = BigInteger.valueOf(2);
