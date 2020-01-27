@@ -22,7 +22,14 @@ public interface DaemonConnection {
      */
     void setClientCallsInterceptor(ClientInterceptor interceptor);
 
-    //FIXME: add javadoc
+    /**
+     * Return the name of the current endpoint group to which the connection is
+     * opened. If implementation sticks to the same endpoint group then method
+     * returns same value each time. If implementation supports failover
+     * between endpoint groups then the name of the group can be changed after
+     * failover happened.
+     * @return name of the endpoint group (@see EndpointGroup.getGroupName())
+     */
     String getEndpointGroupName();
 
     /**
