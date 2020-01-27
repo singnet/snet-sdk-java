@@ -24,7 +24,7 @@ public class ExampleService {
             "\"ethereum_json_rpc_endpoint\": \"https://ropsten.infura.io\", " +
             "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
             "\"signer_type\": \"PRIVATE_KEY\"," +
-            "\"signer_private_key_base64\": \"" + hexToBase64(privateKey) + "\"" +
+            "\"signer_private_key_hex\": \"" + privateKey + "\"" +
             "}";
         Configuration config = new JsonConfiguration(json);
 
@@ -53,11 +53,6 @@ public class ExampleService {
         } finally {
             sdk.shutdown();
         }
-    }
-
-    private static String hexToBase64(String hex) {
-        return io.singularitynet.sdk.common.Utils.bytesToBase64(
-                io.singularitynet.sdk.common.Utils.hexToBytes(hex));
     }
 
 }

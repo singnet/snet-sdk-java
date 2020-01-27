@@ -42,7 +42,7 @@ public class JsonConfigurationTest {
         byte[] privateKey = Utils.base64ToBytes("1PeCDRD7vLjqiGoHl7A+yPuJIy8TdbNc1vxOyuPjxBM=");
         String json = "{" +
             "\"signer_type\": \"PRIVATE_KEY\"," +
-            "\"signer_private_key_base64\": \"" + Utils.bytesToBase64(privateKey) + "\"" +
+            "\"signer_private_key_hex\": \"" + Utils.bytesToHex(privateKey) + "\"" +
             "}";
 
         Configuration config = new JsonConfiguration(json);

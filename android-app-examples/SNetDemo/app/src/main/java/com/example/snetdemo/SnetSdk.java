@@ -24,16 +24,11 @@ public class SnetSdk implements Closeable
                 "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io/v3/" + infuraID + "\", " +
                 "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
                 "\"signer_type\": \"PRIVATE_KEY\"," +
-                "\"signer_private_key_base64\": \"" + hexToBase64(privateKey) + "\"" +
+                "\"signer_private_key_hex\": \"" + privateKey + "\"" +
                 "}";
         Configuration config = new JsonConfiguration(json);
         sdk = new Sdk(config);
 
-    }
-
-    private static String hexToBase64(String hex) {
-        return io.singularitynet.sdk.common.Utils.bytesToBase64(
-                io.singularitynet.sdk.common.Utils.hexToBytes(hex));
     }
 
     public Sdk getSdk() {

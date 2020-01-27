@@ -30,8 +30,6 @@ public class PropertiesConfiguration implements Configuration {
         }
         this.signerType = Enum.valueOf(SignerType.class, props.getProperty("signer.type").toUpperCase());
         this.signerMnemonic = props.getProperty("signer.mnemonic");
-        // FIXME: use hex format in both JsonConfiguration and
-        // PropertiesConfiguration
         this.signerPrivateKey = Utils.hexToBytes(props.getProperty("signer.private.key.hex"));
         this.registryAddress = Optional.ofNullable(props.getProperty("registry.address")).map(Address::new);
         this.multiPartyEscrowAddress = Optional.ofNullable(props.getProperty("multi.party.escrow.address")).map(Address::new);

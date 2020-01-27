@@ -15,7 +15,7 @@ public class JsonConfiguration implements Configuration {
     private final URL ipfsUrl;
     private final String signerType;
     private final String signerMnemonic;
-    private final String signerPrivateKeyBase64;
+    private final String signerPrivateKeyHex;
     private final String registryAddress;
     private final String multiPartyEscrowAddress;
 
@@ -26,7 +26,7 @@ public class JsonConfiguration implements Configuration {
         this.ipfsUrl = config.ipfsUrl;
         this.signerType = config.signerType;
         this.signerMnemonic = config.signerMnemonic;
-        this.signerPrivateKeyBase64 = config.signerPrivateKeyBase64;
+        this.signerPrivateKeyHex = config.signerPrivateKeyHex;
         this.registryAddress = config.registryAddress;
         this.multiPartyEscrowAddress = config.multiPartyEscrowAddress;
     }
@@ -53,7 +53,7 @@ public class JsonConfiguration implements Configuration {
 
     @Override
     public byte[] getSignerPrivateKey() {
-        return Utils.base64ToBytes(signerPrivateKeyBase64);
+        return Utils.hexToBytes(signerPrivateKeyHex);
     }
 
     @Override
