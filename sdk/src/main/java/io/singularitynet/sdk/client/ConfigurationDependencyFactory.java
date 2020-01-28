@@ -6,6 +6,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.ipfs.api.IPFS;
@@ -28,8 +29,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    //FIXME: how to implement remote signer (Signer) without credentials use case?
-    private final PrivateKeyIdentity signer;
+    private final Signer signer;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -50,13 +50,24 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         log.info("Open connection to IPFS RPC endpoint, ipfsUrl: {}", ipfsUrl);
         this.ipfs = new IPFS(ipfsUrl.getHost(), ipfsUrl.getPort());
 
+        DefaultGasProvider gasProvider = new DefaultGasProvider();
+        TransactionManager transactionManager;
+
         log.info("New signer, type: {}", config.getSignerType());
         switch (config.getSignerType()) {
             case MNEMONIC:
-                this.signer = new MnemonicIdentity(config.getSignerMnemonic(), 0);
+                {
+                    PrivateKeyIdentity signer = new MnemonicIdentity(config.getSignerMnemonic(), 0);
+                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
+                    this.signer = signer;
+                }
                 break;
             case PRIVATE_KEY:
-                this.signer = new PrivateKeyIdentity(config.getSignerPrivateKey());
+                {
+                    PrivateKeyIdentity signer = new PrivateKeyIdentity(config.getSignerPrivateKey());
+                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
+                    this.signer = signer;
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected signer type: " + config.getSignerType());
@@ -66,10 +77,6 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
             return web3j.netVersion().send().getNetVersion();
         });
         log.info("Ethereum network id, networkId: {}", networkId);
-        DefaultGasProvider gasProvider = new DefaultGasProvider();
-        RawTransactionManager transactionManager = new RawTransactionManager(
-                // TODO: add unit test on prefix adding
-                web3j, signer.getCredentials());
 
         Address registryAddress;
         if (config.getRegistryAddress().isPresent()) {
