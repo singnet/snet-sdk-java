@@ -40,7 +40,12 @@ public interface ServiceClient {
      */
     <T> T getGrpcStub(Function<Channel, T> constructor);
 
-    //FIXME: write javadoc
+    /**
+     * Return connection to daemon. The connection can be used for tracking
+     * properties which can be changed after failover or reconnection.
+     * @see DaemonConnection#getEndpointGroupName()
+     * @return instance of the connection to the daemon.
+     */
     DaemonConnection getDaemonConnection();
 
     /**

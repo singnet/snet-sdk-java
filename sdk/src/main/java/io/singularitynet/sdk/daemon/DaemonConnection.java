@@ -28,7 +28,8 @@ public interface DaemonConnection {
      * returns same value each time. If implementation supports failover
      * between endpoint groups then the name of the group can be changed after
      * failover happened.
-     * @return name of the endpoint group (@see EndpointGroup.getGroupName())
+     * @see EndpointGroup#getGroupName()
+     * @return name of the endpoint group
      */
     String getEndpointGroupName();
 
