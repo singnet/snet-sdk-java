@@ -5,11 +5,23 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.gas.DefaultGasProvider;
+import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.Transfer;
+import org.web3j.utils.Convert;
 import java.util.Properties;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
+import io.singularitynet.sdk.ethereum.MnemonicIdentity;
+import io.singularitynet.sdk.contracts.MultiPartyEscrow;
+import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
@@ -24,6 +36,7 @@ import io.singularitynet.sdk.test.ExampleService.Result;
 
 public class PaymentChannelTestIT {
 
+    private static final PrivateKeyIdentity TEST_DEPLOYER = new PrivateKeyIdentity(Utils.hexToBytes("c71478a6d0fe44e763649de0a0deb5a080b788eefbbcf9c6f7aef0dd5dbd67e0"));
     private static final StaticConfiguration TEST_CONFIGURATION = StaticConfiguration.newBuilder()
         .setEthereumJsonRpcEndpoint("http://localhost:8545")
         .setIpfsEndpoint("http://localhost:5002")
@@ -36,9 +49,31 @@ public class PaymentChannelTestIT {
     private static final String TEST_ORG_ID = "example-org";
     private static final String TEST_SERVICE_ID = "example-service";
 
+    private Web3j web3j;
+    private MultiPartyEscrowContract mpe;
+
+    @Before
+    public void setUp() {
+        this.web3j = Web3j.build(new HttpService(TEST_CONFIGURATION.getEthereumJsonRpcEndpoint().toString()));
+        DefaultGasProvider gasProvider = new DefaultGasProvider();
+        RawTransactionManager transactionManager = new RawTransactionManager(web3j, TEST_DEPLOYER.getCredentials());
+        this.mpe = new MultiPartyEscrowContract(MultiPartyEscrow
+                .load(TEST_CONFIGURATION.getMultiPartyEscrowAddress().get().toString(),
+                    web3j, transactionManager, gasProvider));
+    }
+
+    @After
+    public void tearDown() {
+        web3j.shutdown();
+    }
+
     @Test
-    public void newChannelIsCreatedOnFirstCall() {
-        Sdk sdk = new Sdk(TEST_CONFIGURATION);
+    public void newChannelIsCreatedOnFirstCall() throws Exception {
+        PrivateKeyIdentity caller = setupNewIdentity();
+        StaticConfiguration config = TEST_CONFIGURATION.toBuilder()
+            .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
+            .build();
+        Sdk sdk = new Sdk(config);
         try {
 
             PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
@@ -62,6 +97,17 @@ public class PaymentChannelTestIT {
         } finally {
             sdk.shutdown();
         }
+    }
+
+    private PrivateKeyIdentity setupNewIdentity() throws Exception {
+        PrivateKeyIdentity identity = new MnemonicIdentity("random mnemonic #" + Math.random(), 0);
+
+        Transfer.sendFunds(web3j, TEST_DEPLOYER.getCredentials(), identity.getAddress().toString(),
+                BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
+        // TODO: implement functions to convert cogs and AGIs
+        mpe.transfer(identity.getAddress(), BigInteger.valueOf(1000000));
+
+        return identity;
     }
 
 }

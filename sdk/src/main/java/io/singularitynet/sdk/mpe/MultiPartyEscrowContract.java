@@ -72,4 +72,11 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    public void transfer(Address receiver, BigInteger value) {
+        Utils.wrapExceptions(() -> {
+            mpe.transfer(receiver.toString(), value).send();
+            return null;
+        });
+    }
+
 }
