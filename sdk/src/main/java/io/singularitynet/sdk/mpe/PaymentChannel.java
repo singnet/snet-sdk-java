@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.math.BigInteger;
 
-import io.singularitynet.sdk.contracts.MultiPartyEscrow.ChannelOpenEventResponse;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
@@ -22,21 +21,6 @@ public class PaymentChannel {
     private final BigInteger value;
     private final BigInteger expiration;
     private final BigInteger spentAmount;
-
-    public static PaymentChannel fromChannelOpenEvent(ChannelOpenEventResponse event) {
-        return PaymentChannel.newBuilder()
-            .setChannelId(event.channelId)
-            .setMpeContractAddress(new Address(event.log.getAddress()))
-            .setNonce(event.nonce)
-            .setSender(new Address(event.sender))
-            .setSigner(new Address(event.signer))
-            .setRecipient(new Address(event.recipient))
-            .setPaymentGroupId(new PaymentGroupId(event.groupId))
-            .setValue(event.amount)
-            .setExpiration(event.expiration)
-            .setSpentAmount(BigInteger.ZERO)
-            .build();
-    }
 
     public static Builder newBuilder() {
         return new Builder();

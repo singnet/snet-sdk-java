@@ -48,7 +48,7 @@ public class PaymentChannelTestIT {
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
+            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
             ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
                     TEST_SERVICE_ID, "default_group", paymentStrategy); 
             try {

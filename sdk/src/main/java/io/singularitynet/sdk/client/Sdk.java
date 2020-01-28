@@ -27,13 +27,11 @@ public class Sdk {
 
     private final static Logger log = LoggerFactory.getLogger(Sdk.class);
 
-    // FIXME: find out correct way to share it with PaymentStrategy
-    final Web3j web3j;
+    private final Web3j web3j;
     private final IPFS ipfs;
     private final Signer signer;
     private final Registry registry;
-    // FIXME: find out correct way to share it with PaymentStrategy
-    final MultiPartyEscrow mpe;
+    private final MultiPartyEscrow mpe;
 
     public Sdk(Configuration config) {
         this(new ConfigurationDependencyFactory(config));
@@ -72,8 +70,9 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, mpeContract, web3j, signer);
-        PaymentChannelProvider paymentChannelProvider =
-            new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+        PaymentChannelProvider paymentChannelProvider = new
+            AskDaemonFirstPaymentChannelProvider(web3j, mpeContract,
+                    stateService);
 
         return new BaseServiceClient(connection, metadataProvider,
                 paymentChannelProvider, paymentStrategy, signer); 

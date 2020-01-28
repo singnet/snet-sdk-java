@@ -2,9 +2,10 @@ package io.singularitynet.sdk.mpe;
 
 import java.util.Optional;
 import java.math.BigInteger;
-import org.web3j.tuples.generated.Tuple7;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.tuples.generated.Tuple7;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.common.Utils;
@@ -46,6 +47,29 @@ public class MultiPartyEscrowContract {
 
     public Address getContractAddress() {
         return new Address(mpe.getContractAddress());
+    }
+
+    public PaymentChannel openChannel(Address signer, Address recipient,
+            PaymentGroupId groupId, BigInteger value, BigInteger expiration) {
+        return Utils.wrapExceptions(() -> {
+            TransactionReceipt transaction = mpe.openChannel(signer.toString(),
+                    recipient.toString(), groupId.getBytes(), value,
+                    expiration).send();
+            MultiPartyEscrow.ChannelOpenEventResponse event =
+                mpe.getChannelOpenEvents(transaction).get(0);
+            return PaymentChannel.newBuilder()
+                .setChannelId(event.channelId)
+                .setMpeContractAddress(getContractAddress())
+                .setNonce(event.nonce)
+                .setSender(new Address(event.sender))
+                .setSigner(new Address(event.signer))
+                .setRecipient(new Address(event.recipient))
+                .setPaymentGroupId(new PaymentGroupId(event.groupId))
+                .setValue(event.amount)
+                .setExpiration(event.expiration)
+                .setSpentAmount(BigInteger.ZERO)
+                .build();
+        });
     }
 
 }
