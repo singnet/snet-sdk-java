@@ -2,8 +2,9 @@ package io.singularitynet.sdk.example;
 
 import java.math.BigInteger;
 
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.Configuration;
-import io.singularitynet.sdk.client.JsonConfiguration;
+import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
@@ -20,13 +21,12 @@ public class CntkImageRecognition {
         String privateKey = args[0];
         BigInteger channelId = new BigInteger(args[1]);
 
-        String json = "{" +
-            "\"ethereum_json_rpc_endpoint\": \"https://ropsten.infura.io\", " +
-            "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
-            "\"signer_type\": \"PRIVATE_KEY\"," +
-            "\"signer_private_key_hex\": \"" + privateKey + "\"" +
-            "}";
-        Configuration config = new JsonConfiguration(json);
+        Configuration config = StaticConfiguration.newBuilder()
+            .setEthereumJsonRpcEndpoint("https://ropsten.infura.io")
+            .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
+            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerPrivateKey(Utils.hexToBytes(privateKey))
+            .build();
 
         Sdk sdk = new Sdk(config);
         try {

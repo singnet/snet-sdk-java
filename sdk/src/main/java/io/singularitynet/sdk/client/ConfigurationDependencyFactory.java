@@ -36,7 +36,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     public ConfigurationDependencyFactory(Configuration config) {
         Preconditions.checkArgument(config.getEthereumJsonRpcEndpoint() != null,
                 "Ethereum JSON RPC endpoint is required");
-        Preconditions.checkArgument(config.getIpfsUrl() != null,
+        Preconditions.checkArgument(config.getIpfsEndpoint() != null,
                 "IPFS endpoint is required");
         Preconditions.checkArgument(config.getSignerType() != null,
                 "Signer type is required");
@@ -44,11 +44,11 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         log.info("Construct SDK dependencies");
 
         log.info("Open connection to Ethereum RPC endpoint, ethereumJsonRpcEndpoint: {}", config.getEthereumJsonRpcEndpoint());
-        this.web3j = Web3j.build(new HttpService(config.getEthereumJsonRpcEndpoint()));
+        this.web3j = Web3j.build(new HttpService(config.getEthereumJsonRpcEndpoint().toString()));
 
-        URL ipfsUrl = config.getIpfsUrl();
-        log.info("Open connection to IPFS RPC endpoint, ipfsUrl: {}", ipfsUrl);
-        this.ipfs = new IPFS(ipfsUrl.getHost(), ipfsUrl.getPort());
+        URL ipfsEndpoint = config.getIpfsEndpoint();
+        log.info("Open connection to IPFS RPC endpoint, ipfsEndpoint: {}", ipfsEndpoint);
+        this.ipfs = new IPFS(ipfsEndpoint.getHost(), ipfsEndpoint.getPort());
 
         DefaultGasProvider gasProvider = new DefaultGasProvider();
         TransactionManager transactionManager;
@@ -57,14 +57,16 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         switch (config.getSignerType()) {
             case MNEMONIC:
                 {
-                    PrivateKeyIdentity signer = new MnemonicIdentity(config.getSignerMnemonic(), 0);
+                    Preconditions.checkArgument(config.getSignerMnemonic().isPresent(), "No signer mnemonic specified");
+                    PrivateKeyIdentity signer = new MnemonicIdentity(config.getSignerMnemonic().get(), 0);
                     transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
                     this.signer = signer;
                 }
                 break;
             case PRIVATE_KEY:
                 {
-                    PrivateKeyIdentity signer = new PrivateKeyIdentity(config.getSignerPrivateKey());
+                    Preconditions.checkArgument(config.getSignerPrivateKey().isPresent(), "No signer private key specified");
+                    PrivateKeyIdentity signer = new PrivateKeyIdentity(config.getSignerPrivateKey().get());
                     transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
                     this.signer = signer;
                 }

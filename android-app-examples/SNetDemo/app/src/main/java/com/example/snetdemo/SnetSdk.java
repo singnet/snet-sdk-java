@@ -6,8 +6,9 @@ import android.content.res.Resources;
 
 import java.io.Closeable;
 
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.Configuration;
-import io.singularitynet.sdk.client.JsonConfiguration;
+import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
 
 public class SnetSdk implements Closeable
@@ -20,13 +21,12 @@ public class SnetSdk implements Closeable
         // See README.md on how to set channel signer private key via resources
         String privateKey = res.getString(R.string.channel_key);
         String infuraID = res.getString(R.string.infura_id);
-        String json = "{" +
-                "\"ethereum_json_rpc_endpoint\": \"https://mainnet.infura.io/v3/" + infuraID + "\", " +
-                "\"ipfs_url\": \"http://ipfs.singularitynet.io:80\"," +
-                "\"signer_type\": \"PRIVATE_KEY\"," +
-                "\"signer_private_key_hex\": \"" + privateKey + "\"" +
-                "}";
-        Configuration config = new JsonConfiguration(json);
+        Configuration config = new StaticConfiguration.newBuilder()
+            .setEthereumJsonRpcEndpoint("https://mainnet.infura.io/v3/" + infuraID)
+            .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
+            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerPrivateKey(Utils.hexToBytes(privateKey))
+            .build();
         sdk = new Sdk(config);
 
     }

@@ -13,11 +13,11 @@ public interface Configuration {
         PRIVATE_KEY
     }
 
-    String getEthereumJsonRpcEndpoint();
-    URL getIpfsUrl();
+    URL getEthereumJsonRpcEndpoint();
+    URL getIpfsEndpoint();
     SignerType getSignerType();
-    String getSignerMnemonic();
-    byte[] getSignerPrivateKey();
+    Optional<String> getSignerMnemonic();
+    Optional<byte[]> getSignerPrivateKey();
     Optional<Address> getRegistryAddress();
     Optional<Address> getMultiPartyEscrowAddress();
 
