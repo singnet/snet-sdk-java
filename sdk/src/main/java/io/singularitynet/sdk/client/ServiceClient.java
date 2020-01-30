@@ -2,11 +2,17 @@ package io.singularitynet.sdk.client;
 
 import io.grpc.Channel;
 import java.util.function.Function;
+import java.math.BigInteger;
 
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.registry.PaymentGroup;
+import io.singularitynet.sdk.registry.Pricing;
+import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.daemon.DaemonConnection;
+import io.singularitynet.sdk.mpe.PaymentChannel;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -54,5 +60,29 @@ public interface ServiceClient {
      */
     void shutdownNow();
 
+    // FIXME: what is clear API for ServiceClient
+    // FIXME: add javadoc
+    PaymentChannel openPaymentChannel(Signer signer,
+            Function<EndpointGroup, BigInteger> valueExpr,
+            Function<PaymentGroup, BigInteger> expirationExpr);
+
+    // FIXME: add javadoc
+    static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {
+        return group -> {
+            Pricing pricing = group.getPricing().stream()
+                .filter(price -> PriceModel.FIXED_PRICE.equals(price.getPriceModel()))
+                .findFirst()
+                .get();
+            return pricing.getPriceInCogs().multiply(numberOfCalls);
+        };
+    }
+
+    // FIXME: add javadoc
+    static Function<PaymentGroup, BigInteger> blocksAfterThreshold(BigInteger numberBlocks) {
+        return group -> {
+            BigInteger expirationThreshold = group.getPaymentDetails().getPaymentExpirationThreshold();
+            return expirationThreshold.add(expirationThreshold);
+        };
+    }
 
 }

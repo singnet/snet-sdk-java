@@ -2,15 +2,17 @@ package io.singularitynet.sdk.client;
 
 import java.util.function.Function;
 import java.util.function.Consumer;
+import java.math.BigInteger;
 import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.Payment;
-import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.registry.ServiceMetadata;
+import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signer;
 
 /**
@@ -78,6 +80,36 @@ public class BaseServiceClient implements ServiceClient {
     public void shutdownNow() {
         daemonConnection.shutdownNow();
         log.info("Service client shutdown");
+    }
+
+    @Override
+    public PaymentChannel openPaymentChannel(Signer signer, Function<EndpointGroup, BigInteger> valueExpr,
+            Function<PaymentGroup, BigInteger> expirationExpr) {
+        OrganizationMetadata orgMetadata = metadataProvider.getOrganizationMetadata();
+        ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
+
+        String groupName = daemonConnection.getEndpointGroupName();
+        EndpointGroup endpointGroup = serviceMetadata.getEndpointGroups()
+            .stream()
+            .filter(eg -> eg.getGroupName().equals(groupName))
+            .findFirst()
+            .get();
+        PaymentGroup paymentGroup = orgMetadata.getPaymentGroups()
+            .stream()
+            .filter(pg -> pg.getPaymentGroupId().equals(endpointGroup.getPaymentGroupId()))
+            .findFirst()
+            .get();
+
+        BigInteger value = valueExpr.apply(endpointGroup);
+
+        Address recipient = paymentGroup.getPaymentDetails().getPaymentAddress();
+        PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
+        BigInteger lifetimeInBlocks = expirationExpr.apply(paymentGroup);
+
+        PaymentChannel channel = paymentChannelProvider.openChannel(signer.getAddress(),
+                recipient, groupId, value, lifetimeInBlocks);
+
+        return channel;
     }
 
     /**
