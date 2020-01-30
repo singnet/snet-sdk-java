@@ -7,6 +7,9 @@ import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;
 import io.singularitynet.sdk.registry.*;
 
+// TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
+// OnDemandPaymentChannelPaymentStrategy from PaymentChannelPaymentStrategy by
+// aggregation
 public abstract class PaymentChannelPaymentStrategy implements PaymentStrategy {
         
     protected abstract PaymentChannel selectChannel(ServiceClient serviceClient);
