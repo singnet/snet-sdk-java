@@ -101,7 +101,7 @@ package io.singularitynet.sdk.client {
     interface Configuration {
         URL getEthereumJsonRpcEndpoint();
         URL getIpfsEndpoint();
-        Optional<SignerType> getSignerType();
+        SignerType getSignerType();
         Optional<String> getSignerMnemonic();
         Optional<byte[]> getSignerPrivateKey();
         Optional<Address> getRegistryAddress();
