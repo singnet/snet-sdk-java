@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.mpe;
 
 import java.math.BigInteger;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.core.Ethereum;
@@ -45,6 +46,14 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
         }
         log.debug("Channel state, channel: {}", channel);
         return channel;
+    }
+
+    @Override
+    public Stream<PaymentChannel> getAllChannels(Address signer) {
+        return mpe.getChannelOpenEvents()
+            .filter(ch -> ch.getSender().equals(signer)
+                    || ch.getSigner().equals(signer))
+            .map(ch -> mpe.getChannelById(ch.getChannelId()).get());
     }
 
     @Override

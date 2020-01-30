@@ -60,7 +60,7 @@ public class Sdk {
                 orgId, serviceId, endpointGroupName, paymentStrategy);
 
         RegistryContract registryContract = new RegistryContract(registry);
-        MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(mpe);
+        MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(web3j, mpe);
 
         MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
         MetadataProvider metadataProvider = new RegistryMetadataProvider(

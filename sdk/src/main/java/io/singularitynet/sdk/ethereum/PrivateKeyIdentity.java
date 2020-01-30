@@ -36,6 +36,7 @@ public class PrivateKeyIdentity implements Signer {
         return new Address(Keys.getAddress(key.getPublicKey()));
     }
 
+    // TODO: think about replacing it by getECKeyPair 
     public Credentials getCredentials() {
         return Credentials.create(key);
     }
