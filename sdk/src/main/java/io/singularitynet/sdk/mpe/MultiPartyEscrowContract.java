@@ -96,6 +96,7 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    // TODO: use server side filtering to restrict number of channels
     public Stream<PaymentChannel> getChannelOpenEvents() {
         return Utils.wrapExceptions(() -> {
             EthFilter filter = new EthFilter(DefaultBlockParameterName.EARLIEST,

@@ -2,10 +2,12 @@ package io.singularitynet.sdk.daemon;
 
 import io.grpc.*;
 import java.net.URL;
+import java.util.List;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 
@@ -59,9 +61,10 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
 
     private ManagedChannel getChannel() {
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
-        URL url = serviceMetadata.getEndpointGroups().stream()
+        List<URL> urls = serviceMetadata.getEndpointGroups().stream()
             .filter(group -> groupName.equals(group.getGroupName()))
-            .findFirst().get().getEndpoints().get(0);
+            .findFirst().get().getEndpoints();
+        URL url = Utils.getRandomItem(urls);
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
             .maxInboundMessageSize(MAX_GRPC_INBOUND_MESSAGE_SIZE)
