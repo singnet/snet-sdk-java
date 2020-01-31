@@ -13,6 +13,6 @@ public interface PaymentChannelProvider {
     // MetadataProvider?
     Stream<PaymentChannel> getAllChannels(Address signer);
     PaymentChannel openChannel(Address signer, Address recipient,
-            PaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks);
+            PaymentGroupId groupId, BigInteger value, BigInteger expiration);
 
 }

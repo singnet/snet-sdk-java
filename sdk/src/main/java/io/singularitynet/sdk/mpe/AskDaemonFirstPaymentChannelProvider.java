@@ -58,12 +58,8 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
 
     @Override
     public PaymentChannel openChannel(Address signer, Address recipient,
-            PaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks) {
-        BigInteger currentBlock = Utils.wrapExceptions(() -> ethereum.ethBlockNumber().send().getBlockNumber());
-        BigInteger expiration = currentBlock.add(lifetimeInBlocks);
-        PaymentChannel channel = mpe.openChannel(signer, recipient, groupId,
-                value, expiration);
-        return channel;
+            PaymentGroupId groupId, BigInteger value, BigInteger expiration) {
+        return mpe.openChannel(signer, recipient, groupId, value, expiration);
     }
 
     private static final BigInteger ONE = BigInteger.valueOf(1);

@@ -83,7 +83,8 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public PaymentChannel openPaymentChannel(Signer signer, Function<EndpointGroup, BigInteger> valueExpr,
+    public PaymentChannel openPaymentChannel(Signer signer,
+            Function<EndpointGroup, BigInteger> valueExpr,
             Function<PaymentGroup, BigInteger> expirationExpr) {
         OrganizationMetadata orgMetadata = metadataProvider.getOrganizationMetadata();
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
@@ -104,10 +105,10 @@ public class BaseServiceClient implements ServiceClient {
 
         Address recipient = paymentGroup.getPaymentDetails().getPaymentAddress();
         PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
-        BigInteger lifetimeInBlocks = expirationExpr.apply(paymentGroup);
+        BigInteger expiration = expirationExpr.apply(paymentGroup);
 
         PaymentChannel channel = paymentChannelProvider.openChannel(signer.getAddress(),
-                recipient, groupId, value, lifetimeInBlocks);
+                recipient, groupId, value, expiration);
 
         return channel;
     }
