@@ -71,8 +71,7 @@ public class Sdk {
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, mpeContract, web3j, signer);
         PaymentChannelProvider paymentChannelProvider = new
-            AskDaemonFirstPaymentChannelProvider(web3j, mpeContract,
-                    stateService);
+            AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
         return new BaseServiceClient(connection, metadataProvider,
                 paymentChannelProvider, paymentStrategy, signer); 
