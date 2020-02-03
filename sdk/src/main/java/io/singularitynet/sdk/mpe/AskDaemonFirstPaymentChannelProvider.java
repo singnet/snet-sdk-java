@@ -50,7 +50,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
         return mpe.getChannelOpenEvents()
             .filter(ch -> ch.getSender().equals(signer)
                     || ch.getSigner().equals(signer))
-            .map(ch -> mpe.getChannelById(ch.getChannelId()).get());
+            .map(ch -> this.getChannelById(ch.getChannelId()));
     }
 
     @Override

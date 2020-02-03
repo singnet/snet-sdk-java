@@ -2,6 +2,7 @@ package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.ToString;
 import org.web3j.protocol.Web3j;
@@ -51,18 +52,14 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
 
         PaymentChannelProvider channelProvider = serviceClient.getPaymentChannelProvider();
 
-        List<PaymentChannel> channels = channelProvider
+        Optional<PaymentChannel> channel = channelProvider
             .getAllChannels(serviceClient.getSigner().getAddress())
-            .collect(Collectors.toList());
-        for (PaymentChannel channel : channels) {
-            //FIXME: API is not clear: if we already have PaymentChannel why
-            //should we get it again?
-            channel = channelProvider.getChannelById(channel.getChannelId());
+            .filter(ch -> ch.getBalance().compareTo(price) >= 0 && 
+                    ch.getExpiration().compareTo(minExpiration) >= 0)
+            .findFirst();
 
-            if (channel.getBalance().compareTo(price) >= 0 && 
-                    channel.getExpiration().compareTo(minExpiration) >= 0) {
-                return channel;
-            }
+        if (channel.isPresent()) {
+            return channel.get();
         }
 
         return serviceClient.openPaymentChannel(
