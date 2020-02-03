@@ -83,6 +83,10 @@ public class PaymentChannel {
         return spentAmount;
     }
 
+    public BigInteger getBalance() {
+        return value.subtract(spentAmount);
+    }
+
     public static class Builder {
 
         private BigInteger channelId;

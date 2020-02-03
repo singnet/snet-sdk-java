@@ -77,6 +77,12 @@ public class Sdk {
                 paymentChannelProvider, paymentStrategy, signer); 
     }
 
+    //FIXME: replace by web3j wrapper which can also cache results instead of
+    //calling JSON RPC service each time
+    public Web3j getWeb3j() {
+        return web3j;
+    }
+
     public void shutdown() {
         web3j.shutdown();
         log.info("SDK shutdown");

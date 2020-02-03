@@ -79,7 +79,7 @@ public class PaymentChannelTestIT {
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
+            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
             ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
                     TEST_SERVICE_ID, "default_group", paymentStrategy); 
             try {
@@ -108,6 +108,7 @@ public class PaymentChannelTestIT {
         }
     }
 
+    //FIXME: merge common flow of the tests
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
@@ -117,7 +118,7 @@ public class PaymentChannelTestIT {
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
+            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
             ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
                     TEST_SERVICE_ID, "default_group", paymentStrategy); 
             try {

@@ -1,27 +1,74 @@
 package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.ToString;
+import org.web3j.protocol.Web3j;
 
+import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 
 @ToString
 public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPaymentStrategy {
 
+    private final Web3j web3j;
     private final BigInteger expirationAdvance;
     private final BigInteger callsAdvance;
         
-    public OnDemandPaymentChannelPaymentStrategy() {
+    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
+        this.web3j = sdk.getWeb3j();
         this.expirationAdvance = BigInteger.valueOf(2);
         this.callsAdvance = BigInteger.valueOf(1);
     }
 
     @Override
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
+        MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
+
+        EndpointGroup endpointGroup = metadataProvider
+            .getServiceMetadata()
+            // FIXME: what does guarantee that endpoint group name is not
+            // changed before actual call is made?
+            .getEndpointGroupByName(serviceClient.getDaemonConnection().getEndpointGroupName()).get();
+
+        BigInteger price = endpointGroup.getPricing().stream()
+            .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
+            .findFirst().get()
+            .getPriceInCogs();
+
+        BigInteger expirationThreshold = metadataProvider
+            .getOrganizationMetadata()
+            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get()
+            .getPaymentDetails()
+            .getPaymentExpirationThreshold();
+        BigInteger currentBlock = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+        BigInteger minExpiration = currentBlock.add(expirationThreshold);
+
+        PaymentChannelProvider channelProvider = serviceClient.getPaymentChannelProvider();
+
+        List<PaymentChannel> channels = channelProvider
+            .getAllChannels(serviceClient.getSigner().getAddress())
+            .collect(Collectors.toList());
+        for (PaymentChannel channel : channels) {
+            //FIXME: API is not clear: if we already have PaymentChannel why
+            //should we get it again?
+            channel = channelProvider.getChannelById(channel.getChannelId());
+
+            if (channel.getBalance().compareTo(price) >= 0 && 
+                    channel.getExpiration().compareTo(minExpiration) >= 0) {
+                return channel;
+            }
+        }
+
         return serviceClient.openPaymentChannel(
                 serviceClient.getSigner(),
-                ServiceClient.callsByFixedPrice(callsAdvance),
-                ServiceClient.blocksAfterThreshold(expirationAdvance));
+                x -> callsAdvance.multiply(price),
+                x -> expirationAdvance.add(minExpiration));
     }
 
 }
