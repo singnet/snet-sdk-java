@@ -73,7 +73,7 @@ public class Sdk {
         PaymentChannelProvider paymentChannelProvider = new
             AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
-        return new BaseServiceClient(connection, metadataProvider,
+        return new BaseServiceClient(mpeContract, connection, metadataProvider,
                 paymentChannelProvider, paymentStrategy, signer); 
     }
 

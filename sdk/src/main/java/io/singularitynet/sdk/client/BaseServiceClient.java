@@ -12,6 +12,7 @@ import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signer;
 
@@ -23,6 +24,7 @@ public class BaseServiceClient implements ServiceClient {
 
     private final static Logger log = LoggerFactory.getLogger(BaseServiceClient.class);
 
+    private final MultiPartyEscrowContract mpe;
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
     private final PaymentChannelProvider paymentChannelProvider;
@@ -31,6 +33,7 @@ public class BaseServiceClient implements ServiceClient {
 
     /**
      * Constructor.
+     * @param mpe provides interface to MultiPartyEscrow contract.
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
      * @param paymentChannelProvider provides the payment channel state.
@@ -38,11 +41,13 @@ public class BaseServiceClient implements ServiceClient {
      * @param signer signs payments.
      */
     public BaseServiceClient(
+            MultiPartyEscrowContract mpe,
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
             PaymentChannelProvider paymentChannelProvider,
             PaymentStrategy paymentStrategy,
             Signer signer) {
+        this.mpe = mpe;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
@@ -100,7 +105,7 @@ public class BaseServiceClient implements ServiceClient {
         PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
         BigInteger expiration = expirationExpr.apply(paymentGroup);
 
-        PaymentChannel channel = paymentChannelProvider.openChannel(signer.getAddress(),
+        PaymentChannel channel = mpe.openChannel(signer.getAddress(),
                 recipient, groupId, value, expiration);
 
         return channel;
