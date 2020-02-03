@@ -31,11 +31,12 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
         MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
 
+        String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
         EndpointGroup endpointGroup = metadataProvider
             .getServiceMetadata()
             // FIXME: what does guarantee that endpoint group name is not
             // changed before actual call is made?
-            .getEndpointGroupByName(serviceClient.getDaemonConnection().getEndpointGroupName()).get();
+            .getEndpointGroupByName(groupName).get();
 
         BigInteger price = endpointGroup.getPricing().stream()
             .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)

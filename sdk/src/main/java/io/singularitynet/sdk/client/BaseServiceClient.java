@@ -86,20 +86,13 @@ public class BaseServiceClient implements ServiceClient {
     public PaymentChannel openPaymentChannel(Signer signer,
             Function<EndpointGroup, BigInteger> valueExpr,
             Function<PaymentGroup, BigInteger> expirationExpr) {
-        OrganizationMetadata orgMetadata = metadataProvider.getOrganizationMetadata();
-        ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
 
         String groupName = daemonConnection.getEndpointGroupName();
-        EndpointGroup endpointGroup = serviceMetadata.getEndpointGroups()
-            .stream()
-            .filter(eg -> eg.getGroupName().equals(groupName))
-            .findFirst()
-            .get();
-        PaymentGroup paymentGroup = orgMetadata.getPaymentGroups()
-            .stream()
-            .filter(pg -> pg.getPaymentGroupId().equals(endpointGroup.getPaymentGroupId()))
-            .findFirst()
-            .get();
+
+        EndpointGroup endpointGroup = metadataProvider.getServiceMetadata()
+            .getEndpointGroupByName(groupName).get();
+        PaymentGroup paymentGroup = metadataProvider.getOrganizationMetadata()
+            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get();
 
         BigInteger value = valueExpr.apply(endpointGroup);
 
