@@ -67,6 +67,7 @@ public interface ServiceClient {
             Function<PaymentGroup, BigInteger> expirationExpr);
 
     // FIXME: add javadoc
+    // FIXME: it is too specific, think about replacing it
     static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {
         return group -> {
             Pricing pricing = group.getPricing().stream()
@@ -78,6 +79,7 @@ public interface ServiceClient {
     }
 
     // FIXME: add javadoc
+    // FIXME: it is too specific, think about replacing it
     static Function<PaymentGroup, BigInteger> blocksAfterThreshold(BigInteger numberBlocks) {
         return group -> {
             BigInteger expirationThreshold = group.getPaymentDetails().getPaymentExpirationThreshold();

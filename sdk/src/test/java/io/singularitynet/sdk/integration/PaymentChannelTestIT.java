@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -17,6 +18,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
@@ -60,51 +62,54 @@ public class PaymentChannelTestIT {
 
     @Test
     public void newChannelIsCreatedOnFirstCall() throws Exception {
-        PrivateKeyIdentity caller = setupNewIdentity();
-        StaticConfiguration config = configBuilder
-            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
-            .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
-            .build();
-        Sdk sdk = new Sdk(config);
-        try {
+        run((caller, serviceClient) -> {
 
-            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
-            ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
-                    IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP, paymentStrategy); 
-            try {
+            makeServiceCall(serviceClient);
 
-                CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
-                Numbers numbers = Numbers.newBuilder()
-                    .setA(7)
-                    .setB(6)
-                    .build();
-                Result result = stub.mul(numbers);
-
-                assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
-
-                Stream<PaymentChannel> channels = serviceClient
-                    .getPaymentChannelProvider()
-                    .getAllChannels(caller.getAddress());
-                assertEquals("Number of payment channels", 1, channels.count());
-
-            } finally {
-                serviceClient.shutdownNow();
-            }
-
-        } finally {
-            sdk.shutdown();
-        }
+            Stream<PaymentChannel> channels = serviceClient
+                .getPaymentChannelProvider()
+                .getAllChannels(caller.getAddress());
+            assertEquals("Number of payment channels", 1, channels.count());
+        });
     }
 
-    //FIXME: merge common flow of the tests
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
+        run((caller, serviceClient) -> {
+            serviceClient.openPaymentChannel(
+                    caller, ServiceClient.callsByFixedPrice(BigInteger.valueOf(1)),
+                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(1)));
+
+            makeServiceCall(serviceClient);
+
+            Stream<PaymentChannel> channels = serviceClient
+                .getPaymentChannelProvider()
+                .getAllChannels(caller.getAddress());
+            assertEquals("Number of payment channels", 1, channels.count());
+        });
+    }
+
+    private void makeServiceCall(ServiceClient serviceClient) {
+        CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
+
+        Numbers numbers = Numbers.newBuilder()
+            .setA(7)
+            .setB(6)
+            .build();
+        Result result = stub.mul(numbers);
+
+        assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
+    }
+
+
+    private void run(BiConsumer<Signer, ServiceClient> test) throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
+
         StaticConfiguration config = configBuilder
             .setSignerType(Configuration.SignerType.PRIVATE_KEY)
             .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
+        
         Sdk sdk = new Sdk(config);
         try {
 
@@ -112,24 +117,8 @@ public class PaymentChannelTestIT {
             ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
                     IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP, paymentStrategy); 
             try {
-                serviceClient.openPaymentChannel(
-                        caller, ServiceClient.callsByFixedPrice(BigInteger.valueOf(1)),
-                        ServiceClient.blocksAfterThreshold(BigInteger.valueOf(1)));
-
-                CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
-                Numbers numbers = Numbers.newBuilder()
-                    .setA(7)
-                    .setB(6)
-                    .build();
-                Result result = stub.mul(numbers);
-
-                assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
-
-                Stream<PaymentChannel> channels = serviceClient
-                    .getPaymentChannelProvider()
-                    .getAllChannels(caller.getAddress());
-                assertEquals("Number of payment channels", 1, channels.count());
+                
+                test.accept(caller, serviceClient);
 
             } finally {
                 serviceClient.shutdownNow();
