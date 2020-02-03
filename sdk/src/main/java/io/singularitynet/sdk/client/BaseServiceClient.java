@@ -92,6 +92,7 @@ public class BaseServiceClient implements ServiceClient {
             Function<EndpointGroup, BigInteger> valueExpr,
             Function<PaymentGroup, BigInteger> expirationExpr) {
 
+        // FIXME: should it be the method parameter?
         String groupName = daemonConnection.getEndpointGroupName();
 
         EndpointGroup endpointGroup = metadataProvider.getServiceMetadata()

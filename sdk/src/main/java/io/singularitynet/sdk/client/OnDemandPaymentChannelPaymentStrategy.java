@@ -34,8 +34,9 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
         String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
         EndpointGroup endpointGroup = metadataProvider
             .getServiceMetadata()
-            // FIXME: what does guarantee that endpoint group name is not
-            // changed before actual call is made?
+            // TODO: what does guarantee that endpoint group name is not
+            // changed before actual call is made? Think about it when
+            // implementing failover strategy.
             .getEndpointGroupByName(groupName).get();
 
         BigInteger price = endpointGroup.getPricing().stream()

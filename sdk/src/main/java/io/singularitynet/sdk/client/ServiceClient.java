@@ -32,6 +32,8 @@ public interface ServiceClient {
      */
     PaymentChannelProvider getPaymentChannelProvider();
 
+    // FIXME: this method can be removed and signer can be received from SDK
+    // itself instead getting it from daemon.
     /**
      * Return the signer to sign payments.
      */
@@ -46,6 +48,7 @@ public interface ServiceClient {
      */
     <T> T getGrpcStub(Function<Channel, T> constructor);
 
+    // FIXME: this can be replaced by returning current endpoint group name
     /**
      * Return connection to daemon. The connection can be used for tracking
      * properties which can be changed after failover or reconnection.
@@ -60,14 +63,20 @@ public interface ServiceClient {
      */
     void shutdownNow();
 
-    // FIXME: what is clear API for ServiceClient
+    // FIXME: how to make code for calculating channel value and expiration
+    // date reusable. Right now it is implemented in
+    // OnDemandPaymentChannelPaymentStrategy.selectChannel and in
+    // BaseServiceClient.openPaymentChannel. It is also used in
+    // PaymentChannelTestIT. Looks like we need the parameterized function
+    // which gets endpointGroupName, serviceMetadata and orgMetadata and
+    // calculates value and expiration for the new channel. There is the
+    // similar question for the extending channel.
     // FIXME: add javadoc
     PaymentChannel openPaymentChannel(Signer signer,
             Function<EndpointGroup, BigInteger> valueExpr,
             Function<PaymentGroup, BigInteger> expirationExpr);
 
     // FIXME: add javadoc
-    // FIXME: it is too specific, think about replacing it
     static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {
         return group -> {
             Pricing pricing = group.getPricing().stream()
@@ -79,7 +88,6 @@ public interface ServiceClient {
     }
 
     // FIXME: add javadoc
-    // FIXME: it is too specific, think about replacing it
     static Function<PaymentGroup, BigInteger> blocksAfterThreshold(BigInteger numberBlocks) {
         return group -> {
             BigInteger expirationThreshold = group.getPaymentDetails().getPaymentExpirationThreshold();
