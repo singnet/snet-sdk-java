@@ -40,8 +40,8 @@ public class Web3jTestIT {
                 roTransactionManager, gasProvider);
 
         Tuple4<Boolean, byte[], byte[], List<byte[]>> result = 
-            registry.getServiceRegistrationById(Utils.strToBytes32("example-org"),
-                    Utils.strToBytes32("example-service")).send();
+            registry.getServiceRegistrationById(Utils.strToBytes32(IntEnv.TEST_ORG_ID),
+                    Utils.strToBytes32(IntEnv.TEST_SERVICE_ID)).send();
 
         assertTrue(result.getValue1());
     }

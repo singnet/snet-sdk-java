@@ -17,8 +17,6 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
-import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
@@ -38,30 +36,20 @@ import io.singularitynet.sdk.test.ExampleService.Result;
 
 public class PaymentChannelTestIT {
 
-    private static final PrivateKeyIdentity TEST_DEPLOYER = new PrivateKeyIdentity(Utils.hexToBytes("c71478a6d0fe44e763649de0a0deb5a080b788eefbbcf9c6f7aef0dd5dbd67e0"));
-    //FIXME: move all environment related values into IntEnv
-    private static final StaticConfiguration TEST_CONFIGURATION = StaticConfiguration.newBuilder()
-        .setEthereumJsonRpcEndpoint("http://localhost:8545")
-        .setIpfsEndpoint("http://localhost:5002")
-        .setSignerType(Configuration.SignerType.PRIVATE_KEY)
-        .setSignerPrivateKey(Utils.hexToBytes("04899d5fd471ce68f84a5ec64e2e4b6b045d8b850599a57f5b307024be01f262"))
-        .setRegistryAddress(IntEnv.REGISTRY_CONTRACT_ADDRESS)
-        .setMultiPartyEscrowAddress(IntEnv.MPE_CONTRACT_ADDRESS)
-        .build();
-
-    private static final String TEST_ORG_ID = "example-org";
-    private static final String TEST_SERVICE_ID = "example-service";
-
+    private PrivateKeyIdentity deployer;
+    private StaticConfiguration.Builder configBuilder;
     private Web3j web3j;
     private MultiPartyEscrowContract mpe;
 
     @Before
     public void setUp() {
-        this.web3j = Web3j.build(new HttpService(TEST_CONFIGURATION.getEthereumJsonRpcEndpoint().toString()));
+        this.deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
+        this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
+        this.web3j = Web3j.build(new HttpService(configBuilder.getEthereumJsonRpcEndpoint().toString()));
         DefaultGasProvider gasProvider = new DefaultGasProvider();
-        RawTransactionManager transactionManager = new RawTransactionManager(web3j, TEST_DEPLOYER.getCredentials());
+        RawTransactionManager transactionManager = new RawTransactionManager(web3j, deployer.getCredentials());
         this.mpe = new MultiPartyEscrowContract(web3j, MultiPartyEscrow
-                .load(TEST_CONFIGURATION.getMultiPartyEscrowAddress().get().toString(),
+                .load(configBuilder.getMultiPartyEscrowAddress().get().toString(),
                     web3j, transactionManager, gasProvider));
     }
 
@@ -73,15 +61,16 @@ public class PaymentChannelTestIT {
     @Test
     public void newChannelIsCreatedOnFirstCall() throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
-        StaticConfiguration config = TEST_CONFIGURATION.toBuilder()
+        StaticConfiguration config = configBuilder
+            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
             .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
         Sdk sdk = new Sdk(config);
         try {
 
             PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
-            ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
-                    TEST_SERVICE_ID, "default_group", paymentStrategy); 
+            ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
+                    IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP, paymentStrategy); 
             try {
 
                 CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
@@ -112,15 +101,16 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
-        StaticConfiguration config = TEST_CONFIGURATION.toBuilder()
+        StaticConfiguration config = configBuilder
+            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
             .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
         Sdk sdk = new Sdk(config);
         try {
 
             PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
-            ServiceClient serviceClient = sdk.newServiceClient(TEST_ORG_ID,
-                    TEST_SERVICE_ID, "default_group", paymentStrategy); 
+            ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
+                    IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP, paymentStrategy); 
             try {
                 serviceClient.openPaymentChannel(
                         caller, ServiceClient.callsByFixedPrice(BigInteger.valueOf(1)),
@@ -153,7 +143,7 @@ public class PaymentChannelTestIT {
     private PrivateKeyIdentity setupNewIdentity() throws Exception {
         PrivateKeyIdentity identity = new MnemonicIdentity("random mnemonic #" + Math.random(), 0);
 
-        Transfer.sendFunds(web3j, TEST_DEPLOYER.getCredentials(), identity.getAddress().toString(),
+        Transfer.sendFunds(web3j, deployer.getCredentials(), identity.getAddress().toString(),
                 BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
         // TODO: implement functions to convert cogs and AGIs
         mpe.transfer(identity.getAddress(), BigInteger.valueOf(1000000));
