@@ -13,7 +13,7 @@ import io.singularitynet.sdk.registry.IpfsMetadataStorage;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
-import io.singularitynet.sdk.daemon.FirstEndpointDaemonConnection;
+import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
@@ -66,7 +66,7 @@ public class Sdk {
         MetadataProvider metadataProvider = new RegistryMetadataProvider(
                 orgId, serviceId, registryContract, metadataStorage);
 
-        DaemonConnection connection = new FirstEndpointDaemonConnection(
+        DaemonConnection connection = new RandomEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, mpeContract, web3j, signer);

@@ -57,9 +57,9 @@ package io.singularitynet.sdk.daemon {
         void shutdownNow();
     }
 
-    class FirstEndpointDaemonConnection
-    DaemonConnection <|.. FirstEndpointDaemonConnection
-    FirstEndpointDaemonConnection o-- MetadataProvider
+    class RandomEndpointDaemonConnection
+    DaemonConnection <|.. RandomEndpointDaemonConnection
+    RandomEndpointDaemonConnection o-- MetadataProvider
 
     class PaymentChannelStateService {
         PaymentChannelStateReply getChannelState(BigInteger channelId);

@@ -11,9 +11,9 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 
-public class FirstEndpointDaemonConnection implements DaemonConnection {
+public class RandomEndpointDaemonConnection implements DaemonConnection {
 
-    private final static Logger log = LoggerFactory.getLogger(FirstEndpointDaemonConnection.class);
+    private final static Logger log = LoggerFactory.getLogger(RandomEndpointDaemonConnection.class);
 
     private final String groupName;
     private final MetadataProvider metadataProvider;
@@ -21,7 +21,7 @@ public class FirstEndpointDaemonConnection implements DaemonConnection {
 
     private ManagedChannel channel;
 
-    public FirstEndpointDaemonConnection(String groupName, MetadataProvider metadataProvider) {
+    public RandomEndpointDaemonConnection(String groupName, MetadataProvider metadataProvider) {
         this.groupName = groupName;
         this.metadataProvider = metadataProvider;
         this.interceptorProxy = new ClientInterceptorProxy();
