@@ -123,4 +123,14 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    public BigInteger channelAddFunds(BigInteger channelId, BigInteger amount) {
+        return Utils.wrapExceptions(() -> {
+            TransactionReceipt transaction = mpe.channelAddFunds(
+                    channelId, amount).send();
+            MultiPartyEscrow.ChannelAddFundsEventResponse event =
+                mpe.getChannelAddFundsEvents(transaction).get(0);
+            return event.additionalFunds;
+        });
+    }
+
 }

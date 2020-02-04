@@ -3,7 +3,9 @@ package io.singularitynet.sdk.client;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.ToString;
 import org.web3j.protocol.Web3j;
 
@@ -54,14 +56,25 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
 
         PaymentChannelProvider channelProvider = serviceClient.getPaymentChannelProvider();
 
-        Optional<PaymentChannel> channel = channelProvider
+        Optional<Supplier<PaymentChannel>> channelSupplier = channelProvider
             .getAllChannels(serviceClient.getSigner().getAddress())
-            .filter(ch -> ch.getBalance().compareTo(price) >= 0 && 
-                    ch.getExpiration().compareTo(minExpiration) >= 0)
+            .flatMap(channel -> {
+                if (channel.getBalance().compareTo(price) >= 0 && 
+                    channel.getExpiration().compareTo(minExpiration) >= 0) {
+                    return Stream.of(() -> channel);
+                }
+
+                if (channel.getExpiration().compareTo(minExpiration) >= 0) {
+                    return Stream.of(() -> serviceClient.addFundsToChannel(
+                                channel, callsAdvance.multiply(price)));
+                }
+
+                return Stream.<Supplier<PaymentChannel>>empty();
+            })
             .findFirst();
 
-        if (channel.isPresent()) {
-            return channel.get();
+        if (channelSupplier.isPresent()) {
+            return channelSupplier.get().get();
         }
 
         return serviceClient.openPaymentChannel(

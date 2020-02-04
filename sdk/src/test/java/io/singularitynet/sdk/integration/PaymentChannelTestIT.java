@@ -8,8 +8,10 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -22,6 +24,7 @@ import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
+import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.client.Configuration;
@@ -86,6 +89,35 @@ public class PaymentChannelTestIT {
                 .getPaymentChannelProvider()
                 .getAllChannels(caller.getAddress());
             assertEquals("Number of payment channels", 1, channels.count());
+        });
+    }
+
+    @Test
+    public void oldChannelValueIsExtendedOnSecondCall() throws Exception {
+        run((caller, serviceClient) -> {
+            serviceClient.openPaymentChannel(
+                    caller, x -> BigInteger.valueOf(0),
+                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(1)));
+
+            makeServiceCall(serviceClient);
+
+            List<PaymentChannel> channels = serviceClient
+                .getPaymentChannelProvider()
+                .getAllChannels(caller.getAddress())
+                .collect(Collectors.toList());
+            assertEquals("Number of payment channels", 1, channels.size());
+            String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+            //FIXME: simplify the code
+            BigInteger priceInCogs = serviceClient.getMetadataProvider()
+                .getServiceMetadata()
+                .getEndpointGroupByName(groupName).get()
+                .getPricing().stream()
+                .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
+                .findFirst().get()
+                .getPriceInCogs();
+            assertEquals("Payment channel balance",
+                    priceInCogs.multiply(BigInteger.valueOf(1)),
+                    channels.get(0).getValue());
         });
     }
 

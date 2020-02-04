@@ -76,6 +76,10 @@ public interface ServiceClient {
             Function<EndpointGroup, BigInteger> valueExpr,
             Function<PaymentGroup, BigInteger> expirationExpr);
 
+    //FIXME: find out proper place for the methods
+    //FIXME: javadoc
+    PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger value);
+
     // FIXME: add javadoc
     static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {
         return group -> {

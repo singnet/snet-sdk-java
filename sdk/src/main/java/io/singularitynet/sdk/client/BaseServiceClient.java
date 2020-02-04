@@ -112,6 +112,14 @@ public class BaseServiceClient implements ServiceClient {
         return channel;
     }
 
+    @Override
+    public PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount) {
+        BigInteger valueInc = mpe.channelAddFunds(channel.getChannelId(), amount);
+        return channel.toBuilder()
+            .setValue(channel.getValue().add(valueInc))
+            .build();
+    }
+
     /**
      * Class responsibility is injecting payment information into gRPC metadata
      * before making remote gRPC call. It uses PaymentStrategy instance to
