@@ -78,8 +78,10 @@ public interface ServiceClient {
 
     //FIXME: find out proper place for the methods
     //FIXME: javadoc
-    PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger value);
+    PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
     PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
+    PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,
+            BigInteger expiration, BigInteger amount);
 
     // FIXME: add javadoc
     static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {

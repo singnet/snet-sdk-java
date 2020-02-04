@@ -141,13 +141,39 @@ public class MultiPartyEscrowContract {
         });
     }
 
-    public BigInteger extendChannel(BigInteger channelId, BigInteger expiration) {
+    public BigInteger channelExtend(BigInteger channelId, BigInteger expiration) {
         return Utils.wrapExceptions(() -> {
             TransactionReceipt transaction = mpe.channelExtend(
                     channelId, shiftToNextBlock(expiration)).send();
             MultiPartyEscrow.ChannelExtendEventResponse event =
                 mpe.getChannelExtendEvents(transaction).get(0);
             return event.newExpiration;
+        });
+    }
+
+    public static class ExtendAndAddFundsResponse {
+        public final BigInteger expiration;
+        public final BigInteger valueIncrement;
+
+        ExtendAndAddFundsResponse(BigInteger expiration,
+                BigInteger valueIncrement) {
+            this.expiration = expiration;
+            this.valueIncrement = valueIncrement;
+        }
+    }
+
+    public ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,
+            BigInteger expiration, BigInteger amount) {
+        return Utils.wrapExceptions(() -> {
+            TransactionReceipt transaction = mpe.channelExtendAndAddFunds(
+                    channelId, shiftToNextBlock(expiration), amount).send();
+            MultiPartyEscrow.ChannelExtendEventResponse extendsEvent =
+                mpe.getChannelExtendEvents(transaction).get(0);
+            MultiPartyEscrow.ChannelAddFundsEventResponse addFundsEvent =
+                mpe.getChannelAddFundsEvents(transaction).get(0);
+            return new ExtendAndAddFundsResponse(
+                    extendsEvent.newExpiration,
+                    addFundsEvent.additionalFunds);
         });
     }
 

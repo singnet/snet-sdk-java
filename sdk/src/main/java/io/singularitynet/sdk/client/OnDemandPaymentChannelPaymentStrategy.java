@@ -69,12 +69,14 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
                                 channel, callsAdvance.multiply(price)));
                 }
 
-                if (channel.getExpiration().compareTo(minExpiration) <= 0) {
+                if (channel.getBalance().compareTo(price) >= 0) {
                     return Stream.of(() -> serviceClient.extendChannel(
                                 channel, expirationThreshold.add(expirationAdvance)));
                 }
 
-                return Stream.<Supplier<PaymentChannel>>empty();
+                return Stream.<Supplier<PaymentChannel>>of(() -> serviceClient.extendAndAddFundsToChannel(
+                            channel, expirationThreshold.add(expirationAdvance),
+                            callsAdvance.multiply(price)));
             })
             .findFirst();
 

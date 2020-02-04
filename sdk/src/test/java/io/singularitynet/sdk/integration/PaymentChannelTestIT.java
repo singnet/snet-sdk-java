@@ -154,6 +154,47 @@ public class PaymentChannelTestIT {
         });
     }
 
+    @Test
+    public void oldChannelIsExtendedAndFundsAddedOnCall() throws Exception {
+        run((caller, serviceClient) -> {
+            PaymentChannel channel = serviceClient.openPaymentChannel(
+                    caller, x -> BigInteger.valueOf(0),
+                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(0)));
+            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+
+            makeServiceCall(serviceClient);
+
+            List<PaymentChannel> channels = serviceClient
+                .getPaymentChannelProvider()
+                .getAllChannels(caller.getAddress())
+                .collect(Collectors.toList());
+            assertEquals("Number of payment channels", 1, channels.size());
+            String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+            //FIXME: simplify the code
+            EndpointGroup endpointGroup = serviceClient.getMetadataProvider()
+                .getServiceMetadata()
+                .getEndpointGroupByName(groupName).get();
+            BigInteger expirationThreshold = serviceClient.getMetadataProvider()
+                .getOrganizationMetadata()
+                .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get()
+                .getPaymentDetails()
+                .getPaymentExpirationThreshold();
+            assertEquals("Payment channel expiration block",
+                    blockBeforeCall.add(expirationThreshold.add(BigInteger.valueOf(2))),
+                    channels.get(0).getExpiration());
+            BigInteger priceInCogs = serviceClient.getMetadataProvider()
+                .getServiceMetadata()
+                .getEndpointGroupByName(groupName).get()
+                .getPricing().stream()
+                .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
+                .findFirst().get()
+                .getPriceInCogs();
+            assertEquals("Payment channel balance",
+                    priceInCogs.multiply(BigInteger.valueOf(1)),
+                    channels.get(0).getValue());
+        });
+    }
+
     private void makeServiceCall(ServiceClient serviceClient) {
         CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
 

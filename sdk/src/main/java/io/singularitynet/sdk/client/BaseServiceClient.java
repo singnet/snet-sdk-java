@@ -122,9 +122,20 @@ public class BaseServiceClient implements ServiceClient {
 
     @Override
     public PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration) {
-        BigInteger newExpiration = mpe.extendChannel(channel.getChannelId(), expiration);
+        BigInteger newExpiration = mpe.channelExtend(channel.getChannelId(), expiration);
         return channel.toBuilder()
             .setExpiration(newExpiration)
+            .build();
+    }
+
+    @Override
+    public PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,
+            BigInteger expiration, BigInteger amount) {
+        MultiPartyEscrowContract.ExtendAndAddFundsResponse response = mpe
+            .channelExtendAndAddFunds(channel.getChannelId(), expiration, amount);
+        return channel.toBuilder()
+            .setExpiration(response.expiration)
+            .setValue(channel.getValue().add(response.valueIncrement))
             .build();
     }
 
