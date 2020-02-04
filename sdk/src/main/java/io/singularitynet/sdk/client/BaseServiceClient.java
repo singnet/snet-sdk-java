@@ -120,6 +120,14 @@ public class BaseServiceClient implements ServiceClient {
             .build();
     }
 
+    @Override
+    public PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration) {
+        BigInteger newExpiration = mpe.extendChannel(channel.getChannelId(), expiration);
+        return channel.toBuilder()
+            .setExpiration(newExpiration)
+            .build();
+    }
+
     /**
      * Class responsibility is injecting payment information into gRPC metadata
      * before making remote gRPC call. It uses PaymentStrategy instance to

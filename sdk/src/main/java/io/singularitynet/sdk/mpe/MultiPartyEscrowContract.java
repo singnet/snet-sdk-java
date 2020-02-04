@@ -141,4 +141,14 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    public BigInteger extendChannel(BigInteger channelId, BigInteger expiration) {
+        return Utils.wrapExceptions(() -> {
+            TransactionReceipt transaction = mpe.channelExtend(
+                    channelId, shiftToNextBlock(expiration)).send();
+            MultiPartyEscrow.ChannelExtendEventResponse event =
+                mpe.getChannelExtendEvents(transaction).get(0);
+            return event.newExpiration;
+        });
+    }
+
 }
