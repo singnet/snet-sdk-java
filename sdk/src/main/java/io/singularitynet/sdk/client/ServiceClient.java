@@ -95,7 +95,7 @@ public interface ServiceClient {
     static Function<PaymentGroup, BigInteger> blocksAfterThreshold(BigInteger numberBlocks) {
         return group -> {
             BigInteger expirationThreshold = group.getPaymentDetails().getPaymentExpirationThreshold();
-            return expirationThreshold.add(expirationThreshold);
+            return expirationThreshold.add(numberBlocks);
         };
     }
 

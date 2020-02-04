@@ -93,11 +93,11 @@ public class PaymentChannelTestIT {
     }
 
     @Test
-    public void oldChannelValueIsExtendedOnSecondCall() throws Exception {
+    public void oldChannelAddFundsOnCall() throws Exception {
         run((caller, serviceClient) -> {
             serviceClient.openPaymentChannel(
                     caller, x -> BigInteger.valueOf(0),
-                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(1)));
+                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(2)));
 
             makeServiceCall(serviceClient);
 

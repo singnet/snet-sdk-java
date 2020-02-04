@@ -67,10 +67,18 @@ public class MultiPartyEscrowContract {
         return Utils.wrapExceptions(() -> {
             TransactionReceipt transaction = mpe.openChannel(signer.toString(),
                     recipient.toString(), groupId.getBytes(), value,
-                    expiration).send();
+                    shiftToNextBlock(expiration))
+                .send();
             MultiPartyEscrow.ChannelOpenEventResponse event =
                 mpe.getChannelOpenEvents(transaction).get(0);
             return channelOpenEventAsPaymentChannel(event);
+        });
+    }
+
+    private BigInteger shiftToNextBlock(BigInteger expiration) {
+        return Utils.wrapExceptions(() -> {
+            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+            return blockBeforeCall.add(expiration).add(BigInteger.valueOf(1));
         });
     }
 

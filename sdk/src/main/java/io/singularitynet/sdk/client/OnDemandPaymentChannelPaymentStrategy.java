@@ -25,7 +25,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
         
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
         this.web3j = sdk.getWeb3j();
-        this.expirationAdvance = BigInteger.valueOf(2);
+        this.expirationAdvance = BigInteger.valueOf(1);
         this.callsAdvance = BigInteger.valueOf(1);
     }
 
@@ -60,11 +60,11 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
             .getAllChannels(serviceClient.getSigner().getAddress())
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
-                    channel.getExpiration().compareTo(minExpiration) >= 0) {
+                    channel.getExpiration().compareTo(minExpiration) > 0) {
                     return Stream.of(() -> channel);
                 }
 
-                if (channel.getExpiration().compareTo(minExpiration) >= 0) {
+                if (channel.getExpiration().compareTo(minExpiration) > 0) {
                     return Stream.of(() -> serviceClient.addFundsToChannel(
                                 channel, callsAdvance.multiply(price)));
                 }
@@ -80,7 +80,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
         return serviceClient.openPaymentChannel(
                 serviceClient.getSigner(),
                 x -> callsAdvance.multiply(price),
-                x -> expirationAdvance.add(minExpiration));
+                x -> expirationThreshold.add(expirationAdvance));
     }
 
 }
