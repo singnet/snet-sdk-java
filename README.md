@@ -10,14 +10,28 @@
 
 ## How to build
 
-Integration testing is enabled by default. To run full build including
+Integration testing is disabled by default. To run full build including
 integration tests use:
 ```
-mvn install
+mvn install -DskipITs=false -P run-integration-environment
+```
+
+The command about automatically starts integration environment docker before
+running tests and stops after it. To start integration environment manually
+execute:
+```
+docker run -d \
+    --name java-sdk-integration-environment \
+    -p 5002:5002 -p 8545:8545 -p 7000:7000 \
+    singularitynet/java-sdk-integration-test-env
+```
+Then you can run build with integration testing using:
+```
+mvn install -DskipITs=false
 ```
 
 Running integration tests is a time consuming process so to make fast build
 running unit tests only use:
 ```
-mvn install -DskipITs
+mvn install
 ```
