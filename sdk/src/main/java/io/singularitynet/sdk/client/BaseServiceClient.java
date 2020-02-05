@@ -88,9 +88,8 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public PaymentChannel openPaymentChannel(Signer signer,
-            Function<EndpointGroup, BigInteger> valueExpr,
-            Function<PaymentGroup, BigInteger> expirationExpr) {
+    public PaymentChannel openPaymentChannel(Signer signer, BigInteger value,
+            BigInteger expiration) {
 
         // FIXME: should it be the method parameter?
         String groupName = daemonConnection.getEndpointGroupName();
@@ -100,11 +99,8 @@ public class BaseServiceClient implements ServiceClient {
         PaymentGroup paymentGroup = metadataProvider.getOrganizationMetadata()
             .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get();
 
-        BigInteger value = valueExpr.apply(endpointGroup);
-
         Address recipient = paymentGroup.getPaymentDetails().getPaymentAddress();
         PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
-        BigInteger expiration = expirationExpr.apply(paymentGroup);
 
         PaymentChannel channel = mpe.openChannel(signer.getAddress(),
                 recipient, groupId, value, expiration);

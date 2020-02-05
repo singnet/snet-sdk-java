@@ -62,18 +62,9 @@ public interface ServiceClient {
      */
     void shutdownNow();
 
-    // FIXME: how to make code for calculating channel value and expiration
-    // date reusable. Right now it is implemented in
-    // OnDemandPaymentChannelPaymentStrategy.selectChannel and in
-    // BaseServiceClient.openPaymentChannel. It is also used in
-    // PaymentChannelTestIT. Looks like we need the parameterized function
-    // which gets endpointGroupName, serviceMetadata and orgMetadata and
-    // calculates value and expiration for the new channel. There is the
-    // similar question for the extending channel.
     // FIXME: add javadoc
-    PaymentChannel openPaymentChannel(Signer signer,
-            Function<EndpointGroup, BigInteger> valueExpr,
-            Function<PaymentGroup, BigInteger> expirationExpr);
+    PaymentChannel openPaymentChannel(Signer signer, BigInteger value,
+            BigInteger expiration);
 
     //FIXME: find out proper place for the methods
     //FIXME: javadoc
@@ -81,24 +72,5 @@ public interface ServiceClient {
     PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
     PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,
             BigInteger expiration, BigInteger amount);
-
-    // FIXME: add javadoc
-    static Function<EndpointGroup, BigInteger> callsByFixedPrice(BigInteger numberOfCalls) {
-        return group -> {
-            Pricing pricing = group.getPricing().stream()
-                .filter(price -> PriceModel.FIXED_PRICE.equals(price.getPriceModel()))
-                .findFirst()
-                .get();
-            return pricing.getPriceInCogs().multiply(numberOfCalls);
-        };
-    }
-
-    // FIXME: add javadoc
-    static Function<PaymentGroup, BigInteger> blocksAfterThreshold(BigInteger numberBlocks) {
-        return group -> {
-            BigInteger expirationThreshold = group.getPaymentDetails().getPaymentExpirationThreshold();
-            return expirationThreshold.add(numberBlocks);
-        };
-    }
 
 }

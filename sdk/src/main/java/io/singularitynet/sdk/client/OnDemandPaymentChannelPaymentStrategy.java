@@ -86,8 +86,8 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
 
         return serviceClient.openPaymentChannel(
                 serviceClient.getSigner(),
-                x -> callsAdvance.multiply(price),
-                x -> expirationThreshold.add(expirationAdvance));
+                callsAdvance.multiply(price),
+                expirationThreshold.add(expirationAdvance));
     }
 
 }

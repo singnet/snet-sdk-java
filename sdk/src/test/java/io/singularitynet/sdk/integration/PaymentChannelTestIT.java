@@ -56,6 +56,8 @@ public class PaymentChannelTestIT {
     private EndpointGroup endpointGroup;
     private PaymentGroup paymentGroup;
     private Pricing servicePrice;
+    private BigInteger cogsPerCall;
+    private BigInteger expirationThreshold;
 
     @Before
     public void setUp() {
@@ -85,6 +87,9 @@ public class PaymentChannelTestIT {
             .getPricing().stream()
             .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
             .findFirst().get();
+        this.cogsPerCall = servicePrice.getPriceInCogs();
+        this.expirationThreshold = paymentGroup.getPaymentDetails()
+            .getPaymentExpirationThreshold();
     }
 
     @After
@@ -108,9 +113,8 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
         run((caller, serviceClient) -> {
-            serviceClient.openPaymentChannel(
-                    caller, ServiceClient.callsByFixedPrice(BigInteger.valueOf(1)),
-                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(1)));
+            serviceClient.openPaymentChannel(caller, cogsPerCall,
+                    expirationThreshold.add(BigInteger.valueOf(1)));
 
             makeServiceCall(serviceClient);
 
@@ -124,9 +128,8 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelAddFundsOnCall() throws Exception {
         run((caller, serviceClient) -> {
-            serviceClient.openPaymentChannel(
-                    caller, x -> BigInteger.valueOf(0),
-                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(2)));
+            serviceClient.openPaymentChannel(caller, BigInteger.ZERO,
+                    expirationThreshold.add(BigInteger.valueOf(2)));
 
             makeServiceCall(serviceClient);
 
@@ -135,10 +138,8 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            BigInteger priceInCogs = servicePrice.getPriceInCogs();
             assertEquals("Payment channel balance",
-                    priceInCogs.multiply(BigInteger.valueOf(1)),
-                    channels.get(0).getValue());
+                    cogsPerCall, channels.get(0).getValue());
         });
     }
 
@@ -146,8 +147,7 @@ public class PaymentChannelTestIT {
     public void oldChannelIsExtendedOnCall() throws Exception {
         run((caller, serviceClient) -> {
             PaymentChannel channel = serviceClient.openPaymentChannel(
-                    caller, x -> BigInteger.valueOf(1),
-                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(0)));
+                    caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
@@ -157,8 +157,6 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            BigInteger expirationThreshold = paymentGroup.getPaymentDetails()
-                .getPaymentExpirationThreshold();
             assertEquals("Payment channel expiration block",
                     blockBeforeCall.add(expirationThreshold.add(BigInteger.valueOf(2))),
                     channels.get(0).getExpiration());
@@ -169,8 +167,7 @@ public class PaymentChannelTestIT {
     public void oldChannelIsExtendedAndFundsAddedOnCall() throws Exception {
         run((caller, serviceClient) -> {
             PaymentChannel channel = serviceClient.openPaymentChannel(
-                    caller, x -> BigInteger.valueOf(0),
-                    ServiceClient.blocksAfterThreshold(BigInteger.valueOf(0)));
+                    caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
@@ -180,15 +177,11 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            BigInteger expirationThreshold = paymentGroup.getPaymentDetails()
-                .getPaymentExpirationThreshold();
             assertEquals("Payment channel expiration block",
                     blockBeforeCall.add(expirationThreshold.add(BigInteger.valueOf(2))),
                     channels.get(0).getExpiration());
-            BigInteger priceInCogs = servicePrice.getPriceInCogs();
             assertEquals("Payment channel balance",
-                    priceInCogs.multiply(BigInteger.valueOf(1)),
-                    channels.get(0).getValue());
+                    cogsPerCall, channels.get(0).getValue());
         });
     }
 
