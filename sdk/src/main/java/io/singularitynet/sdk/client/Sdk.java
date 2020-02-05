@@ -59,12 +59,9 @@ public class Sdk {
         log.info("Start service client, orgId: {}, serviceId: {}, endpointGroupName: {}, paymentStrategy: {}",
                 orgId, serviceId, endpointGroupName, paymentStrategy);
 
-        RegistryContract registryContract = new RegistryContract(registry);
         MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(web3j, mpe);
 
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
-        MetadataProvider metadataProvider = new RegistryMetadataProvider(
-                orgId, serviceId, registryContract, metadataStorage);
+        MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
         DaemonConnection connection = new RandomEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
@@ -81,6 +78,13 @@ public class Sdk {
     //calling JSON RPC service each time
     public Web3j getWeb3j() {
         return web3j;
+    }
+
+    public MetadataProvider getMetadataProvider(String orgId, String serviceId) {
+        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
+        RegistryContract registryContract = new RegistryContract(registry);
+        return new RegistryMetadataProvider(orgId, serviceId, registryContract,
+                metadataStorage);
     }
 
     public void shutdown() {

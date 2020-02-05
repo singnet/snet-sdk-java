@@ -26,7 +26,10 @@ import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.registry.PriceModel;
+import io.singularitynet.sdk.registry.Pricing;
+import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.client.Configuration;
@@ -43,26 +46,50 @@ import io.singularitynet.sdk.test.ExampleService.Result;
 
 public class PaymentChannelTestIT {
 
-    private PrivateKeyIdentity deployer;
     private StaticConfiguration.Builder configBuilder;
-    private Web3j web3j;
+
+    private PrivateKeyIdentity deployer;
     private MultiPartyEscrowContract mpe;
+
+    private Sdk sdk;
+
+    private EndpointGroup endpointGroup;
+    private PaymentGroup paymentGroup;
+    private Pricing servicePrice;
 
     @Before
     public void setUp() {
-        this.deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
         this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
-        this.web3j = Web3j.build(new HttpService(configBuilder.getEthereumJsonRpcEndpoint().toString()));
+        StaticConfiguration config = configBuilder
+            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
+            .build();
+        this.sdk = new Sdk(config);
+
+        this.deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
         DefaultGasProvider gasProvider = new DefaultGasProvider();
-        RawTransactionManager transactionManager = new RawTransactionManager(web3j, deployer.getCredentials());
-        this.mpe = new MultiPartyEscrowContract(web3j, MultiPartyEscrow
+        RawTransactionManager transactionManager = new RawTransactionManager(sdk.getWeb3j(), deployer.getCredentials());
+        this.mpe = new MultiPartyEscrowContract(sdk.getWeb3j(), MultiPartyEscrow
                 .load(configBuilder.getMultiPartyEscrowAddress().get().toString(),
-                    web3j, transactionManager, gasProvider));
+                    sdk.getWeb3j(), transactionManager, gasProvider));
+        
+        MetadataProvider metadataProvider = sdk.getMetadataProvider(
+                IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID);
+        this.endpointGroup = metadataProvider
+            .getServiceMetadata()
+            .getEndpointGroupByName(IntEnv.TEST_ENDPOINT_GROUP).get();
+        this.paymentGroup = metadataProvider
+            .getOrganizationMetadata()
+            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get();
+        this.servicePrice = endpointGroup 
+            .getPricing().stream()
+            .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
+            .findFirst().get();
     }
 
     @After
     public void tearDown() {
-        web3j.shutdown();
+        sdk.shutdown();
     }
 
     @Test
@@ -108,15 +135,7 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getEndpointGroupName();
-            //FIXME: simplify the code
-            BigInteger priceInCogs = serviceClient.getMetadataProvider()
-                .getServiceMetadata()
-                .getEndpointGroupByName(groupName).get()
-                .getPricing().stream()
-                .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
-                .findFirst().get()
-                .getPriceInCogs();
+            BigInteger priceInCogs = servicePrice.getPriceInCogs();
             assertEquals("Payment channel balance",
                     priceInCogs.multiply(BigInteger.valueOf(1)),
                     channels.get(0).getValue());
@@ -129,7 +148,7 @@ public class PaymentChannelTestIT {
             PaymentChannel channel = serviceClient.openPaymentChannel(
                     caller, x -> BigInteger.valueOf(1),
                     ServiceClient.blocksAfterThreshold(BigInteger.valueOf(0)));
-            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
 
@@ -138,15 +157,7 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getEndpointGroupName();
-            //FIXME: simplify the code
-            EndpointGroup endpointGroup = serviceClient.getMetadataProvider()
-                .getServiceMetadata()
-                .getEndpointGroupByName(groupName).get();
-            BigInteger expirationThreshold = serviceClient.getMetadataProvider()
-                .getOrganizationMetadata()
-                .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get()
-                .getPaymentDetails()
+            BigInteger expirationThreshold = paymentGroup.getPaymentDetails()
                 .getPaymentExpirationThreshold();
             assertEquals("Payment channel expiration block",
                     blockBeforeCall.add(expirationThreshold.add(BigInteger.valueOf(2))),
@@ -160,7 +171,7 @@ public class PaymentChannelTestIT {
             PaymentChannel channel = serviceClient.openPaymentChannel(
                     caller, x -> BigInteger.valueOf(0),
                     ServiceClient.blocksAfterThreshold(BigInteger.valueOf(0)));
-            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
 
@@ -169,26 +180,12 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getEndpointGroupName();
-            //FIXME: simplify the code
-            EndpointGroup endpointGroup = serviceClient.getMetadataProvider()
-                .getServiceMetadata()
-                .getEndpointGroupByName(groupName).get();
-            BigInteger expirationThreshold = serviceClient.getMetadataProvider()
-                .getOrganizationMetadata()
-                .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get()
-                .getPaymentDetails()
+            BigInteger expirationThreshold = paymentGroup.getPaymentDetails()
                 .getPaymentExpirationThreshold();
             assertEquals("Payment channel expiration block",
                     blockBeforeCall.add(expirationThreshold.add(BigInteger.valueOf(2))),
                     channels.get(0).getExpiration());
-            BigInteger priceInCogs = serviceClient.getMetadataProvider()
-                .getServiceMetadata()
-                .getEndpointGroupByName(groupName).get()
-                .getPricing().stream()
-                .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
-                .findFirst().get()
-                .getPriceInCogs();
+            BigInteger priceInCogs = servicePrice.getPriceInCogs();
             assertEquals("Payment channel balance",
                     priceInCogs.multiply(BigInteger.valueOf(1)),
                     channels.get(0).getValue());
@@ -221,7 +218,7 @@ public class PaymentChannelTestIT {
 
             PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
             ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
-                    IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP, paymentStrategy); 
+                    IntEnv.TEST_SERVICE_ID, endpointGroup.getGroupName(), paymentStrategy); 
             try {
                 
                 test.accept(caller, serviceClient);
@@ -238,7 +235,7 @@ public class PaymentChannelTestIT {
     private PrivateKeyIdentity setupNewIdentity() throws Exception {
         PrivateKeyIdentity identity = new MnemonicIdentity("random mnemonic #" + Math.random(), 0);
 
-        Transfer.sendFunds(web3j, deployer.getCredentials(), identity.getAddress().toString(),
+        Transfer.sendFunds(sdk.getWeb3j(), deployer.getCredentials(), identity.getAddress().toString(),
                 BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
         // TODO: implement functions to convert cogs and AGIs
         mpe.transfer(identity.getAddress(), BigInteger.valueOf(1000000));
