@@ -21,7 +21,7 @@ public class SnetSdk implements Closeable
         // See README.md on how to set channel signer private key via resources
         String privateKey = res.getString(R.string.channel_key);
         String infuraID = res.getString(R.string.infura_id);
-        Configuration config = new StaticConfiguration.newBuilder()
+        Configuration config = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint("https://mainnet.infura.io/v3/" + infuraID)
             .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
             .setSignerType(Configuration.SignerType.PRIVATE_KEY)
