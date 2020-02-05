@@ -14,7 +14,7 @@ public class StaticConfiguration implements Configuration {
 
     private final URL ethereumJsonRpcEndpoint;
     private final URL ipfsEndpoint;
-    private final SignerType signerType;
+    private final IdentityType signerType;
     private final Optional<String> signerMnemonic;
     private final Optional<byte[]> signerPrivateKey;
     private final Optional<Address> registryAddress;
@@ -46,7 +46,7 @@ public class StaticConfiguration implements Configuration {
         return ipfsEndpoint;
     }
 
-    public SignerType getSignerType() {
+    public IdentityType getSignerType() {
         return signerType;
     }
 
@@ -70,7 +70,7 @@ public class StaticConfiguration implements Configuration {
 
         private URL ethereumJsonRpcEndpoint;
         private URL ipfsEndpoint;
-        private SignerType signerType;
+        private IdentityType signerType;
         private Optional<String> signerMnemonic;
         private Optional<byte[]> signerPrivateKey;
         private Optional<Address> registryAddress;
@@ -129,12 +129,12 @@ public class StaticConfiguration implements Configuration {
             return ipfsEndpoint;
         }
 
-        public Builder setSignerType(SignerType signerType) {
+        public Builder setSignerType(IdentityType signerType) {
             this.signerType = signerType;
             return this;
         }
 
-        public SignerType getSignerType() {
+        public IdentityType getSignerType() {
             return signerType;
         }
 

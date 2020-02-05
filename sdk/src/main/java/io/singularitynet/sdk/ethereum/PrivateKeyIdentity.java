@@ -9,7 +9,7 @@ import org.web3j.crypto.Credentials;
 
 import io.singularitynet.sdk.common.Utils;
 
-public class PrivateKeyIdentity implements Signer {
+public class PrivateKeyIdentity implements Identity {
 
     private final ECKeyPair key;
 

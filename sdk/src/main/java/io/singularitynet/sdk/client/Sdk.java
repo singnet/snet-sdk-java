@@ -21,7 +21,7 @@ import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.client.BaseServiceClient;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 
 public class Sdk {
 
@@ -29,7 +29,7 @@ public class Sdk {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    private final Signer signer;
+    private final Identity signer;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -45,7 +45,7 @@ public class Sdk {
         this.mpe = factory.getMultiPartyEscrow();
     }
 
-    public Sdk(Web3j web3j, IPFS ipfs, Signer signer, Registry registry,
+    public Sdk(Web3j web3j, IPFS ipfs, Identity signer, Registry registry,
             MultiPartyEscrow mpe) {
         this.web3j = web3j;
         this.ipfs = ipfs;

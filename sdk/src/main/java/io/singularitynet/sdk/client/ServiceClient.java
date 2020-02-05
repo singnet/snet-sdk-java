@@ -10,7 +10,7 @@ import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.Pricing;
 import io.singularitynet.sdk.registry.PriceModel;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 
@@ -35,9 +35,9 @@ public interface ServiceClient {
     // FIXME: this method can be removed and signer can be received from SDK
     // itself instead getting it from daemon.
     /**
-     * Return the signer to sign payments.
+     * Return identity to sign payments.
      */
-    Signer getSigner();
+    Identity getSigner();
 
     /**
      * Construct new gRPC stub to call the platform service.
@@ -63,7 +63,7 @@ public interface ServiceClient {
     void shutdownNow();
 
     // FIXME: add javadoc
-    PaymentChannel openPaymentChannel(Signer signer, BigInteger value,
+    PaymentChannel openPaymentChannel(Identity signer, BigInteger value,
             BigInteger expiration);
 
     //FIXME: find out proper place for the methods

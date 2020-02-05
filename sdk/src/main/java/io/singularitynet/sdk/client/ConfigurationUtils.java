@@ -16,7 +16,7 @@ public class ConfigurationUtils {
         StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint(props.getProperty("ethereum.json.rpc.endpoint"))
             .setIpfsEndpoint(props.getProperty("ipfs.endpoint"))
-            .setSignerType(Enum.valueOf(Configuration.SignerType.class, props.getProperty("signer.type").toUpperCase()));
+            .setSignerType(Enum.valueOf(Configuration.IdentityType.class, props.getProperty("signer.type").toUpperCase()));
 
         Optional.ofNullable(props.getProperty("signer.mnemonic")).ifPresent(builder::setSignerMnemonic);
         Optional.ofNullable(props.getProperty("signer.private.key.hex")).map(Utils::hexToBytes).ifPresent(builder::setSignerPrivateKey);
@@ -43,7 +43,7 @@ public class ConfigurationUtils {
         StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint(config.ethereumJsonRpcEndpoint)
             .setIpfsEndpoint(config.ipfsEndpoint)
-            .setSignerType(Enum.valueOf(Configuration.SignerType.class, config.signerType.toUpperCase()));
+            .setSignerType(Enum.valueOf(Configuration.IdentityType.class, config.signerType.toUpperCase()));
 
         Optional.ofNullable(config.signerMnemonic).ifPresent(builder::setSignerMnemonic);
         Optional.ofNullable(config.signerPrivateKeyHex).map(Utils::hexToBytes).ifPresent(builder::setSignerPrivateKey);

@@ -24,7 +24,7 @@ public class SnetSdk implements Closeable
         Configuration config = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint("https://mainnet.infura.io/v3/" + infuraID)
             .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
-            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerType(Configuration.IdentityType.PRIVATE_KEY)
             .setSignerPrivateKey(Utils.hexToBytes(privateKey))
             .build();
         sdk = new Sdk(config);

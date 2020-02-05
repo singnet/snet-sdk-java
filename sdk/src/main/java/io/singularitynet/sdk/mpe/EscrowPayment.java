@@ -8,7 +8,7 @@ import lombok.ToString;
 
 import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.daemon.PaymentSerializer;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.common.Utils;
 
@@ -85,7 +85,7 @@ public class EscrowPayment implements Payment {
     
         private PaymentChannel paymentChannel;
         private BigInteger amount;
-        private Signer signer;
+        private Identity signer;
     
         public Builder() {
         }
@@ -100,7 +100,7 @@ public class EscrowPayment implements Payment {
             return this;
         }
 
-        public Builder setSigner(Signer signer) {
+        public Builder setSigner(Identity signer) {
             this.signer = signer;
             return this;
         }

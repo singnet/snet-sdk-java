@@ -17,7 +17,7 @@ import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.ContractUtils;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.contracts.Registry;
@@ -29,7 +29,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    private final Signer signer;
+    private final Identity signer;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -114,7 +114,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     }
 
     @Override
-    public Signer getSigner() {
+    public Identity getSigner() {
         return signer;
     }
 

@@ -1,6 +1,6 @@
 package io.singularitynet.sdk.ethereum;
 
-public interface Signer extends WithAddress {
+public interface Identity extends WithAddress {
 
     Signature sign(byte[] message);
 

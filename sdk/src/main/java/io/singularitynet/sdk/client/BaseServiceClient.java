@@ -14,7 +14,7 @@ import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 
 /**
  * The class is responsible for providing all necessary facilities to call
@@ -29,7 +29,7 @@ public class BaseServiceClient implements ServiceClient {
     private final MetadataProvider metadataProvider;
     private final PaymentChannelProvider paymentChannelProvider;
     private final PaymentStrategy paymentStrategy;
-    private final Signer signer;
+    private final Identity signer;
 
     /**
      * Constructor.
@@ -46,7 +46,7 @@ public class BaseServiceClient implements ServiceClient {
             MetadataProvider metadataProvider,
             PaymentChannelProvider paymentChannelProvider,
             PaymentStrategy paymentStrategy,
-            Signer signer) {
+            Identity signer) {
         this.mpe = mpe;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
@@ -67,7 +67,7 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public Signer getSigner() {
+    public Identity getSigner() {
         return signer;
     }
 
@@ -88,7 +88,7 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public PaymentChannel openPaymentChannel(Signer signer, BigInteger value,
+    public PaymentChannel openPaymentChannel(Identity signer, BigInteger value,
             BigInteger expiration) {
 
         // FIXME: should it be the method parameter?

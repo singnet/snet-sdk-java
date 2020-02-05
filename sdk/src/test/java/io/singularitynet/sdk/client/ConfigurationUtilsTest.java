@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.client.Configuration.SignerType;
+import io.singularitynet.sdk.client.Configuration.IdentityType;
 
 public class ConfigurationUtilsTest {
 
@@ -64,7 +64,7 @@ public class ConfigurationUtilsTest {
 
         Configuration config = ConfigurationUtils.fromJson(json);
 
-        assertEquals("Signer type", SignerType.PRIVATE_KEY, config.getSignerType());
+        assertEquals("Signer type", IdentityType.PRIVATE_KEY, config.getSignerType());
         assertArrayEquals("Signer private key", privateKey, config.getSignerPrivateKey().get());
     }
 

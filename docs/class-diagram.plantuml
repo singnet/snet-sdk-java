@@ -8,15 +8,15 @@ package io.singularitynet.sdk.ethereum {
         Address getAddress();
     }
 
-    interface Signer {
+    interface Identity {
         Signature sign(byte[] message);
     }
-    WithAddress <|-- Signer
+    WithAddress <|-- Identity
 
     class PrivateKeyIdentity {
         Credentials getCredentials();
     }
-    Signer <|.. PrivateKeyIdentity
+    Identity <|.. PrivateKeyIdentity
 
     class MnemonicIdentity
     PrivateKeyIdentity <|-- MnemonicIdentity
@@ -64,7 +64,7 @@ package io.singularitynet.sdk.daemon {
     class PaymentChannelStateService {
         PaymentChannelStateReply getChannelState(BigInteger channelId);
     }
-    PaymentChannelStateService o-- Signer
+    PaymentChannelStateService o-- Identity
     PaymentChannelStateService -- DaemonConnection
 
     interface Payment {
@@ -101,7 +101,7 @@ package io.singularitynet.sdk.client {
     interface Configuration {
         URL getEthereumJsonRpcEndpoint();
         URL getIpfsEndpoint();
-        SignerType getSignerType();
+        IdentityType getSignerType();
         Optional<String> getSignerMnemonic();
         Optional<byte[]> getSignerPrivateKey();
         Optional<Address> getRegistryAddress();
@@ -121,7 +121,7 @@ package io.singularitynet.sdk.client {
     interface DependencyFactory {
         Web3j getWeb3j();
         IPFS getIpfs();
-        Signer getSigner();
+        Identity getSigner();
         Registry getRegistry();
         MultiPartyEscrow getMultiPartyEscrow();
     }
@@ -158,7 +158,7 @@ package io.singularitynet.sdk.client {
     interface ServiceClient {
         MetadataProvider getMetadataProvider();
         PaymentChannelProvider getPaymentChannelProvider();
-        Signer getSigner();
+        Identity getSigner();
         T getGrpcStub(Function<Channel, T> constructor);
         String getEndpointGroupName();
         void shutdownNow();
@@ -170,7 +170,7 @@ package io.singularitynet.sdk.client {
     BaseServiceClient *-- MetadataProvider
     BaseServiceClient *-- PaymentChannelProvider
     BaseServiceClient *-- PaymentStrategy
-    BaseServiceClient *-- Signer
+    BaseServiceClient *-- Identity
 
 }
 

@@ -21,7 +21,7 @@ import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
@@ -63,7 +63,7 @@ public class PaymentChannelTestIT {
     public void setUp() {
         this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
         StaticConfiguration config = configBuilder
-            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerType(Configuration.IdentityType.PRIVATE_KEY)
             .setSignerPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
             .build();
         this.sdk = new Sdk(config);
@@ -198,11 +198,11 @@ public class PaymentChannelTestIT {
     }
 
 
-    private void run(BiConsumer<Signer, ServiceClient> test) throws Exception {
+    private void run(BiConsumer<Identity, ServiceClient> test) throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
 
         StaticConfiguration config = configBuilder
-            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
+            .setSignerType(Configuration.IdentityType.PRIVATE_KEY)
             .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
         

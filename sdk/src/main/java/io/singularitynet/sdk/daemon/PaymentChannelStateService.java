@@ -12,7 +12,7 @@ import io.singularitynet.daemon.escrow.*;
 import io.singularitynet.daemon.escrow.StateService.*;
 import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc.*;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
@@ -25,7 +25,7 @@ public class PaymentChannelStateService {
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
-            MultiPartyEscrowContract mpe, Ethereum ethereum, Signer signer) {
+            MultiPartyEscrowContract mpe, Ethereum ethereum, Identity signer) {
         this.signingHelper = new MessageSigningHelper(mpe.getContractAddress(), ethereum, signer);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
@@ -66,10 +66,10 @@ public class PaymentChannelStateService {
 
         private final byte[] mpeContractAddress;
         private final Ethereum ethereum;
-        private final Signer signer;
+        private final Identity signer;
 
         public MessageSigningHelper(Address mpeAddress, Ethereum ethereum,
-                Signer signer) {
+                Identity signer) {
             this.mpeContractAddress = mpeAddress.toByteArray();
             this.ethereum = ethereum;
             this.signer = signer;
