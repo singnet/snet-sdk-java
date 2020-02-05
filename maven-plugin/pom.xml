@@ -179,14 +179,8 @@
 
   <profiles>
     <profile>
-      <id>run-integration-environment-container</id>
+      <id>run-integration-environment</id>
 
-      <activation>
-        <property>
-          <name>skipITs</name>
-          <value>false</value>
-        </property>
-      </activation>
       <build>
         <plugins>
 
