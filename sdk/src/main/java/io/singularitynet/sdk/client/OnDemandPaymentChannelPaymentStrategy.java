@@ -33,7 +33,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPayment
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
         MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
 
-        String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+        String groupName = serviceClient.getEndpointGroupName();
         EndpointGroup endpointGroup = metadataProvider
             .getServiceMetadata()
             // TODO: what does guarantee that endpoint group name is not

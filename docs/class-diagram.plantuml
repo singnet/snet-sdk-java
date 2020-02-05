@@ -160,7 +160,7 @@ package io.singularitynet.sdk.client {
         PaymentChannelProvider getPaymentChannelProvider();
         Signer getSigner();
         T getGrpcStub(Function<Channel, T> constructor);
-        DaemonConnection getDaemonConnection();
+        String getEndpointGroupName();
         void shutdownNow();
     }
 

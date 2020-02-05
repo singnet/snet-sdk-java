@@ -108,7 +108,7 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+            String groupName = serviceClient.getEndpointGroupName();
             //FIXME: simplify the code
             BigInteger priceInCogs = serviceClient.getMetadataProvider()
                 .getServiceMetadata()
@@ -138,7 +138,7 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+            String groupName = serviceClient.getEndpointGroupName();
             //FIXME: simplify the code
             EndpointGroup endpointGroup = serviceClient.getMetadataProvider()
                 .getServiceMetadata()
@@ -169,7 +169,7 @@ public class PaymentChannelTestIT {
                 .getAllChannels(caller.getAddress())
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
-            String groupName = serviceClient.getDaemonConnection().getEndpointGroupName();
+            String groupName = serviceClient.getEndpointGroupName();
             //FIXME: simplify the code
             EndpointGroup endpointGroup = serviceClient.getMetadataProvider()
                 .getServiceMetadata()

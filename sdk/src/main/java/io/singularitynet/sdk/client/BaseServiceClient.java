@@ -77,8 +77,8 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public DaemonConnection getDaemonConnection() {
-        return daemonConnection;
+    public String getEndpointGroupName() {
+        return daemonConnection.getEndpointGroupName();
     }
 
     @Override

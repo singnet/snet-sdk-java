@@ -48,14 +48,13 @@ public interface ServiceClient {
      */
     <T> T getGrpcStub(Function<Channel, T> constructor);
 
-    // FIXME: this can be replaced by returning current endpoint group name
     /**
-     * Return connection to daemon. The connection can be used for tracking
-     * properties which can be changed after failover or reconnection.
-     * @see DaemonConnection#getEndpointGroupName()
-     * @return instance of the connection to the daemon.
+     * Return current endpoint group name. Endpoint group name can be changed
+     * after failover or reconnection.
+     * @return name of the current endpoint group to which client  is
+     * connected.
      */
-    DaemonConnection getDaemonConnection();
+    String getEndpointGroupName();
 
     /**
      * Closes platform service connection. This call causes calling
