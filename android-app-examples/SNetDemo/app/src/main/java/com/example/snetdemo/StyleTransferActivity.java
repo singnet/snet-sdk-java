@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -126,6 +127,12 @@ public class StyleTransferActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
+        }
+
+        if(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+        {
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
         }
 
         setTitle("Style Transfer Demo");
@@ -370,6 +377,10 @@ public class StyleTransferActivity extends AppCompatActivity
                 }
             }
         }
+        if (requestCode == REQUEST_CODE_SHOW_IMAGE)
+        {
+            enableActivityGUI();
+        }
 
         if( isInputImageUploaded && isStyleImageUploaded)
         {
@@ -412,8 +423,8 @@ public class StyleTransferActivity extends AppCompatActivity
     }
     public void sendRunStyleTransferMessage(View view)
     {
-        if(this.isInputImageUploaded && this.isStyleImageUploaded)
-        {
+        if(this.isInputImageUploaded && this.isStyleImageUploaded) {
+
             AsyncTask<Object, Integer, Object> task = new AsyncTask<Object, Integer, Object>()
             {
 
@@ -534,7 +545,6 @@ public class StyleTransferActivity extends AppCompatActivity
 
                 protected void onPostExecute(Object obj)
                 {
-                    enableActivityGUI();
 
                     serviceResponseTime /= 1e6;
                     textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
@@ -542,14 +552,20 @@ public class StyleTransferActivity extends AppCompatActivity
 
                     if (!isExceptionCaught)
                     {
-                        Intent intent = new Intent(StyleTransferActivity.this, ImageShowActivity.class);
 
-                        intent.putExtra("img_path", imageResultPath);
-                        intent.putExtra("response_time", serviceResponseTime);
+                        galleryAddPic(StyleTransferActivity.this, imageResultPath);
+
+                        File file = new File(imageResultPath);
+
+                        final Intent intent = new Intent(Intent.ACTION_VIEW)//
+                                .setDataAndType(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ?
+                                                FileProvider.getUriForFile(StyleTransferActivity.this,getPackageName(), file) :
+                                                Uri.fromFile(file),
+                                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         startActivityForResult(intent, REQUEST_CODE_SHOW_IMAGE);
 
-                        galleryAddPic(StyleTransferActivity.this, imageResultPath);
+
                     }
                     else
                     {
