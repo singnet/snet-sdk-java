@@ -27,7 +27,6 @@ public class SingleServiceSingleClientTest {
     public void setUp() throws Exception {
         env = Environment.env();
 
-
         String orgId = "test-org-id";
         env.newOrganizationMetadata(orgId);
         env.registerOrganization(orgId);

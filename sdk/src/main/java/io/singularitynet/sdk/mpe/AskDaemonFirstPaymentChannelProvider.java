@@ -3,23 +3,29 @@ package io.singularitynet.sdk.mpe;
 import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.web3j.protocol.core.Ethereum;
 
 import io.singularitynet.sdk.common.Preconditions;
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
+import io.singularitynet.sdk.registry.PaymentGroupId;
 
 public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
 
     private final static Logger log = LoggerFactory.getLogger(AskDaemonFirstPaymentChannelProvider.class);
 
+    private final Ethereum ethereum;
     private final MultiPartyEscrowContract mpe;
     private final PaymentChannelStateService stateService;
 
-    public AskDaemonFirstPaymentChannelProvider(MultiPartyEscrowContract mpe,
+    public AskDaemonFirstPaymentChannelProvider(Ethereum ethereum,
+            MultiPartyEscrowContract mpe,
             PaymentChannelStateService stateService) {
+        this.ethereum = ethereum;
         this.mpe = mpe;
         this.stateService = stateService;
     }
@@ -38,6 +44,16 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
             channel = mergeChannelState(channel, reply);
         }
         log.debug("Channel state, channel: {}", channel);
+        return channel;
+    }
+
+    @Override
+    public PaymentChannel openChannel(Address signer, Address recipient,
+            PaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks) {
+        BigInteger currentBlock = Utils.wrapExceptions(() -> ethereum.ethBlockNumber().send().getBlockNumber());
+        BigInteger expiration = currentBlock.add(lifetimeInBlocks);
+        PaymentChannel channel = mpe.openChannel(signer, recipient, groupId,
+                value, expiration);
         return channel;
     }
 

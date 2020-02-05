@@ -23,6 +23,17 @@ public interface DaemonConnection {
     void setClientCallsInterceptor(ClientInterceptor interceptor);
 
     /**
+     * Return the name of the current endpoint group to which the connection is
+     * opened. If implementation sticks to the same endpoint group then method
+     * returns same value each time. If implementation supports failover
+     * between endpoint groups then the name of the group can be changed after
+     * failover happened.
+     * @see EndpointGroup#getGroupName()
+     * @return name of the endpoint group
+     */
+    String getEndpointGroupName();
+
+    /**
      * Closes platform service connection. This call causes calling
      * shutdownNow() on each stub returned by getGrpcStub() method.
      */

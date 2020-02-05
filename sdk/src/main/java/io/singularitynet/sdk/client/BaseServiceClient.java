@@ -70,6 +70,11 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
+    public DaemonConnection getDaemonConnection() {
+        return daemonConnection;
+    }
+
+    @Override
     public void shutdownNow() {
         daemonConnection.shutdownNow();
         log.info("Service client shutdown");

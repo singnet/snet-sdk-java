@@ -30,7 +30,7 @@ public class DaemonMock extends PaymentChannelStateServiceGrpc.PaymentChannelSta
             payments.add(payment.get());
         }
         return next.startCall(call, headers);
-            }
+    }
 
     public List<Payment> getPayments() {
         return payments;

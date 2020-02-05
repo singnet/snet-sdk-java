@@ -6,6 +6,7 @@ import java.util.function.Function;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.daemon.DaemonConnection;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -38,6 +39,14 @@ public interface ServiceClient {
      * @return gRPC stub constracted.
      */
     <T> T getGrpcStub(Function<Channel, T> constructor);
+
+    /**
+     * Return connection to daemon. The connection can be used for tracking
+     * properties which can be changed after failover or reconnection.
+     * @see DaemonConnection#getEndpointGroupName()
+     * @return instance of the connection to the daemon.
+     */
+    DaemonConnection getDaemonConnection();
 
     /**
      * Closes platform service connection. This call causes calling

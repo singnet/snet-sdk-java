@@ -13,7 +13,9 @@ package io.singularitynet.sdk.ethereum {
     }
     WithAddress <|-- Signer
 
-    class PrivateKeyIdentity
+    class PrivateKeyIdentity {
+        Credentials getCredentials();
+    }
     Signer <|.. PrivateKeyIdentity
 
     class MnemonicIdentity
@@ -37,6 +39,7 @@ package io.singularitynet.sdk.registry {
 
     interface MetadataProvider {
         ServiceMetadata getServiceMetadata();
+        OrganizationMetadata getOrganizationMetadata();
     }
     class RegistryMetadataProvider
     MetadataProvider <|.. RegistryMetadataProvider
@@ -50,6 +53,7 @@ package io.singularitynet.sdk.daemon {
     interface DaemonConnection {
         <T> T getGrpcStub(Function<Channel, T> constructor);
         void setClientCallsInterceptor(ClientInterceptor interceptor);
+        String getEndpointGroupName();
         void shutdownNow();
     }
 
@@ -73,10 +77,13 @@ package io.singularitynet.sdk.mpe {
     class MultiPartyEscrowContract {
         Optional<PaymentChannel> getChannelById(BigInteger channelId);
         Address getContractAddress();
+        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
+        void transfer(Address receiver, BigInteger value);
     }
 
     interface PaymentChannelProvider {
         PaymentChannel getChannelById(BigInteger channelId);
+        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks);
     }
 
     class AskDaemonFirstPaymentChannelProvider
@@ -92,17 +99,24 @@ package io.singularitynet.sdk.mpe {
 package io.singularitynet.sdk.client {
 
     interface Configuration {
-        String getEthereumJsonRpcEndpoint();
-        URL getIpfsUrl();
+        URL getEthereumJsonRpcEndpoint();
+        URL getIpfsEndpoint();
         SignerType getSignerType();
-        String getSignerMnemonic();
-        byte[] getSignerPrivateKey();
+        Optional<String> getSignerMnemonic();
+        Optional<byte[]> getSignerPrivateKey();
         Optional<Address> getRegistryAddress();
         Optional<Address> getMultiPartyEscrowAddress();
     }
 
-    class JsonConfiguration
-    Configuration <|.. JsonConfiguration
+    class ConfigurationUtils {
+        static Configuration fromProperties(Properties props);
+        static Configuration fromJson(String json);
+    }
+    
+    ConfigurationUtils -- Configuration
+
+    class StaticConfiguration
+    Configuration <|.. StaticConfiguration
 
     interface DependencyFactory {
         Web3j getWeb3j();
@@ -119,8 +133,16 @@ package io.singularitynet.sdk.client {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
     }
 
+    abstract class PaymentChannelPaymentStrategy {
+        protected PaymentChannel selectChannel(ServiceClient serviceClient);
+    }
+    PaymentStrategy <|.. PaymentChannelPaymentStrategy
+
     class FixedPaymentChannelPaymentStrategy
-    PaymentStrategy <|.. FixedPaymentChannelPaymentStrategy
+    PaymentChannelPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
+    
+    class OnDemandPaymentChannelPaymentStrategy
+    PaymentChannelPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
 
     class Sdk {
         Sdk(Configuration config);
@@ -138,6 +160,7 @@ package io.singularitynet.sdk.client {
         PaymentChannelProvider getPaymentChannelProvider();
         Signer getSigner();
         T getGrpcStub(Function<Channel, T> constructor);
+        DaemonConnection getDaemonConnection();
         void shutdownNow();
     }
 
@@ -152,4 +175,3 @@ package io.singularitynet.sdk.client {
 }
 
 @enduml
-

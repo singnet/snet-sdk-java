@@ -5,7 +5,8 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
-import org.web3j.tx.ReadonlyTransactionManager;
+import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.ipfs.api.IPFS;
@@ -35,7 +36,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     public ConfigurationDependencyFactory(Configuration config) {
         Preconditions.checkArgument(config.getEthereumJsonRpcEndpoint() != null,
                 "Ethereum JSON RPC endpoint is required");
-        Preconditions.checkArgument(config.getIpfsUrl() != null,
+        Preconditions.checkArgument(config.getIpfsEndpoint() != null,
                 "IPFS endpoint is required");
         Preconditions.checkArgument(config.getSignerType() != null,
                 "Signer type is required");
@@ -43,19 +44,32 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         log.info("Construct SDK dependencies");
 
         log.info("Open connection to Ethereum RPC endpoint, ethereumJsonRpcEndpoint: {}", config.getEthereumJsonRpcEndpoint());
-        this.web3j = Web3j.build(new HttpService(config.getEthereumJsonRpcEndpoint()));
+        this.web3j = Web3j.build(new HttpService(config.getEthereumJsonRpcEndpoint().toString()));
 
-        URL ipfsUrl = config.getIpfsUrl();
-        log.info("Open connection to IPFS RPC endpoint, ipfsUrl: {}", ipfsUrl);
-        this.ipfs = new IPFS(ipfsUrl.getHost(), ipfsUrl.getPort());
+        URL ipfsEndpoint = config.getIpfsEndpoint();
+        log.info("Open connection to IPFS RPC endpoint, ipfsEndpoint: {}", ipfsEndpoint);
+        this.ipfs = new IPFS(ipfsEndpoint.getHost(), ipfsEndpoint.getPort());
+
+        DefaultGasProvider gasProvider = new DefaultGasProvider();
+        TransactionManager transactionManager;
 
         log.info("New signer, type: {}", config.getSignerType());
         switch (config.getSignerType()) {
             case MNEMONIC:
-                this.signer = new MnemonicIdentity(config.getSignerMnemonic(), 0);
+                {
+                    Preconditions.checkArgument(config.getSignerMnemonic().isPresent(), "No signer mnemonic specified");
+                    PrivateKeyIdentity signer = new MnemonicIdentity(config.getSignerMnemonic().get(), 0);
+                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
+                    this.signer = signer;
+                }
                 break;
             case PRIVATE_KEY:
-                this.signer = new PrivateKeyIdentity(config.getSignerPrivateKey());
+                {
+                    Preconditions.checkArgument(config.getSignerPrivateKey().isPresent(), "No signer private key specified");
+                    PrivateKeyIdentity signer = new PrivateKeyIdentity(config.getSignerPrivateKey().get());
+                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
+                    this.signer = signer;
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected signer type: " + config.getSignerType());
@@ -65,10 +79,6 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
             return web3j.netVersion().send().getNetVersion();
         });
         log.info("Ethereum network id, networkId: {}", networkId);
-        DefaultGasProvider gasProvider = new DefaultGasProvider();
-        ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(
-                // TODO: add unit test on prefix adding
-                web3j, signer.getAddress().toString());
 
         Address registryAddress;
         if (config.getRegistryAddress().isPresent()) {

@@ -72,7 +72,7 @@ public class Utils {
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-    public static String bytesToHex(byte[] bytes) {
+    public static String bytesToHexWithSpaces(byte[] bytes) {
         StringBuffer hex = new StringBuffer();
         int eight = 0;
         for (byte b : bytes) {
@@ -82,6 +82,14 @@ public class Utils {
                 hex.append(" ");
                 eight = 0;
             }
+        }
+        return hex.toString();
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuffer hex = new StringBuffer();
+        for (byte b : bytes) {
+            hex.append(HEX_ARRAY[(b >> 4) & 0xF]).append(HEX_ARRAY[b & 0xF]);
         }
         return hex.toString();
     }
