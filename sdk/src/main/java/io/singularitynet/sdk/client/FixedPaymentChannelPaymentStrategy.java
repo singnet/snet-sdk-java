@@ -10,7 +10,7 @@ import io.singularitynet.sdk.mpe.PaymentChannel;
  * the specified payment channel.
  */
 @ToString
-public class FixedPaymentChannelPaymentStrategy extends PaymentChannelPaymentStrategy {
+public class FixedPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
         
     private final BigInteger channelId;
 

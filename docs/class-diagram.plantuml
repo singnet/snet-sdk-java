@@ -133,16 +133,16 @@ package io.singularitynet.sdk.client {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
     }
 
-    abstract class PaymentChannelPaymentStrategy {
+    abstract class EscrowPaymentStrategy {
         protected PaymentChannel selectChannel(ServiceClient serviceClient);
     }
-    PaymentStrategy <|.. PaymentChannelPaymentStrategy
+    PaymentStrategy <|.. EscrowPaymentStrategy
 
     class FixedPaymentChannelPaymentStrategy
-    PaymentChannelPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
     
     class OnDemandPaymentChannelPaymentStrategy
-    PaymentChannelPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
 
     class Sdk {
         Sdk(Configuration config);

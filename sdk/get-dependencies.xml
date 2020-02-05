@@ -65,7 +65,7 @@
     <mkdir dir="${project.build.directory}/proto"/>
     <move file="${project.build.directory}/snet-daemon/proto/state_service.proto"
       todir="${project.build.directory}/proto" />
-    <!-- Next step should be removed when daemon v2.0.3 is released -->
+    <!-- TODO: Next step should be removed when daemon v2.0.3 is released -->
     <echo message='option java_package = "io.singularitynet.daemon.escrow";'
       file="${project.build.directory}/proto/state_service.proto" append="true"/>
   </target>

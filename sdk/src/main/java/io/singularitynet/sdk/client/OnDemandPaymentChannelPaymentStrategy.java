@@ -17,7 +17,7 @@ import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.PaymentChannelProvider;
 
 @ToString
-public class OnDemandPaymentChannelPaymentStrategy extends PaymentChannelPaymentStrategy {
+public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
     private final Web3j web3j;
     private final BigInteger expirationAdvance;
