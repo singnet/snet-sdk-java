@@ -21,12 +21,15 @@ import io.singularitynet.sdk.mpe.PaymentChannelManager;
 public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
     private final Ethereum ethereum;
+    private final PaymentChannelManager channelManager;
+
     private final BigInteger expirationAdvance;
     private final BigInteger callsAdvance;
         
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
         super(sdk);
         this.ethereum = sdk.getEthereum();
+        this.channelManager = sdk.getPaymentChannelManager();
         this.expirationAdvance = BigInteger.valueOf(1);
         this.callsAdvance = BigInteger.valueOf(1);
     }
@@ -56,8 +59,6 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             .getPaymentExpirationThreshold();
         BigInteger currentBlock = ethereum.getEthBlockNumber();
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
-
-        PaymentChannelManager channelManager = getPaymentChannelManager();
 
         Optional<Supplier<PaymentChannel>> channelSupplier = channelManager
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())

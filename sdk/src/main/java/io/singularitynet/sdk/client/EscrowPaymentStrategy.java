@@ -6,7 +6,6 @@ import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;
-import io.singularitynet.sdk.mpe.PaymentChannelManager;
 import io.singularitynet.sdk.registry.*;
 
 // TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
@@ -15,21 +14,15 @@ import io.singularitynet.sdk.registry.*;
 public abstract class EscrowPaymentStrategy implements PaymentStrategy {
 
     private final Identity signer;
-    private final PaymentChannelManager channelManager;
 
     public EscrowPaymentStrategy(Sdk sdk) {
         this.signer = sdk.getIdentity();
-        this.channelManager = sdk.getPaymentChannelManager();
     }
 
     protected Identity getSigner() {
         return signer;
     }
 
-    protected PaymentChannelManager getPaymentChannelManager() {
-        return channelManager;
-    }
-        
     protected abstract PaymentChannel selectChannel(ServiceClient serviceClient);
 
     @Override
