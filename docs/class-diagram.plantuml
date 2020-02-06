@@ -104,7 +104,7 @@ package io.singularitynet.sdk.mpe {
 
     interface PaymentChannelManager {
         Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
-        PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,\n\tAddress recipient, WithAddress signer, BigInteger value, BigInteger expiration);
+        PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,\n\tWithAddress signer, BigInteger value, BigInteger expiration);
         PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
         PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
         PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,\n\tBigInteger expiration, BigInteger amount);
@@ -158,7 +158,6 @@ package io.singularitynet.sdk.client {
     }
     PaymentStrategy <|.. EscrowPaymentStrategy
     EscrowPaymentStrategy o-- Identity
-    EscrowPaymentStrategy o-- PaymentChannelManager
 
     class FixedPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
@@ -166,6 +165,7 @@ package io.singularitynet.sdk.client {
     class OnDemandPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
     OnDemandPaymentChannelPaymentStrategy o-- Ethereum
+    OnDemandPaymentChannelPaymentStrategy o-- PaymentChannelManager
 
     class Sdk {
         Sdk(Configuration config);
