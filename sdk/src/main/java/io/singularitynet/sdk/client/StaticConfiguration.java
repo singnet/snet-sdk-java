@@ -14,9 +14,9 @@ public class StaticConfiguration implements Configuration {
 
     private final URL ethereumJsonRpcEndpoint;
     private final URL ipfsEndpoint;
-    private final IdentityType signerType;
-    private final Optional<String> signerMnemonic;
-    private final Optional<byte[]> signerPrivateKey;
+    private final IdentityType identityType;
+    private final Optional<String> identityMnemonic;
+    private final Optional<byte[]> identityPrivateKey;
     private final Optional<Address> registryAddress;
     private final Optional<Address> multiPartyEscrowAddress;
 
@@ -31,9 +31,9 @@ public class StaticConfiguration implements Configuration {
     private StaticConfiguration(Builder builder) {
         this.ethereumJsonRpcEndpoint = builder.ethereumJsonRpcEndpoint;
         this.ipfsEndpoint = builder.ipfsEndpoint;
-        this.signerType = builder.signerType;
-        this.signerMnemonic = builder.signerMnemonic;
-        this.signerPrivateKey = builder.signerPrivateKey;
+        this.identityType = builder.identityType;
+        this.identityMnemonic = builder.identityMnemonic;
+        this.identityPrivateKey = builder.identityPrivateKey;
         this.registryAddress = builder.registryAddress;
         this.multiPartyEscrowAddress = builder.multiPartyEscrowAddress;
     }
@@ -46,16 +46,16 @@ public class StaticConfiguration implements Configuration {
         return ipfsEndpoint;
     }
 
-    public IdentityType getSignerType() {
-        return signerType;
+    public IdentityType getIdentityType() {
+        return identityType;
     }
 
-    public Optional<String> getSignerMnemonic() {
-        return signerMnemonic;
+    public Optional<String> getIdentityMnemonic() {
+        return identityMnemonic;
     }
 
-    public Optional<byte[]> getSignerPrivateKey() {
-        return signerPrivateKey;
+    public Optional<byte[]> getIdentityPrivateKey() {
+        return identityPrivateKey;
     }
 
     public Optional<Address> getRegistryAddress() {
@@ -70,15 +70,15 @@ public class StaticConfiguration implements Configuration {
 
         private URL ethereumJsonRpcEndpoint;
         private URL ipfsEndpoint;
-        private IdentityType signerType;
-        private Optional<String> signerMnemonic;
-        private Optional<byte[]> signerPrivateKey;
+        private IdentityType identityType;
+        private Optional<String> identityMnemonic;
+        private Optional<byte[]> identityPrivateKey;
         private Optional<Address> registryAddress;
         private Optional<Address> multiPartyEscrowAddress;
 
         private Builder() {
-            this.signerMnemonic = Optional.<String>empty();
-            this.signerPrivateKey = Optional.<byte[]>empty();
+            this.identityMnemonic = Optional.<String>empty();
+            this.identityPrivateKey = Optional.<byte[]>empty();
             this.registryAddress = Optional.<Address>empty();
             this.multiPartyEscrowAddress = Optional.<Address>empty();
         }
@@ -86,9 +86,9 @@ public class StaticConfiguration implements Configuration {
         private Builder(StaticConfiguration object) {
             this.ethereumJsonRpcEndpoint = object.ethereumJsonRpcEndpoint;
             this.ipfsEndpoint = object.ipfsEndpoint;
-            this.signerType = object.signerType;
-            this.signerMnemonic = object.signerMnemonic;
-            this.signerPrivateKey = object.signerPrivateKey;
+            this.identityType = object.identityType;
+            this.identityMnemonic = object.identityMnemonic;
+            this.identityPrivateKey = object.identityPrivateKey;
             this.registryAddress = object.registryAddress;
             this.multiPartyEscrowAddress = object.multiPartyEscrowAddress;
         }
@@ -129,31 +129,31 @@ public class StaticConfiguration implements Configuration {
             return ipfsEndpoint;
         }
 
-        public Builder setSignerType(IdentityType signerType) {
-            this.signerType = signerType;
+        public Builder setIdentityType(IdentityType identityType) {
+            this.identityType = identityType;
             return this;
         }
 
-        public IdentityType getSignerType() {
-            return signerType;
+        public IdentityType getIdentityType() {
+            return identityType;
         }
 
-        public Builder setSignerMnemonic(String signerMnemonic) {
-            this.signerMnemonic = Optional.of(signerMnemonic);
+        public Builder setIdentityMnemonic(String identityMnemonic) {
+            this.identityMnemonic = Optional.of(identityMnemonic);
             return this;
         }
 
-        public Optional<String> getSignerMnemonic() {
-            return signerMnemonic;
+        public Optional<String> getIdentityMnemonic() {
+            return identityMnemonic;
         }
 
-        public Builder setSignerPrivateKey(byte[] signerPrivateKey) {
-            this.signerPrivateKey = Optional.of(signerPrivateKey);
+        public Builder setIdentityPrivateKey(byte[] identityPrivateKey) {
+            this.identityPrivateKey = Optional.of(identityPrivateKey);
             return this;
         }
 
-        public Optional<byte[]> getSignerPrivateKey() {
-            return signerPrivateKey;
+        public Optional<byte[]> getIdentityPrivateKey() {
+            return identityPrivateKey;
         }
 
         public Builder setRegistryAddress(Address registryAddress) {

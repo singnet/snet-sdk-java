@@ -64,8 +64,8 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     public void setUp() {
         this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
         StaticConfiguration config = configBuilder
-            .setSignerType(Configuration.IdentityType.PRIVATE_KEY)
-            .setSignerPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
+            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
+            .setIdentityPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
             .build();
         this.sdk = new Sdk(config);
 
@@ -206,8 +206,8 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         PrivateKeyIdentity caller = setupNewIdentity();
 
         StaticConfiguration config = configBuilder
-            .setSignerType(Configuration.IdentityType.PRIVATE_KEY)
-            .setSignerPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
+            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
+            .setIdentityPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
         
         Sdk sdk = new Sdk(config);

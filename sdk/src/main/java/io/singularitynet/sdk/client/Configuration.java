@@ -15,9 +15,9 @@ public interface Configuration {
 
     URL getEthereumJsonRpcEndpoint();
     URL getIpfsEndpoint();
-    IdentityType getSignerType();
-    Optional<String> getSignerMnemonic();
-    Optional<byte[]> getSignerPrivateKey();
+    IdentityType getIdentityType();
+    Optional<String> getIdentityMnemonic();
+    Optional<byte[]> getIdentityPrivateKey();
     Optional<Address> getRegistryAddress();
     Optional<Address> getMultiPartyEscrowAddress();
 

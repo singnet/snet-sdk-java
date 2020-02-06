@@ -30,8 +30,7 @@ public class Sdk {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    //FIXME: rename signer to identity
-    private final Identity signer;
+    private final Identity identity;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -42,16 +41,16 @@ public class Sdk {
     public Sdk(DependencyFactory factory) {
         this.web3j = factory.getWeb3j();
         this.ipfs = factory.getIpfs();
-        this.signer = factory.getSigner();
+        this.identity = factory.getIdentity();
         this.registry = factory.getRegistry();
         this.mpe = factory.getMultiPartyEscrow();
     }
 
-    public Sdk(Web3j web3j, IPFS ipfs, Identity signer, Registry registry,
+    public Sdk(Web3j web3j, IPFS ipfs, Identity identity, Registry registry,
             MultiPartyEscrow mpe) {
         this.web3j = web3j;
         this.ipfs = ipfs;
-        this.signer = signer;
+        this.identity = identity;
         this.registry = registry;
         this.mpe = mpe;
     }
@@ -68,14 +67,14 @@ public class Sdk {
         DaemonConnection connection = new RandomEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract, web3j, signer);
+                connection, mpeContract, web3j, identity);
         PaymentChannelStateProvider paymentChannelStateProvider = new
             AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
         MpePaymentChannelManager paymentChannelManager = new MpePaymentChannelManager(
                 metadataProvider, mpeContract, paymentChannelStateProvider);
 
         return new BaseServiceClient(connection, metadataProvider,
-                paymentChannelManager, paymentStrategy, signer); 
+                paymentChannelManager, paymentStrategy, identity); 
     }
 
     //FIXME: replace by web3j wrapper which can also cache results instead of

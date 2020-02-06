@@ -101,9 +101,9 @@ package io.singularitynet.sdk.client {
     interface Configuration {
         URL getEthereumJsonRpcEndpoint();
         URL getIpfsEndpoint();
-        IdentityType getSignerType();
-        Optional<String> getSignerMnemonic();
-        Optional<byte[]> getSignerPrivateKey();
+        IdentityType getIdentityType();
+        Optional<String> getIdentityMnemonic();
+        Optional<byte[]> getIdentityPrivateKey();
         Optional<Address> getRegistryAddress();
         Optional<Address> getMultiPartyEscrowAddress();
     }
@@ -121,7 +121,7 @@ package io.singularitynet.sdk.client {
     interface DependencyFactory {
         Web3j getWeb3j();
         IPFS getIpfs();
-        Identity getSigner();
+        Identity getIdentity();
         Registry getRegistry();
         MultiPartyEscrow getMultiPartyEscrow();
     }

@@ -11,7 +11,7 @@ public interface DependencyFactory {
 
     Web3j getWeb3j();
     IPFS getIpfs();
-    Identity getSigner();
+    Identity getIdentity();
     Registry getRegistry();
     MultiPartyEscrow getMultiPartyEscrow();
 

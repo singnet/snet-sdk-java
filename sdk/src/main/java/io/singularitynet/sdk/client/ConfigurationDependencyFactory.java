@@ -29,7 +29,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
 
     private final Web3j web3j;
     private final IPFS ipfs;
-    private final Identity signer;
+    private final Identity identity;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
@@ -38,8 +38,8 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
                 "Ethereum JSON RPC endpoint is required");
         Preconditions.checkArgument(config.getIpfsEndpoint() != null,
                 "IPFS endpoint is required");
-        Preconditions.checkArgument(config.getSignerType() != null,
-                "Signer type is required");
+        Preconditions.checkArgument(config.getIdentityType() != null,
+                "Identity type is required");
 
         log.info("Construct SDK dependencies");
 
@@ -53,26 +53,26 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         DefaultGasProvider gasProvider = new DefaultGasProvider();
         TransactionManager transactionManager;
 
-        log.info("New signer, type: {}", config.getSignerType());
-        switch (config.getSignerType()) {
+        log.info("New identity, type: {}", config.getIdentityType());
+        switch (config.getIdentityType()) {
             case MNEMONIC:
                 {
-                    Preconditions.checkArgument(config.getSignerMnemonic().isPresent(), "No signer mnemonic specified");
-                    PrivateKeyIdentity signer = new MnemonicIdentity(config.getSignerMnemonic().get(), 0);
-                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
-                    this.signer = signer;
+                    Preconditions.checkArgument(config.getIdentityMnemonic().isPresent(), "No identity mnemonic specified");
+                    PrivateKeyIdentity identity = new MnemonicIdentity(config.getIdentityMnemonic().get(), 0);
+                    transactionManager = new RawTransactionManager(web3j, identity.getCredentials());
+                    this.identity = identity;
                 }
                 break;
             case PRIVATE_KEY:
                 {
-                    Preconditions.checkArgument(config.getSignerPrivateKey().isPresent(), "No signer private key specified");
-                    PrivateKeyIdentity signer = new PrivateKeyIdentity(config.getSignerPrivateKey().get());
-                    transactionManager = new RawTransactionManager(web3j, signer.getCredentials());
-                    this.signer = signer;
+                    Preconditions.checkArgument(config.getIdentityPrivateKey().isPresent(), "No identity private key specified");
+                    PrivateKeyIdentity identity = new PrivateKeyIdentity(config.getIdentityPrivateKey().get());
+                    transactionManager = new RawTransactionManager(web3j, identity.getCredentials());
+                    this.identity = identity;
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Unexpected signer type: " + config.getSignerType());
+                throw new IllegalArgumentException("Unexpected identity type: " + config.getIdentityType());
         }
 
         String networkId = Utils.wrapExceptions(() -> {
@@ -114,8 +114,8 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     }
 
     @Override
-    public Identity getSigner() {
-        return signer;
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

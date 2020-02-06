@@ -16,10 +16,10 @@ public class ConfigurationUtils {
         StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint(props.getProperty("ethereum.json.rpc.endpoint"))
             .setIpfsEndpoint(props.getProperty("ipfs.endpoint"))
-            .setSignerType(Enum.valueOf(Configuration.IdentityType.class, props.getProperty("signer.type").toUpperCase()));
+            .setIdentityType(Enum.valueOf(Configuration.IdentityType.class, props.getProperty("identity.type").toUpperCase()));
 
-        Optional.ofNullable(props.getProperty("signer.mnemonic")).ifPresent(builder::setSignerMnemonic);
-        Optional.ofNullable(props.getProperty("signer.private.key.hex")).map(Utils::hexToBytes).ifPresent(builder::setSignerPrivateKey);
+        Optional.ofNullable(props.getProperty("identity.mnemonic")).ifPresent(builder::setIdentityMnemonic);
+        Optional.ofNullable(props.getProperty("identity.private.key.hex")).map(Utils::hexToBytes).ifPresent(builder::setIdentityPrivateKey);
         Optional.ofNullable(props.getProperty("registry.address")).map(Address::new).ifPresent(builder::setRegistryAddress);
         Optional.ofNullable(props.getProperty("multi.party.escrow.address")).map(Address::new).ifPresent(builder::setMultiPartyEscrowAddress);
 
@@ -29,9 +29,9 @@ public class ConfigurationUtils {
     private static final class JsonConfiguration {
         URL ethereumJsonRpcEndpoint;
         URL ipfsEndpoint;
-        String signerType;
-        String signerMnemonic;
-        String signerPrivateKeyHex;
+        String identityType;
+        String identityMnemonic;
+        String identityPrivateKeyHex;
         String registryAddress;
         String multiPartyEscrowAddress;
     }
@@ -43,10 +43,10 @@ public class ConfigurationUtils {
         StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint(config.ethereumJsonRpcEndpoint)
             .setIpfsEndpoint(config.ipfsEndpoint)
-            .setSignerType(Enum.valueOf(Configuration.IdentityType.class, config.signerType.toUpperCase()));
+            .setIdentityType(Enum.valueOf(Configuration.IdentityType.class, config.identityType.toUpperCase()));
 
-        Optional.ofNullable(config.signerMnemonic).ifPresent(builder::setSignerMnemonic);
-        Optional.ofNullable(config.signerPrivateKeyHex).map(Utils::hexToBytes).ifPresent(builder::setSignerPrivateKey);
+        Optional.ofNullable(config.identityMnemonic).ifPresent(builder::setIdentityMnemonic);
+        Optional.ofNullable(config.identityPrivateKeyHex).map(Utils::hexToBytes).ifPresent(builder::setIdentityPrivateKey);
         Optional.ofNullable(config.registryAddress).map(Address::new).ifPresent(builder::setRegistryAddress);
         Optional.ofNullable(config.multiPartyEscrowAddress).map(Address::new).ifPresent(builder::setMultiPartyEscrowAddress);
 
