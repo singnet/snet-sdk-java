@@ -3,7 +3,7 @@ package io.singularitynet.sdk.client;
 import java.net.URL;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.ContractGasProvider;
+import org.web3j.tx.gas.StaticGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
@@ -50,7 +50,10 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         log.info("Open connection to IPFS RPC endpoint, ipfsEndpoint: {}", ipfsEndpoint);
         this.ipfs = new IPFS(ipfsEndpoint.getHost(), ipfsEndpoint.getPort());
 
-        DefaultGasProvider gasProvider = new DefaultGasProvider();
+        StaticGasProvider gasProvider = new StaticGasProvider(
+                config.getGasPrice().orElse(DefaultGasProvider.GAS_PRICE),
+                config.getGasLimit().orElse(DefaultGasProvider.GAS_LIMIT)
+                );
         TransactionManager transactionManager;
 
         log.info("New identity, type: {}", config.getIdentityType());

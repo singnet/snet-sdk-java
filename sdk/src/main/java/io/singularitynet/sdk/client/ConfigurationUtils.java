@@ -1,5 +1,6 @@
 package io.singularitynet.sdk.client;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Properties;
@@ -22,6 +23,8 @@ public class ConfigurationUtils {
         Optional.ofNullable(props.getProperty("identity.private.key.hex")).map(Utils::hexToBytes).ifPresent(builder::setIdentityPrivateKey);
         Optional.ofNullable(props.getProperty("registry.address")).map(Address::new).ifPresent(builder::setRegistryAddress);
         Optional.ofNullable(props.getProperty("multi.party.escrow.address")).map(Address::new).ifPresent(builder::setMultiPartyEscrowAddress);
+        Optional.ofNullable(props.getProperty("gas.price")).map(BigInteger::new).ifPresent(builder::setGasPrice);
+        Optional.ofNullable(props.getProperty("gas.limit")).map(BigInteger::new).ifPresent(builder::setGasLimit);
 
         return builder.build();
     }
@@ -34,6 +37,8 @@ public class ConfigurationUtils {
         String identityPrivateKeyHex;
         String registryAddress;
         String multiPartyEscrowAddress;
+        String gasLimit;
+        String gasPrice;
     }
 
     public static Configuration fromJson(String json) {
@@ -49,6 +54,8 @@ public class ConfigurationUtils {
         Optional.ofNullable(config.identityPrivateKeyHex).map(Utils::hexToBytes).ifPresent(builder::setIdentityPrivateKey);
         Optional.ofNullable(config.registryAddress).map(Address::new).ifPresent(builder::setRegistryAddress);
         Optional.ofNullable(config.multiPartyEscrowAddress).map(Address::new).ifPresent(builder::setMultiPartyEscrowAddress);
+        Optional.ofNullable(config.gasPrice).map(BigInteger::new).ifPresent(builder::setGasPrice);
+        Optional.ofNullable(config.gasLimit).map(BigInteger::new).ifPresent(builder::setGasLimit);
 
         return builder.build();
     }

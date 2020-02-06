@@ -1,5 +1,6 @@
 package io.singularitynet.sdk.client;
 
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -19,6 +20,8 @@ public class StaticConfiguration implements Configuration {
     private final Optional<byte[]> identityPrivateKey;
     private final Optional<Address> registryAddress;
     private final Optional<Address> multiPartyEscrowAddress;
+    private final Optional<BigInteger> gasPrice;
+    private final Optional<BigInteger> gasLimit;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -36,6 +39,8 @@ public class StaticConfiguration implements Configuration {
         this.identityPrivateKey = builder.identityPrivateKey;
         this.registryAddress = builder.registryAddress;
         this.multiPartyEscrowAddress = builder.multiPartyEscrowAddress;
+        this.gasPrice = builder.gasPrice;
+        this.gasLimit = builder.gasLimit;
     }
 
     public URL getEthereumJsonRpcEndpoint() {
@@ -66,6 +71,14 @@ public class StaticConfiguration implements Configuration {
         return multiPartyEscrowAddress;
     }
 
+    public Optional<BigInteger> getGasPrice() {
+        return gasPrice;
+    }
+
+    public Optional<BigInteger> getGasLimit() {
+        return gasLimit;
+    }
+
     public static class Builder {
 
         private URL ethereumJsonRpcEndpoint;
@@ -75,12 +88,16 @@ public class StaticConfiguration implements Configuration {
         private Optional<byte[]> identityPrivateKey;
         private Optional<Address> registryAddress;
         private Optional<Address> multiPartyEscrowAddress;
+        private Optional<BigInteger> gasPrice;
+        private Optional<BigInteger> gasLimit;
 
         private Builder() {
             this.identityMnemonic = Optional.<String>empty();
             this.identityPrivateKey = Optional.<byte[]>empty();
             this.registryAddress = Optional.<Address>empty();
             this.multiPartyEscrowAddress = Optional.<Address>empty();
+            this.gasPrice = Optional.<BigInteger>empty();
+            this.gasLimit = Optional.<BigInteger>empty();
         }
 
         private Builder(StaticConfiguration object) {
@@ -91,6 +108,8 @@ public class StaticConfiguration implements Configuration {
             this.identityPrivateKey = object.identityPrivateKey;
             this.registryAddress = object.registryAddress;
             this.multiPartyEscrowAddress = object.multiPartyEscrowAddress;
+            this.gasPrice = object.gasPrice;
+            this.gasLimit = object.gasLimit;
         }
 
         public Builder setEthereumJsonRpcEndpoint(URL ethereumJsonRpcEndpoint) {
@@ -172,6 +191,24 @@ public class StaticConfiguration implements Configuration {
 
         public Optional<Address> getMultiPartyEscrowAddress() {
             return multiPartyEscrowAddress;
+        }
+
+        public Builder setGasPrice(BigInteger gasPrice) {
+            this.gasPrice = Optional.of(gasPrice);
+            return this;
+        }
+
+        public Optional<BigInteger> getGasPrice() {
+            return gasPrice;
+        }
+
+        public Builder setGasLimit(BigInteger gasLimit) {
+            this.gasLimit = Optional.of(gasLimit);
+            return this;
+        }
+
+        public Optional<BigInteger> getGasLimit() {
+            return gasLimit;
         }
 
         public StaticConfiguration build() {

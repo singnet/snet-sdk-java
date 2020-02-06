@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.client;
 
 import java.net.URL;
+import java.math.BigInteger;
 import java.util.Optional;
 
 import io.singularitynet.sdk.ethereum.Address;
@@ -20,5 +21,7 @@ public interface Configuration {
     Optional<byte[]> getIdentityPrivateKey();
     Optional<Address> getRegistryAddress();
     Optional<Address> getMultiPartyEscrowAddress();
+    Optional<BigInteger> getGasPrice();
+    Optional<BigInteger> getGasLimit();
 
 }
