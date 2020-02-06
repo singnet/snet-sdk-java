@@ -30,12 +30,12 @@ public class MpePaymentChannelManager implements PaymentChannelManager {
     }
 
     @Override
-    public PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,
-            Address recipient, WithAddress signer, BigInteger value,
-            BigInteger expiration) {
+    public PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,
+            WithAddress signer, BigInteger value, BigInteger expiration) {
 
         PaymentChannel channel = mpe.openChannel(signer.getAddress(),
-                recipient, paymentGroupId, value, expiration);
+                paymentGroup.getPaymentDetails().getPaymentAddress(),
+                paymentGroup.getPaymentGroupId(), value, expiration);
 
         return channel;
     }

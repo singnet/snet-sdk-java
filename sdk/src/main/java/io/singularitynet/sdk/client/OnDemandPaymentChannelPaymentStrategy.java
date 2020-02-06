@@ -92,8 +92,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         }
 
         return channelManager.openPaymentChannel(
-                paymentGroup.getPaymentGroupId(),
-                paymentGroup.getPaymentDetails().getPaymentAddress(),
+                paymentGroup,
                 getSigner(),
                 callsAdvance.multiply(price),
                 expirationThreshold.add(expirationAdvance));

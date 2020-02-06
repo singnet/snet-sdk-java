@@ -95,9 +95,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getPaymentChannelManager().
-                openPaymentChannel(paymentGroup.getPaymentGroupId(),
-                    paymentGroup.getPaymentDetails().getPaymentAddress(),
-                    caller, cogsPerCall,
+                openPaymentChannel(paymentGroup, caller, cogsPerCall,
                     expirationThreshold.add(BigInteger.valueOf(1)));
 
             makeServiceCall(serviceClient);
@@ -112,9 +110,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getPaymentChannelManager().
-                openPaymentChannel(paymentGroup.getPaymentGroupId(),
-                    paymentGroup.getPaymentDetails().getPaymentAddress(),
-                    caller, BigInteger.ZERO,
+                openPaymentChannel(paymentGroup, caller, BigInteger.ZERO,
                     expirationThreshold.add(BigInteger.valueOf(2)));
 
             makeServiceCall(serviceClient);
@@ -132,9 +128,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getPaymentChannelManager().
-                openPaymentChannel(paymentGroup.getPaymentGroupId(),
-                    paymentGroup.getPaymentDetails().getPaymentAddress(),
-                    caller, cogsPerCall, BigInteger.ZERO);
+                openPaymentChannel(paymentGroup, caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
             makeServiceCall(serviceClient);
@@ -153,9 +147,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getPaymentChannelManager().
-                openPaymentChannel(paymentGroup.getPaymentGroupId(),
-                    paymentGroup.getPaymentDetails().getPaymentAddress(),
-                    caller, BigInteger.ZERO, BigInteger.ZERO);
+                openPaymentChannel(paymentGroup, caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
             makeServiceCall(serviceClient);

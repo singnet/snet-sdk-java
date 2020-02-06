@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.WithAddress;
+import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
 /**
@@ -25,17 +26,15 @@ public interface PaymentChannelManager {
 
     /**
      * Open channel for the given payment group of the organization.
-     * @param paymentGroupId id of the payment group.
-     * @param recipient recipient of the payment group.
+     * @param paymentGroup payment group to open channel.
      * @param signer identity which can be used to sign payments on this
      * channel.
      * @param value initial value in the channel in cogs.
      * @param expiration the block number at which channel is expired.
      * @return created payment channel.
      */
-    PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,
-            Address recipient, WithAddress signer, BigInteger value,
-            BigInteger expiration);
+    PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,
+            WithAddress signer, BigInteger value, BigInteger expiration);
 
     /**
      * Add funds to the channel value.
