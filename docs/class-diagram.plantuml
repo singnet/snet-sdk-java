@@ -21,6 +21,10 @@ package io.singularitynet.sdk.ethereum {
     class MnemonicIdentity
     PrivateKeyIdentity <|-- MnemonicIdentity
 
+    class Ethereum {
+        BigInteger getEthBlockNumber();
+    }
+
 }
 
 
@@ -65,6 +69,8 @@ package io.singularitynet.sdk.daemon {
         PaymentChannelStateReply getChannelState(BigInteger channelId);
     }
     PaymentChannelStateService o-- Identity
+    PaymentChannelStateService o-- Ethereum
+    PaymentChannelStateService o-- MultiPartyEscrowContract
     PaymentChannelStateService -- DaemonConnection
 
     interface Payment {
@@ -79,20 +85,35 @@ package io.singularitynet.sdk.mpe {
         Address getContractAddress();
         PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
         void transfer(Address receiver, BigInteger value);
+        Stream<PaymentChannel> getChannelOpenEvents();
+        BigInteger channelAddFunds(BigInteger channelId, BigInteger amount);
+        BigInteger channelExtend(BigInteger channelId, BigInteger expiration);
+        ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,\n\tBigInteger expiration, BigInteger amount);
     }
 
-    interface PaymentChannelProvider {
-        PaymentChannel getChannelById(BigInteger channelId);
-        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks);
+    interface PaymentChannelStateProvider {
+        PaymentChannel getChannelStateById(BigInteger channelId);
     }
 
     class AskDaemonFirstPaymentChannelProvider
-    PaymentChannelProvider <|.. AskDaemonFirstPaymentChannelProvider
-    AskDaemonFirstPaymentChannelProvider *-- MultiPartyEscrowContract
+    PaymentChannelStateProvider <|.. AskDaemonFirstPaymentChannelProvider
+    AskDaemonFirstPaymentChannelProvider o-- MultiPartyEscrowContract
     AskDaemonFirstPaymentChannelProvider *-- PaymentChannelStateService
 
     class EscrowPayment
     Payment ()- EscrowPayment
+
+    interface PaymentChannelManager {
+        Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
+        PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,\n\tAddress recipient, WithAddress signer, BigInteger value, BigInteger expiration);
+        PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
+        PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
+        PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,\n\tBigInteger expiration, BigInteger amount);
+    }
+
+    class MpePaymentChannelManager
+    PaymentChannelManager <|.. MpePaymentChannelManager
+    MpePaymentChannelManager o-- MultiPartyEscrowContract
 
 }
 
@@ -137,18 +158,26 @@ package io.singularitynet.sdk.client {
         protected PaymentChannel selectChannel(ServiceClient serviceClient);
     }
     PaymentStrategy <|.. EscrowPaymentStrategy
+    EscrowPaymentStrategy o-- Identity
+    EscrowPaymentStrategy o-- PaymentChannelManager
 
     class FixedPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
     
     class OnDemandPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
+    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
 
     class Sdk {
         Sdk(Configuration config);
         Sdk(DependencyFactory factory);
 
         ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
+        Ethereum getEthereum();
+        void transfer(Address toAddress, BigInteger amount);
+        Identity getIdentity();
+        MetadataProvider getMetadataProvider(String orgId, String serviceId);
+        PaymentChannelManager getPaymentChannelManager();
         void shutdown();
     }
     Sdk -- Configuration
@@ -157,8 +186,7 @@ package io.singularitynet.sdk.client {
 
     interface ServiceClient {
         MetadataProvider getMetadataProvider();
-        PaymentChannelProvider getPaymentChannelProvider();
-        Identity getSigner();
+        PaymentChannelStateProvider getPaymentChannelStateProvider();
         T getGrpcStub(Function<Channel, T> constructor);
         String getEndpointGroupName();
         void shutdownNow();
@@ -168,9 +196,8 @@ package io.singularitynet.sdk.client {
     ServiceClient <|.. BaseServiceClient
     BaseServiceClient *-- DaemonConnection
     BaseServiceClient *-- MetadataProvider
-    BaseServiceClient *-- PaymentChannelProvider
+    BaseServiceClient *-- PaymentChannelStateProvider
     BaseServiceClient *-- PaymentStrategy
-    BaseServiceClient *-- Identity
 
 }
 
