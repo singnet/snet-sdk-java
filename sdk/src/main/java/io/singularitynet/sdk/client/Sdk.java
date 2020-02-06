@@ -1,7 +1,8 @@
 package io.singularitynet.sdk.client;
 
-import org.web3j.protocol.Web3j;
 import io.ipfs.api.IPFS;
+import java.math.BigInteger;
+import org.web3j.protocol.Web3j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,8 @@ import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.client.BaseServiceClient;
 import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.ethereum.Ethereum;
+import io.singularitynet.sdk.ethereum.Address;
 
 public class Sdk {
 
@@ -35,6 +38,7 @@ public class Sdk {
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
+    private final Ethereum ethereum;
     private final MultiPartyEscrowContract mpeContract;
     private final MetadataStorage metadataStorage;
     private final RegistryContract registryContract;
@@ -57,6 +61,7 @@ public class Sdk {
         this.registry = registry;
         this.mpe = mpe;
 
+        this.ethereum = new Ethereum(web3j);
         this.mpeContract = new MultiPartyEscrowContract(web3j, mpe);
         this.metadataStorage = new IpfsMetadataStorage(ipfs);
         this.registryContract = new RegistryContract(registry);
@@ -76,7 +81,7 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
 
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract, web3j, identity);
+                connection, mpeContract, ethereum, identity);
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
@@ -84,10 +89,13 @@ public class Sdk {
                 paymentChannelStateProvider, paymentStrategy); 
     }
 
-    //FIXME: replace by web3j wrapper which can also cache results instead of
-    //calling JSON RPC service each time
-    public Web3j getWeb3j() {
-        return web3j;
+    public Ethereum getEthereum() {
+        return ethereum;
+    }
+
+    public void transfer(Address toAddress, BigInteger amount) {
+        // TODO: implement functions to convert cogs and AGIs
+        mpeContract.transfer(toAddress, amount);
     }
 
     public Identity getIdentity() {

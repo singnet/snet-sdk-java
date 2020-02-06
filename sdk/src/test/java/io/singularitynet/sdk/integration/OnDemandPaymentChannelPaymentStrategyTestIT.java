@@ -3,40 +3,29 @@ package io.singularitynet.sdk.integration;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.DefaultGasProvider;
-import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
-import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
-import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.registry.Pricing;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
-import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
@@ -48,10 +37,7 @@ import io.singularitynet.sdk.test.ExampleService.Result;
 public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     private StaticConfiguration.Builder configBuilder;
-
     private PrivateKeyIdentity deployer;
-    private MultiPartyEscrowContract mpe;
-
     private Sdk sdk;
 
     private EndpointGroup endpointGroup;
@@ -68,13 +54,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
             .setIdentityPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
             .build();
         this.sdk = new Sdk(config);
-
         this.deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
-        DefaultGasProvider gasProvider = new DefaultGasProvider();
-        RawTransactionManager transactionManager = new RawTransactionManager(sdk.getWeb3j(), deployer.getCredentials());
-        this.mpe = new MultiPartyEscrowContract(sdk.getWeb3j(), MultiPartyEscrow
-                .load(configBuilder.getMultiPartyEscrowAddress().get().toString(),
-                    sdk.getWeb3j(), transactionManager, gasProvider));
         
         MetadataProvider metadataProvider = sdk.getMetadataProvider(
                 IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID);
@@ -155,7 +135,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
                     paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, cogsPerCall, BigInteger.ZERO);
-            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
+            BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
             makeServiceCall(serviceClient);
 
@@ -176,7 +156,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
                     paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, BigInteger.ZERO, BigInteger.ZERO);
-            BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
+            BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
             makeServiceCall(serviceClient);
 
@@ -221,7 +201,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
+            OnDemandPaymentChannelPaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
             ServiceClient serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
                     IntEnv.TEST_SERVICE_ID, endpointGroup.getGroupName(), paymentStrategy); 
             try {
@@ -240,10 +220,14 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     private PrivateKeyIdentity setupNewIdentity() throws Exception {
         PrivateKeyIdentity identity = new MnemonicIdentity("random mnemonic #" + Math.random(), 0);
 
-        Transfer.sendFunds(sdk.getWeb3j(), deployer.getCredentials(), identity.getAddress().toString(),
+        Web3j web3j = Web3j.build(new HttpService(configBuilder.getEthereumJsonRpcEndpoint().toString()));
+        try {
+        Transfer.sendFunds(web3j, deployer.getCredentials(), identity.getAddress().toString(),
                 BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
-        // TODO: implement functions to convert cogs and AGIs
-        mpe.transfer(identity.getAddress(), BigInteger.valueOf(1000000));
+        } finally {
+            web3j.shutdown();
+        }
+        sdk.transfer(identity.getAddress(), BigInteger.valueOf(1000000));
 
         return identity;
     }

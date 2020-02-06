@@ -7,9 +7,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.ToString;
-import org.web3j.protocol.Web3j;
 
-import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
@@ -21,13 +20,13 @@ import io.singularitynet.sdk.mpe.PaymentChannelManager;
 @ToString
 public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
-    private final Web3j web3j;
+    private final Ethereum ethereum;
     private final BigInteger expirationAdvance;
     private final BigInteger callsAdvance;
         
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
         super(sdk);
-        this.web3j = sdk.getWeb3j();
+        this.ethereum = sdk.getEthereum();
         this.expirationAdvance = BigInteger.valueOf(1);
         this.callsAdvance = BigInteger.valueOf(1);
     }
@@ -55,7 +54,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         BigInteger expirationThreshold = paymentGroup
             .getPaymentDetails()
             .getPaymentExpirationThreshold();
-        BigInteger currentBlock = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
+        BigInteger currentBlock = ethereum.getEthBlockNumber();
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
 
         PaymentChannelManager channelManager = getPaymentChannelManager();
