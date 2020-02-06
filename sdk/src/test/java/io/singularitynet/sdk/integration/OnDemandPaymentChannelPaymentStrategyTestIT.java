@@ -45,8 +45,7 @@ import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
 import io.singularitynet.sdk.test.ExampleService.Numbers;
 import io.singularitynet.sdk.test.ExampleService.Result;
 
-//FIXME: rename to OnDemandPaymentChannelPaymentStrategyTestIT
-public class PaymentChannelTestIT {
+public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     private StaticConfiguration.Builder configBuilder;
 
