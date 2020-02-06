@@ -2,17 +2,14 @@ package io.singularitynet.sdk.client;
 
 import java.util.function.Function;
 import java.util.function.Consumer;
-import java.math.BigInteger;
 import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.Payment;
-import io.singularitynet.sdk.registry.*;
-import io.singularitynet.sdk.mpe.PaymentChannelProvider;
-import io.singularitynet.sdk.mpe.PaymentChannel;
-import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
+import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelManager;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
 
@@ -24,34 +21,30 @@ public class BaseServiceClient implements ServiceClient {
 
     private final static Logger log = LoggerFactory.getLogger(BaseServiceClient.class);
 
-    private final MultiPartyEscrowContract mpe;
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
-    private final PaymentChannelProvider paymentChannelProvider;
+    private final PaymentChannelManager channelManager;
     private final PaymentStrategy paymentStrategy;
     private final Identity signer;
 
     /**
      * Constructor.
-     * @param mpe provides interface to MultiPartyEscrow contract.
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
-     * @param paymentChannelProvider provides the payment channel state.
+     * @param channelManager provides channel management service.
      * @param paymentStrategy provides payment for the client call.
      * @param signer signs payments.
      */
     public BaseServiceClient(
-            MultiPartyEscrowContract mpe,
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
-            PaymentChannelProvider paymentChannelProvider,
+            PaymentChannelManager channelManager,
             PaymentStrategy paymentStrategy,
             Identity signer) {
-        this.mpe = mpe;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
-        this.paymentChannelProvider = paymentChannelProvider;
+        this.channelManager = channelManager;
         this.paymentStrategy = paymentStrategy;
         this.signer = signer;
     }
@@ -62,8 +55,8 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public PaymentChannelProvider getPaymentChannelProvider() {
-        return paymentChannelProvider;
+    public PaymentChannelManager getPaymentChannelManager() {
+        return channelManager;
     }
 
     @Override
@@ -85,54 +78,6 @@ public class BaseServiceClient implements ServiceClient {
     public void shutdownNow() {
         daemonConnection.shutdownNow();
         log.info("Service client shutdown");
-    }
-
-    @Override
-    public PaymentChannel openPaymentChannel(Identity signer, BigInteger value,
-            BigInteger expiration) {
-
-        // FIXME: should it be the method parameter?
-        String groupName = daemonConnection.getEndpointGroupName();
-
-        EndpointGroup endpointGroup = metadataProvider.getServiceMetadata()
-            .getEndpointGroupByName(groupName).get();
-        PaymentGroup paymentGroup = metadataProvider.getOrganizationMetadata()
-            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get();
-
-        Address recipient = paymentGroup.getPaymentDetails().getPaymentAddress();
-        PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
-
-        PaymentChannel channel = mpe.openChannel(signer.getAddress(),
-                recipient, groupId, value, expiration);
-
-        return channel;
-    }
-
-    @Override
-    public PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount) {
-        BigInteger valueInc = mpe.channelAddFunds(channel.getChannelId(), amount);
-        return channel.toBuilder()
-            .setValue(channel.getValue().add(valueInc))
-            .build();
-    }
-
-    @Override
-    public PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration) {
-        BigInteger newExpiration = mpe.channelExtend(channel.getChannelId(), expiration);
-        return channel.toBuilder()
-            .setExpiration(newExpiration)
-            .build();
-    }
-
-    @Override
-    public PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,
-            BigInteger expiration, BigInteger amount) {
-        MultiPartyEscrowContract.ExtendAndAddFundsResponse response = mpe
-            .channelExtendAndAddFunds(channel.getChannelId(), expiration, amount);
-        return channel.toBuilder()
-            .setExpiration(response.expiration)
-            .setValue(channel.getValue().add(response.valueIncrement))
-            .build();
     }
 
     /**

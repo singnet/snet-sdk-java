@@ -2,17 +2,10 @@ package io.singularitynet.sdk.client;
 
 import io.grpc.Channel;
 import java.util.function.Function;
-import java.math.BigInteger;
 
-import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelManager;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.registry.EndpointGroup;
-import io.singularitynet.sdk.registry.PaymentGroup;
-import io.singularitynet.sdk.registry.Pricing;
-import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.ethereum.Identity;
-import io.singularitynet.sdk.daemon.DaemonConnection;
-import io.singularitynet.sdk.mpe.PaymentChannel;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -27,10 +20,10 @@ public interface ServiceClient {
     MetadataProvider getMetadataProvider();
 
     /**
-     * Return an instance of the payment channel provider.
-     * @return payment channel provider instance.
+     * Return an instance of the payment channel manager.
+     * @return payment channel manager instance.
      */
-    PaymentChannelProvider getPaymentChannelProvider();
+    PaymentChannelManager getPaymentChannelManager();
 
     // FIXME: this method can be removed and signer can be received from SDK
     // itself instead getting it from daemon.
@@ -57,20 +50,8 @@ public interface ServiceClient {
     String getEndpointGroupName();
 
     /**
-     * Closes platform service connection. This call causes calling
-     * DaemonConnection.shutdownNow().
+     * Closes platform service connection.
      */
     void shutdownNow();
-
-    // FIXME: add javadoc
-    PaymentChannel openPaymentChannel(Identity signer, BigInteger value,
-            BigInteger expiration);
-
-    //FIXME: find out proper place for the methods
-    //FIXME: javadoc
-    PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
-    PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
-    PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,
-            BigInteger expiration, BigInteger amount);
 
 }

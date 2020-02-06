@@ -5,6 +5,7 @@ import lombok.ToString;
 import java.math.BigInteger;
 
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
 @EqualsAndHashCode
@@ -84,7 +85,12 @@ public class PaymentChannel {
     }
 
     public BigInteger getBalance() {
-        return value.subtract(spentAmount);
+        return getValue().subtract(getSpentAmount());
+    }
+
+    public boolean isAccessibleBy(WithAddress identity) {
+        return getSigner().equals(identity.getAddress())
+            || getSender().equals(identity.getAddress());
     }
 
     public static class Builder {

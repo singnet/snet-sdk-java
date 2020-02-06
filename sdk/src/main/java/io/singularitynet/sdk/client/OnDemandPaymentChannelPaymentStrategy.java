@@ -10,11 +10,12 @@ import lombok.ToString;
 import org.web3j.protocol.Web3j;
 
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
-import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelManager;
 
 @ToString
 public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
@@ -54,10 +55,11 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         BigInteger currentBlock = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
 
-        PaymentChannelProvider channelProvider = serviceClient.getPaymentChannelProvider();
+        PaymentChannelManager channelManager = serviceClient.getPaymentChannelManager();
+        WithAddress signer = serviceClient.getSigner();
 
-        Optional<Supplier<PaymentChannel>> channelSupplier = channelProvider
-            .getAllChannels(serviceClient.getSigner().getAddress())
+        Optional<Supplier<PaymentChannel>> channelSupplier = channelManager
+            .getChannelsAccessibleBy(endpointGroup.getPaymentGroupId(), signer)
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {
@@ -65,16 +67,16 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
                 }
 
                 if (channel.getExpiration().compareTo(minExpiration) > 0) {
-                    return Stream.of(() -> serviceClient.addFundsToChannel(
+                    return Stream.of(() -> channelManager.addFundsToChannel(
                                 channel, callsAdvance.multiply(price)));
                 }
 
                 if (channel.getBalance().compareTo(price) >= 0) {
-                    return Stream.of(() -> serviceClient.extendChannel(
+                    return Stream.of(() -> channelManager.extendChannel(
                                 channel, expirationThreshold.add(expirationAdvance)));
                 }
 
-                return Stream.<Supplier<PaymentChannel>>of(() -> serviceClient.extendAndAddFundsToChannel(
+                return Stream.<Supplier<PaymentChannel>>of(() -> channelManager.extendAndAddFundsToChannel(
                             channel, expirationThreshold.add(expirationAdvance),
                             callsAdvance.multiply(price)));
             })
@@ -84,7 +86,8 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             return channelSupplier.get().get();
         }
 
-        return serviceClient.openPaymentChannel(
+        return channelManager.openPaymentChannel(
+                endpointGroup.getPaymentGroupId(),
                 serviceClient.getSigner(),
                 callsAdvance.multiply(price),
                 expirationThreshold.add(expirationAdvance));

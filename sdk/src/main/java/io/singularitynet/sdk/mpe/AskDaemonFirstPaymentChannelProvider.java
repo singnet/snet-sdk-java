@@ -14,15 +14,14 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
-/**
- * This class uses straightforward strategy to implement PaymentChannelProvider
- * interface. Each time client tries to get channel state it makes gRPC call
- * to the daemon. It is simple but ineffective strategy. Nevetherless it can be
- * useful when calls are rare and there are few clients using the same payment
- * channel. Under such conditions it allows sharing channel state via daemon
- * without additional synchronization.
+/** This class uses straightforward strategy to implement
+ * PaymentChannelStateProvider interface. Each time client tries to get channel
+ * state it makes gRPC call to the daemon. It is simple but ineffective
+ * strategy. Nevetherless it can be useful when calls are rare and there are
+ * few clients using the same payment channel. Under such conditions it allows
+ * sharing channel state via daemon without additional synchronization.
  */
-public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
+public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelStateProvider {
 
     private final static Logger log = LoggerFactory.getLogger(AskDaemonFirstPaymentChannelProvider.class);
 
@@ -43,7 +42,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
     }
 
     @Override
-    public PaymentChannel getChannelById(BigInteger channelId) {
+    public PaymentChannel getChannelStateById(BigInteger channelId) {
         log.debug("Getting the channel state, channelId: {}", channelId);
         PaymentChannel channel = mpe.getChannelById(channelId).get();
         PaymentChannelStateReply reply = stateService.getChannelState(channelId);
@@ -57,14 +56,6 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
         }
         log.debug("Channel state, channel: {}", channel);
         return channel;
-    }
-
-    @Override
-    public Stream<PaymentChannel> getAllChannels(Address signer) {
-        return mpe.getChannelOpenEvents()
-            .filter(ch -> ch.getSender().equals(signer)
-                    || ch.getSigner().equals(signer))
-            .map(ch -> this.getChannelById(ch.getChannelId()));
     }
 
     private static final BigInteger ONE = BigInteger.valueOf(1);

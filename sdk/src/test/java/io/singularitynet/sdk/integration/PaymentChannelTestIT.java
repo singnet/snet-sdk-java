@@ -22,6 +22,7 @@ import org.web3j.utils.Convert;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
@@ -44,6 +45,7 @@ import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
 import io.singularitynet.sdk.test.ExampleService.Numbers;
 import io.singularitynet.sdk.test.ExampleService.Result;
 
+//FIXME: rename to OnDemandPaymentChannelPaymentStrategyTestIT
 public class PaymentChannelTestIT {
 
     private StaticConfiguration.Builder configBuilder;
@@ -96,16 +98,14 @@ public class PaymentChannelTestIT {
     public void tearDown() {
         sdk.shutdown();
     }
-
+    
     @Test
     public void newChannelIsCreatedOnFirstCall() throws Exception {
         run((caller, serviceClient) -> {
 
             makeServiceCall(serviceClient);
 
-            Stream<PaymentChannel> channels = serviceClient
-                .getPaymentChannelProvider()
-                .getAllChannels(caller.getAddress());
+            Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
             assertEquals("Number of payment channels", 1, channels.count());
         });
     }
@@ -113,14 +113,14 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
         run((caller, serviceClient) -> {
-            serviceClient.openPaymentChannel(caller, cogsPerCall,
+            serviceClient.getPaymentChannelManager().
+                openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    caller, cogsPerCall,
                     expirationThreshold.add(BigInteger.valueOf(1)));
 
             makeServiceCall(serviceClient);
 
-            Stream<PaymentChannel> channels = serviceClient
-                .getPaymentChannelProvider()
-                .getAllChannels(caller.getAddress());
+            Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
             assertEquals("Number of payment channels", 1, channels.count());
         });
     }
@@ -128,14 +128,14 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelAddFundsOnCall() throws Exception {
         run((caller, serviceClient) -> {
-            serviceClient.openPaymentChannel(caller, BigInteger.ZERO,
+            serviceClient.getPaymentChannelManager().
+                openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    caller, BigInteger.ZERO,
                     expirationThreshold.add(BigInteger.valueOf(2)));
 
             makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = serviceClient
-                .getPaymentChannelProvider()
-                .getAllChannels(caller.getAddress())
+            List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel balance",
@@ -146,15 +146,14 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelIsExtendedOnCall() throws Exception {
         run((caller, serviceClient) -> {
-            PaymentChannel channel = serviceClient.openPaymentChannel(
+            serviceClient.getPaymentChannelManager().
+                openPaymentChannel(paymentGroup.getPaymentGroupId(),
                     caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = serviceClient
-                .getPaymentChannelProvider()
-                .getAllChannels(caller.getAddress())
+            List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel expiration block",
@@ -166,15 +165,14 @@ public class PaymentChannelTestIT {
     @Test
     public void oldChannelIsExtendedAndFundsAddedOnCall() throws Exception {
         run((caller, serviceClient) -> {
-            PaymentChannel channel = serviceClient.openPaymentChannel(
+            serviceClient.getPaymentChannelManager().
+                openPaymentChannel(paymentGroup.getPaymentGroupId(),
                     caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
             makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = serviceClient
-                .getPaymentChannelProvider()
-                .getAllChannels(caller.getAddress())
+            List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel expiration block",
@@ -184,6 +182,13 @@ public class PaymentChannelTestIT {
                     cogsPerCall, channels.get(0).getValue());
         });
     }
+
+    private Stream<PaymentChannel> getChannels(WithAddress caller, ServiceClient serviceClient) {
+        return serviceClient
+            .getPaymentChannelManager()
+            .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), caller);
+    }
+
 
     private void makeServiceCall(ServiceClient serviceClient) {
         CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);

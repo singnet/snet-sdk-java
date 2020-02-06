@@ -25,8 +25,8 @@ public class FixedPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
     @Override
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
-        PaymentChannel channel = serviceClient.getPaymentChannelProvider()
-            .getChannelById(channelId);
+        PaymentChannel channel = serviceClient.getPaymentChannelManager()
+            .getChannelStateById(channelId);
         return channel;
     }
 

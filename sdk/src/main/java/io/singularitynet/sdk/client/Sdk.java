@@ -16,7 +16,8 @@ import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
-import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
+import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
@@ -29,6 +30,7 @@ public class Sdk {
 
     private final Web3j web3j;
     private final IPFS ipfs;
+    //FIXME: rename signer to identity
     private final Identity signer;
     private final Registry registry;
     private final MultiPartyEscrow mpe;
@@ -67,11 +69,13 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, mpeContract, web3j, signer);
-        PaymentChannelProvider paymentChannelProvider = new
+        PaymentChannelStateProvider paymentChannelStateProvider = new
             AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+        MpePaymentChannelManager paymentChannelManager = new MpePaymentChannelManager(
+                metadataProvider, mpeContract, paymentChannelStateProvider);
 
-        return new BaseServiceClient(mpeContract, connection, metadataProvider,
-                paymentChannelProvider, paymentStrategy, signer); 
+        return new BaseServiceClient(connection, metadataProvider,
+                paymentChannelManager, paymentStrategy, signer); 
     }
 
     //FIXME: replace by web3j wrapper which can also cache results instead of
