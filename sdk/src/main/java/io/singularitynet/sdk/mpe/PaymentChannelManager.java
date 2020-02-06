@@ -3,6 +3,7 @@ package io.singularitynet.sdk.mpe;
 import java.math.BigInteger;
 import java.util.stream.Stream;
 
+import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
@@ -10,7 +11,7 @@ import io.singularitynet.sdk.registry.PaymentGroupId;
  * This interface provides payment channel management methods for specific
  * organization.
  */
-public interface PaymentChannelManager extends PaymentChannelStateProvider {
+public interface PaymentChannelManager {
 
     /**
      * Get all channels for the given payment group accessible by the given
@@ -25,6 +26,7 @@ public interface PaymentChannelManager extends PaymentChannelStateProvider {
     /**
      * Open channel for the given payment group of the organization.
      * @param paymentGroupId id of the payment group.
+     * @param recipient recipient of the payment group.
      * @param signer identity which can be used to sign payments on this
      * channel.
      * @param value initial value in the channel in cogs.
@@ -32,7 +34,8 @@ public interface PaymentChannelManager extends PaymentChannelStateProvider {
      * @return created payment channel.
      */
     PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,
-            WithAddress signer, BigInteger value, BigInteger expiration);
+            Address recipient, WithAddress signer, BigInteger value,
+            BigInteger expiration);
 
     /**
      * Add funds to the channel value.

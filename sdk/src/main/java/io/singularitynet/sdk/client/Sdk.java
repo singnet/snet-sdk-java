@@ -17,6 +17,7 @@ import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelManager;
 import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.client.PaymentStrategy;
@@ -34,16 +35,18 @@ public class Sdk {
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
+    private final MultiPartyEscrowContract mpeContract;
+    private final MetadataStorage metadataStorage;
+    private final RegistryContract registryContract;
+    private final MpePaymentChannelManager paymentChannelManager;
+
     public Sdk(Configuration config) {
         this(new ConfigurationDependencyFactory(config));
     }
 
     public Sdk(DependencyFactory factory) {
-        this.web3j = factory.getWeb3j();
-        this.ipfs = factory.getIpfs();
-        this.identity = factory.getIdentity();
-        this.registry = factory.getRegistry();
-        this.mpe = factory.getMultiPartyEscrow();
+        this(factory.getWeb3j(), factory.getIpfs(), factory.getIdentity(),
+                factory.getRegistry(), factory.getMultiPartyEscrow());
     }
 
     public Sdk(Web3j web3j, IPFS ipfs, Identity identity, Registry registry,
@@ -53,28 +56,32 @@ public class Sdk {
         this.identity = identity;
         this.registry = registry;
         this.mpe = mpe;
+
+        this.mpeContract = new MultiPartyEscrowContract(web3j, mpe);
+        this.metadataStorage = new IpfsMetadataStorage(ipfs);
+        this.registryContract = new RegistryContract(registry);
+        this.paymentChannelManager = new MpePaymentChannelManager(mpeContract);
     }
 
+    // TODO: move BaseServiceClient related initialization into
+    // BaseServiceClient constructor.
     public ServiceClient newServiceClient(String orgId, String serviceId,
             String endpointGroupName, PaymentStrategy paymentStrategy) {
         log.info("Start service client, orgId: {}, serviceId: {}, endpointGroupName: {}, paymentStrategy: {}",
                 orgId, serviceId, endpointGroupName, paymentStrategy);
 
-        MultiPartyEscrowContract mpeContract = new MultiPartyEscrowContract(web3j, mpe);
-
         MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
         DaemonConnection connection = new RandomEndpointDaemonConnection(
                 endpointGroupName, metadataProvider);
+
         PaymentChannelStateService stateService = new PaymentChannelStateService(
                 connection, mpeContract, web3j, identity);
-        PaymentChannelStateProvider paymentChannelStateProvider = new
-            AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
-        MpePaymentChannelManager paymentChannelManager = new MpePaymentChannelManager(
-                metadataProvider, mpeContract, paymentChannelStateProvider);
+        PaymentChannelStateProvider paymentChannelStateProvider =
+            new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
         return new BaseServiceClient(connection, metadataProvider,
-                paymentChannelManager, paymentStrategy, identity); 
+                paymentChannelStateProvider, paymentStrategy); 
     }
 
     //FIXME: replace by web3j wrapper which can also cache results instead of
@@ -83,11 +90,17 @@ public class Sdk {
         return web3j;
     }
 
+    public Identity getIdentity() {
+        return identity;
+    }
+
     public MetadataProvider getMetadataProvider(String orgId, String serviceId) {
-        MetadataStorage metadataStorage = new IpfsMetadataStorage(ipfs);
-        RegistryContract registryContract = new RegistryContract(registry);
         return new RegistryMetadataProvider(orgId, serviceId, registryContract,
                 metadataStorage);
+    }
+
+    public PaymentChannelManager getPaymentChannelManager() {
+        return paymentChannelManager;
     }
 
     public void shutdown() {

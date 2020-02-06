@@ -16,16 +16,18 @@ public class FixedPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
     /**
      * Constructor.
+     * @param sdk sdk instance.
      * @param channelId id of the payment channel to use for the payment
      * generation.
      */
-    public FixedPaymentChannelPaymentStrategy(BigInteger channelId) {
+    public FixedPaymentChannelPaymentStrategy(Sdk sdk, BigInteger channelId) {
+        super(sdk);
         this.channelId = channelId;
     }
 
     @Override
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
-        PaymentChannel channel = serviceClient.getPaymentChannelManager()
+        PaymentChannel channel = serviceClient.getPaymentChannelStateProvider()
             .getChannelStateById(channelId);
         return channel;
     }

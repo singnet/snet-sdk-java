@@ -32,7 +32,7 @@ public class CntkImageRecognition {
         try {
 
             PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                    channelId);
+                    sdk, channelId);
             ServiceClient serviceClient = sdk.newServiceClient("snet", "cntk-image-recon",
                     "default_group", paymentStrategy); 
             try {

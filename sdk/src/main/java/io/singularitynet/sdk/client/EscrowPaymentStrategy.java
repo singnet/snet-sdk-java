@@ -3,14 +3,32 @@ package io.singularitynet.sdk.client;
 import java.math.BigInteger;
 
 import io.singularitynet.sdk.daemon.Payment;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;
+import io.singularitynet.sdk.mpe.PaymentChannelManager;
 import io.singularitynet.sdk.registry.*;
 
 // TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
 // OnDemandPaymentChannelPaymentStrategy from EscrowPaymentStrategy by
 // aggregation
 public abstract class EscrowPaymentStrategy implements PaymentStrategy {
+
+    private final Identity signer;
+    private final PaymentChannelManager channelManager;
+
+    public EscrowPaymentStrategy(Sdk sdk) {
+        this.signer = sdk.getIdentity();
+        this.channelManager = sdk.getPaymentChannelManager();
+    }
+
+    protected Identity getSigner() {
+        return signer;
+    }
+
+    protected PaymentChannelManager getPaymentChannelManager() {
+        return channelManager;
+    }
         
     protected abstract PaymentChannel selectChannel(ServiceClient serviceClient);
 
@@ -24,7 +42,7 @@ public abstract class EscrowPaymentStrategy implements PaymentStrategy {
         return EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
             .setAmount(newAmount)
-            .setSigner(serviceClient.getSigner())
+            .setSigner(signer)
             .build();
     }
 

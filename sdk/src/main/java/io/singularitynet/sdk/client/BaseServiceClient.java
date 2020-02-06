@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.Payment;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.mpe.PaymentChannelManager;
-import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 
 /**
  * The class is responsible for providing all necessary facilities to call
@@ -23,30 +21,26 @@ public class BaseServiceClient implements ServiceClient {
 
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
-    private final PaymentChannelManager channelManager;
+    private final PaymentChannelStateProvider channelStateProvider;
     private final PaymentStrategy paymentStrategy;
-    private final Identity signer;
 
     /**
      * Constructor.
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
-     * @param channelManager provides channel management service.
+     * @param channelStateProvider actual payment channel state provider.
      * @param paymentStrategy provides payment for the client call.
-     * @param signer signs payments.
      */
     public BaseServiceClient(
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
-            PaymentChannelManager channelManager,
-            PaymentStrategy paymentStrategy,
-            Identity signer) {
+            PaymentChannelStateProvider channelStateProvider,
+            PaymentStrategy paymentStrategy) {
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
-        this.channelManager = channelManager;
+        this.channelStateProvider = channelStateProvider;
         this.paymentStrategy = paymentStrategy;
-        this.signer = signer;
     }
 
     @Override
@@ -55,13 +49,8 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public PaymentChannelManager getPaymentChannelManager() {
-        return channelManager;
-    }
-
-    @Override
-    public Identity getSigner() {
-        return signer;
+    public PaymentChannelStateProvider getPaymentChannelStateProvider() {
+        return channelStateProvider;
     }
 
     @Override

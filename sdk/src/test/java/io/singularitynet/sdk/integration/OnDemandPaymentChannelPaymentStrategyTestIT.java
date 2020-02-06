@@ -100,7 +100,8 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     
     @Test
     public void newChannelIsCreatedOnFirstCall() throws Exception {
-        run((caller, serviceClient) -> {
+        run((sdk, serviceClient) -> {
+            WithAddress caller = sdk.getIdentity();
 
             makeServiceCall(serviceClient);
 
@@ -111,9 +112,11 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Test
     public void oldChannelIsReusedOnSecondCall() throws Exception {
-        run((caller, serviceClient) -> {
-            serviceClient.getPaymentChannelManager().
+        run((sdk, serviceClient) -> {
+            WithAddress caller = sdk.getIdentity();
+            sdk.getPaymentChannelManager().
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, cogsPerCall,
                     expirationThreshold.add(BigInteger.valueOf(1)));
 
@@ -126,9 +129,11 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Test
     public void oldChannelAddFundsOnCall() throws Exception {
-        run((caller, serviceClient) -> {
-            serviceClient.getPaymentChannelManager().
+        run((sdk, serviceClient) -> {
+            WithAddress caller = sdk.getIdentity();
+            sdk.getPaymentChannelManager().
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, BigInteger.ZERO,
                     expirationThreshold.add(BigInteger.valueOf(2)));
 
@@ -144,9 +149,11 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Test
     public void oldChannelIsExtendedOnCall() throws Exception {
-        run((caller, serviceClient) -> {
-            serviceClient.getPaymentChannelManager().
+        run((sdk, serviceClient) -> {
+            WithAddress caller = sdk.getIdentity();
+            sdk.getPaymentChannelManager().
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
@@ -163,9 +170,11 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Test
     public void oldChannelIsExtendedAndFundsAddedOnCall() throws Exception {
-        run((caller, serviceClient) -> {
-            serviceClient.getPaymentChannelManager().
+        run((sdk, serviceClient) -> {
+            WithAddress caller = sdk.getIdentity();
+            sdk.getPaymentChannelManager().
                 openPaymentChannel(paymentGroup.getPaymentGroupId(),
+                    paymentGroup.getPaymentDetails().getPaymentAddress(),
                     caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = Utils.wrapExceptions(() -> sdk.getWeb3j().ethBlockNumber().send().getBlockNumber());
 
@@ -183,8 +192,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     }
 
     private Stream<PaymentChannel> getChannels(WithAddress caller, ServiceClient serviceClient) {
-        return serviceClient
-            .getPaymentChannelManager()
+        return sdk.getPaymentChannelManager()
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), caller);
     }
 
@@ -202,7 +210,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     }
 
 
-    private void run(BiConsumer<Identity, ServiceClient> test) throws Exception {
+    private void run(BiConsumer<Sdk, ServiceClient> test) throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
 
         StaticConfiguration config = configBuilder
@@ -218,7 +226,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                     IntEnv.TEST_SERVICE_ID, endpointGroup.getGroupName(), paymentStrategy); 
             try {
                 
-                test.accept(caller, serviceClient);
+                test.accept(sdk, serviceClient);
 
             } finally {
                 serviceClient.shutdownNow();

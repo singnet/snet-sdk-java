@@ -32,7 +32,7 @@ public class ExampleService {
         try {
 
             PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                    channelId);
+                    sdk, channelId);
             ServiceClient serviceClient = sdk.newServiceClient("snet", "example-service",
                     "default_group", paymentStrategy); 
             try {

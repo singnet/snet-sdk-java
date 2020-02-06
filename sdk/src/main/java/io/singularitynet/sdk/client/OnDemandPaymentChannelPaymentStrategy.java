@@ -13,6 +13,7 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.PaymentChannelManager;
@@ -25,6 +26,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
     private final BigInteger callsAdvance;
         
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
+        super(sdk);
         this.web3j = sdk.getWeb3j();
         this.expirationAdvance = BigInteger.valueOf(1);
         this.callsAdvance = BigInteger.valueOf(1);
@@ -47,19 +49,22 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             .findFirst().get()
             .getPriceInCogs();
 
-        BigInteger expirationThreshold = metadataProvider
+        PaymentGroup paymentGroup = metadataProvider
             .getOrganizationMetadata()
-            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get()
+            .getPaymentGroupById(endpointGroup.getPaymentGroupId()).get();
+        BigInteger expirationThreshold = paymentGroup
             .getPaymentDetails()
             .getPaymentExpirationThreshold();
         BigInteger currentBlock = Utils.wrapExceptions(() -> web3j.ethBlockNumber().send().getBlockNumber());
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
 
-        PaymentChannelManager channelManager = serviceClient.getPaymentChannelManager();
-        WithAddress signer = serviceClient.getSigner();
+        PaymentChannelManager channelManager = getPaymentChannelManager();
 
         Optional<Supplier<PaymentChannel>> channelSupplier = channelManager
-            .getChannelsAccessibleBy(endpointGroup.getPaymentGroupId(), signer)
+            .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())
+            .map(ch -> ch.getChannelId())
+            .map(id -> serviceClient.getPaymentChannelStateProvider()
+                    .getChannelStateById(id))
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {
@@ -87,8 +92,9 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         }
 
         return channelManager.openPaymentChannel(
-                endpointGroup.getPaymentGroupId(),
-                serviceClient.getSigner(),
+                paymentGroup.getPaymentGroupId(),
+                paymentGroup.getPaymentDetails().getPaymentAddress(),
+                getSigner(),
                 callsAdvance.multiply(price),
                 expirationThreshold.add(expirationAdvance));
     }

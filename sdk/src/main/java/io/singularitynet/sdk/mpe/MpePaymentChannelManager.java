@@ -7,28 +7,15 @@ import java.util.stream.Collectors;
 
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.WithAddress;
-import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
 public class MpePaymentChannelManager implements PaymentChannelManager {
 
-    private final MetadataProvider metadataProvider;
     private final MultiPartyEscrowContract mpe;
-    private final PaymentChannelStateProvider channelStateProvider;
     
-    public MpePaymentChannelManager(
-            MetadataProvider metadataProvider,
-            MultiPartyEscrowContract mpe,
-            PaymentChannelStateProvider channelStateProvider) {
-        this.metadataProvider = metadataProvider;
+    public MpePaymentChannelManager(MultiPartyEscrowContract mpe) {
         this.mpe = mpe;
-        this.channelStateProvider = channelStateProvider;
-    }
-
-    @Override
-    public PaymentChannel getChannelStateById(BigInteger channelId) {
-        return channelStateProvider.getChannelStateById(channelId);
     }
 
     @Override
@@ -39,21 +26,16 @@ public class MpePaymentChannelManager implements PaymentChannelManager {
             .filter(ch -> ch.getPaymentGroupId().equals(paymentGroupId))
             .filter(ch -> ch.isAccessibleBy(identity))
             .map(ch -> ch.getChannelId())
-            .map(id -> channelStateProvider.getChannelStateById(id));
+            .map(id -> mpe.getChannelById(id).get());
     }
 
     @Override
     public PaymentChannel openPaymentChannel(PaymentGroupId paymentGroupId,
-            WithAddress signer, BigInteger value, BigInteger expiration) {
-
-        PaymentGroup paymentGroup = metadataProvider.getOrganizationMetadata()
-            .getPaymentGroupById(paymentGroupId).get();
-
-        Address recipient = paymentGroup.getPaymentDetails().getPaymentAddress();
-        PaymentGroupId groupId = paymentGroup.getPaymentGroupId();
+            Address recipient, WithAddress signer, BigInteger value,
+            BigInteger expiration) {
 
         PaymentChannel channel = mpe.openChannel(signer.getAddress(),
-                recipient, groupId, value, expiration);
+                recipient, paymentGroupId, value, expiration);
 
         return channel;
     }

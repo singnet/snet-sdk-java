@@ -167,7 +167,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 try
                 {
                     SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
-                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
+                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(sdk.getSdk(), BigInteger.valueOf(channelID));
                     serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
                             "default_group", paymentStrategy);
                 }

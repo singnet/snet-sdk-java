@@ -3,9 +3,8 @@ package io.singularitynet.sdk.client;
 import io.grpc.Channel;
 import java.util.function.Function;
 
-import io.singularitynet.sdk.mpe.PaymentChannelManager;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.ethereum.Identity;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -20,17 +19,12 @@ public interface ServiceClient {
     MetadataProvider getMetadataProvider();
 
     /**
-     * Return an instance of the payment channel manager.
-     * @return payment channel manager instance.
+     * Return actual payment channel state provider. As part of payment channel
+     * state is kept on the daemon side the provider needs live connection to
+     * the daemon.
+     * @return actual payment channel state provider.
      */
-    PaymentChannelManager getPaymentChannelManager();
-
-    // FIXME: this method can be removed and signer can be received from SDK
-    // itself instead getting it from daemon.
-    /**
-     * Return identity to sign payments.
-     */
-    Identity getSigner();
+    PaymentChannelStateProvider getPaymentChannelStateProvider();
 
     /**
      * Construct new gRPC stub to call the platform service.
