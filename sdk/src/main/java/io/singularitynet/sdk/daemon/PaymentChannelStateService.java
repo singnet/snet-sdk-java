@@ -14,7 +14,6 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
-import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 
 public class PaymentChannelStateService {
 
@@ -24,8 +23,8 @@ public class PaymentChannelStateService {
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
-            MultiPartyEscrowContract mpe, Ethereum ethereum, Identity signer) {
-        this.signingHelper = new MessageSigningHelper(mpe.getContractAddress(), ethereum, signer);
+            Address mpeAddress, Ethereum ethereum, Identity signer) {
+        this.signingHelper = new MessageSigningHelper(mpeAddress, ethereum, signer);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 

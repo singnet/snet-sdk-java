@@ -81,7 +81,7 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
 
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract, ethereum, identity);
+                connection, mpeContract.getContractAddress(), ethereum, identity);
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 

@@ -27,7 +27,6 @@ package io.singularitynet.sdk.ethereum {
 
 }
 
-
 package io.singularitynet.sdk.registry {
 
     interface MetadataStorage {
@@ -70,7 +69,6 @@ package io.singularitynet.sdk.daemon {
     }
     PaymentChannelStateService o-- Identity
     PaymentChannelStateService o-- Ethereum
-    PaymentChannelStateService o-- MultiPartyEscrowContract
     PaymentChannelStateService -- DaemonConnection
 
     interface Payment {
@@ -80,6 +78,7 @@ package io.singularitynet.sdk.daemon {
 }
 
 package io.singularitynet.sdk.mpe {
+
     class MultiPartyEscrowContract {
         Optional<PaymentChannel> getChannelById(BigInteger channelId);
         Address getContractAddress();
