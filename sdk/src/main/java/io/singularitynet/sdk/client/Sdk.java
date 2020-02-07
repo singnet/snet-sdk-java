@@ -18,7 +18,7 @@ import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
-import io.singularitynet.sdk.mpe.PaymentChannelManager;
+import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.client.PaymentStrategy;
@@ -107,7 +107,7 @@ public class Sdk {
                 metadataStorage);
     }
 
-    public PaymentChannelManager getPaymentChannelManager() {
+    public BlockchainPaymentChannelManager getBlockchainPaymentChannelManager() {
         return paymentChannelManager;
     }
 

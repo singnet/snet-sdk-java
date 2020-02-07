@@ -15,13 +15,13 @@ import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
-import io.singularitynet.sdk.mpe.PaymentChannelManager;
+import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 
 @ToString
 public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
     private final Ethereum ethereum;
-    private final PaymentChannelManager channelManager;
+    private final BlockchainPaymentChannelManager blockchainChannelManager;
 
     private final BigInteger expirationAdvance;
     private final BigInteger callsAdvance;
@@ -29,7 +29,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
         super(sdk);
         this.ethereum = sdk.getEthereum();
-        this.channelManager = sdk.getPaymentChannelManager();
+        this.blockchainChannelManager = sdk.getBlockchainPaymentChannelManager();
         this.expirationAdvance = BigInteger.valueOf(1);
         this.callsAdvance = BigInteger.valueOf(1);
     }
@@ -60,7 +60,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         BigInteger currentBlock = ethereum.getEthBlockNumber();
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
 
-        Optional<Supplier<PaymentChannel>> channelSupplier = channelManager
+        Optional<Supplier<PaymentChannel>> channelSupplier = blockchainChannelManager
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())
             .map(ch -> ch.getChannelId())
             .map(id -> serviceClient.getPaymentChannelStateProvider()
@@ -72,17 +72,18 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
                 }
 
                 if (channel.getExpiration().compareTo(minExpiration) > 0) {
-                    return Stream.of(() -> channelManager.addFundsToChannel(
+                    return Stream.of(() -> blockchainChannelManager.addFundsToChannel(
                                 channel, callsAdvance.multiply(price)));
                 }
 
                 if (channel.getBalance().compareTo(price) >= 0) {
-                    return Stream.of(() -> channelManager.extendChannel(
+                    return Stream.of(() -> blockchainChannelManager.extendChannel(
                                 channel, expirationThreshold.add(expirationAdvance)));
                 }
 
-                return Stream.<Supplier<PaymentChannel>>of(() -> channelManager.extendAndAddFundsToChannel(
-                            channel, expirationThreshold.add(expirationAdvance),
+                return Stream.<Supplier<PaymentChannel>>of(() -> blockchainChannelManager
+                        .extendAndAddFundsToChannel(channel,
+                            expirationThreshold.add(expirationAdvance),
                             callsAdvance.multiply(price)));
             })
             .findFirst();
@@ -91,7 +92,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             return channelSupplier.get().get();
         }
 
-        return channelManager.openPaymentChannel(
+        return blockchainChannelManager.openPaymentChannel(
                 paymentGroup,
                 getSigner(),
                 callsAdvance.multiply(price),

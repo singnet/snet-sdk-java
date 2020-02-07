@@ -14,7 +14,7 @@ import io.singularitynet.sdk.registry.PaymentGroupId;
  * side. To get this part use PaymentChannelStateProvider.
  * @see io.singularitynet.sdk.mpe.PaymentChannelStateProvider
  */
-public interface PaymentChannelManager {
+public interface BlockchainPaymentChannelManager {
 
     /**
      * Get all channels for the given payment group accessible by the given

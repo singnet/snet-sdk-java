@@ -117,7 +117,7 @@ package io.singularitynet.sdk.mpe {
     class EscrowPayment
     Payment ()- EscrowPayment
 
-    interface PaymentChannelManager {
+    interface BlockchainPaymentChannelManager {
         Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
         PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,\n\tWithAddress signer, BigInteger value, BigInteger expiration);
         PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
@@ -126,7 +126,7 @@ package io.singularitynet.sdk.mpe {
     }
 
     class MpePaymentChannelManager
-    PaymentChannelManager <|.. MpePaymentChannelManager
+    BlockchainPaymentChannelManager <|.. MpePaymentChannelManager
     MpePaymentChannelManager o-- MultiPartyEscrowContract
 
 }
@@ -180,7 +180,7 @@ package io.singularitynet.sdk.client {
     class OnDemandPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
     OnDemandPaymentChannelPaymentStrategy o-- Ethereum
-    OnDemandPaymentChannelPaymentStrategy o-- PaymentChannelManager
+    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
 
     class Sdk {
         Sdk(Configuration config);
@@ -191,7 +191,7 @@ package io.singularitynet.sdk.client {
         void transfer(Address toAddress, BigInteger amount);
         Identity getIdentity();
         MetadataProvider getMetadataProvider(String orgId, String serviceId);
-        PaymentChannelManager getPaymentChannelManager();
+        BlockchainPaymentChannelManager getBlockchainPaymentChannelManager();
         void shutdown();
     }
     Sdk -- Configuration

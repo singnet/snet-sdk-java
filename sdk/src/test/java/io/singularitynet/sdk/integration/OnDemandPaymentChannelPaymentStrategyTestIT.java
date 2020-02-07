@@ -94,7 +94,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     public void oldChannelIsReusedOnSecondCall() throws Exception {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
-            sdk.getPaymentChannelManager().
+            sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, cogsPerCall,
                     expirationThreshold.add(BigInteger.valueOf(1)));
 
@@ -109,7 +109,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     public void oldChannelAddFundsOnCall() throws Exception {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
-            sdk.getPaymentChannelManager().
+            sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO,
                     expirationThreshold.add(BigInteger.valueOf(2)));
 
@@ -127,7 +127,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     public void oldChannelIsExtendedOnCall() throws Exception {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
-            sdk.getPaymentChannelManager().
+            sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
@@ -146,7 +146,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     public void oldChannelIsExtendedAndFundsAddedOnCall() throws Exception {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
-            sdk.getPaymentChannelManager().
+            sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
@@ -164,7 +164,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
     }
 
     private Stream<PaymentChannel> getChannels(WithAddress caller, ServiceClient serviceClient) {
-        return sdk.getPaymentChannelManager()
+        return sdk.getBlockchainPaymentChannelManager()
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), caller);
     }
 

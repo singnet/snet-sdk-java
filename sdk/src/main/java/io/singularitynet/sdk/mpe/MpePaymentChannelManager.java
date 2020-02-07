@@ -13,7 +13,7 @@ import io.singularitynet.sdk.registry.PaymentGroupId;
 /**
  * Blockchain payment channel manager implementation.
  */
-public class MpePaymentChannelManager implements PaymentChannelManager {
+public class MpePaymentChannelManager implements BlockchainPaymentChannelManager {
 
     private final MultiPartyEscrowContract mpe;
     
