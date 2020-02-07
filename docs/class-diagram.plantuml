@@ -9,6 +9,7 @@ package io.singularitynet.sdk.payment {
     }
 
     class PaymentSerializer {
+        static final Metadata.Key<String> SNET_PAYMENT_TYPE;
         static final Metadata.AsciiMarshaller<BigInteger> ASCII_BIGINTEGER_MARSHALLER;
 
         static void register(String type, Function<Metadata, Payment> reader);

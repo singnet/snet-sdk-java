@@ -38,7 +38,7 @@ public class EscrowPayment implements Payment {
 
     @Override
     public void toMetadata(Metadata headers) {
-        headers.put(Payment.SNET_PAYMENT_TYPE, EscrowPayment.PAYMENT_TYPE_ESCROW);
+        headers.put(PaymentSerializer.SNET_PAYMENT_TYPE, EscrowPayment.PAYMENT_TYPE_ESCROW);
         headers.put(SNET_PAYMENT_CHANNEL_ID, channelId);
         headers.put(SNET_PAYMENT_CHANNEL_NONCE, channelNonce);
         headers.put(SNET_PAYMENT_CHANNEL_AMOUNT, amount);
