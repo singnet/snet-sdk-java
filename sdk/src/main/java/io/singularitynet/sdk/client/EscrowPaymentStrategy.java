@@ -2,7 +2,7 @@ package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
 
-import io.singularitynet.sdk.daemon.Payment;
+import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;

@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.payment;
 
 import io.grpc.Metadata;
 

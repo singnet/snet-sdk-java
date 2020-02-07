@@ -6,8 +6,8 @@ import java.io.ByteArrayOutputStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import io.singularitynet.sdk.daemon.Payment;
-import io.singularitynet.sdk.daemon.PaymentSerializer;
+import io.singularitynet.sdk.payment.Payment;
+import io.singularitynet.sdk.payment.PaymentSerializer;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.common.Utils;

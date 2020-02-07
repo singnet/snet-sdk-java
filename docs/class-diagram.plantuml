@@ -2,6 +2,24 @@
 
 title SingularityNet Java SDK
 
+package io.singularitynet.sdk.payment {
+
+    interface Payment {
+        void toMetadata(Metadata headers);
+    }
+
+    class PaymentSerializer {
+        static final Metadata.AsciiMarshaller<BigInteger> ASCII_BIGINTEGER_MARSHALLER;
+
+        static void register(String type, Function<Metadata, Payment> reader);
+        static Optional<Payment> fromMetadata(Metadata headers);
+        static void toMetadata(Payment payment, Metadata headers);
+    }
+
+    PaymentSerializer -- Payment
+
+}
+
 package io.singularitynet.sdk.ethereum {
 
     interface WithAddress {
@@ -70,10 +88,6 @@ package io.singularitynet.sdk.daemon {
     PaymentChannelStateService o-- Identity
     PaymentChannelStateService o-- Ethereum
     PaymentChannelStateService -- DaemonConnection
-
-    interface Payment {
-        void toMetadata(Metadata headers);
-    }
 
 }
 
