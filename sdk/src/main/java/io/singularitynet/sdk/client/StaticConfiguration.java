@@ -9,6 +9,10 @@ import lombok.ToString;
 
 import io.singularitynet.sdk.ethereum.Address;
 
+/**
+ * Static configuration implementation. Provides Builder API to set and return
+ * configuration values.
+ */
 @EqualsAndHashCode
 @ToString
 public class StaticConfiguration implements Configuration {

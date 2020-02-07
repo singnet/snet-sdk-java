@@ -11,18 +11,35 @@ import io.singularitynet.sdk.registry.*;
 // TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
 // OnDemandPaymentChannelPaymentStrategy from EscrowPaymentStrategy by
 // aggregation
+/**
+ * Escrow payment strategy class which is based on MultiPartyEscrow contract
+ * payment channel selection.
+ */
 public abstract class EscrowPaymentStrategy implements PaymentStrategy {
 
     private final Identity signer;
 
+    /**
+     * Constructor.
+     * @param sdk SDK instance.
+     */
     public EscrowPaymentStrategy(Sdk sdk) {
         this.signer = sdk.getIdentity();
     }
 
+    /**
+     * @return payment check signer identity.
+     */
     protected Identity getSigner() {
         return signer;
     }
 
+    /**
+     * Select and return actual payment channel state which should be used for
+     * payment.
+     * @param serviceClient service client instance.
+     * @return payment channel state.
+     */
     protected abstract PaymentChannel selectChannel(ServiceClient serviceClient);
 
     @Override

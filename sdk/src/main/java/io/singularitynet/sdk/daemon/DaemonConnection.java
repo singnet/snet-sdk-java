@@ -4,6 +4,9 @@ import java.util.function.Function;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
 
+/**
+ * Interface wraps gRPC connection to the service daemon.
+ */
 public interface DaemonConnection {
 
     /**

@@ -23,6 +23,9 @@ import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 
+/**
+ * Bootstraps SDK dependencies from configuration.
+ */
 public class ConfigurationDependencyFactory implements DependencyFactory {
 
     private final static Logger log = LoggerFactory.getLogger(ConfigurationDependencyFactory.class);
@@ -33,6 +36,10 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     private final Registry registry;
     private final MultiPartyEscrow mpe;
 
+    /**
+     * Constructor.
+     * @param config SDK configuration.
+     */
     public ConfigurationDependencyFactory(Configuration config) {
         Preconditions.checkArgument(config.getEthereumJsonRpcEndpoint() != null,
                 "Ethereum JSON RPC endpoint is required");

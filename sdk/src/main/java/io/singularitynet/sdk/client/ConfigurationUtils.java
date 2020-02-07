@@ -11,8 +11,16 @@ import com.google.gson.FieldNamingPolicy;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 
+/**
+ * Configuraiton related helper methods.
+ */
 public class ConfigurationUtils {
 
+    /**
+     * Load configuration from properties.
+     * @param props properties containing configuration values.
+     * @return static configuration instance.
+     */
     public static Configuration fromProperties(Properties props) {
         StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint(props.getProperty("ethereum.json.rpc.endpoint"))
@@ -41,6 +49,11 @@ public class ConfigurationUtils {
         String gasPrice;
     }
 
+    /**
+     * Load configuration from JSON.
+     * @param json string containing JSON with values.
+     * @return static configuration instance.
+     */
     public static Configuration fromJson(String json) {
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         JsonConfiguration config = gson.fromJson(json, JsonConfiguration.class);
