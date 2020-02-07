@@ -9,6 +9,10 @@ import java.net.URL;
 
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * Metadata provider implementation which synchronously forwards calls to the
+ * registry and metadata storage.
+ */
 public class RegistryMetadataProvider implements MetadataProvider {
 
     private final static Logger log = LoggerFactory.getLogger(RegistryMetadataProvider.class);
@@ -18,6 +22,13 @@ public class RegistryMetadataProvider implements MetadataProvider {
 	private final RegistryContract registryContract;
 	private final MetadataStorage metadataStorage;
 
+    /**
+     * Constructor.
+     * @param orgId organization id.
+     * @param serviceId service id.
+     * @param registryContract registry contract adapter.
+     * @param metadataStorage metadata storage implementation.
+     */
     public RegistryMetadataProvider(String orgId, String serviceId,
             RegistryContract registryContract, MetadataStorage metadataStorage) {
 		this.orgId = orgId;

@@ -10,16 +10,28 @@ import org.slf4j.LoggerFactory;
 
 import static io.singularitynet.sdk.common.Utils.*;
 
+/**
+ * Class adapts web3j generated contract ABI to the SDK data structures.
+ */
 public class RegistryContract {
 
     private final static Logger log = LoggerFactory.getLogger(RegistryContract.class);
 
     private final Registry registry;
 
+    /**
+     * New adapter from web3j generated contract.
+     * @param web3j generated contract.
+     */
     public RegistryContract(Registry registry) {
         this.registry = registry;
     }
 
+    /**
+     * Get organization registration information from Ethereum blockchain.
+     * @param orgId id of the organization.
+     * @return organization registration info.
+     */
     public Optional<OrganizationRegistration> getOrganizationById(String orgId) {
         return wrapExceptions(() -> {
             log.info("Get organization from Registry, orgId: {}", orgId);
@@ -38,6 +50,12 @@ public class RegistryContract {
         });
     }
 
+    /**
+     * Get service registration information from Ethereum blockchain.
+     * @param orgId organization id.
+     * @param serviceId service id.
+     * @return service registration information.
+     */
     public Optional<ServiceRegistration> getServiceRegistrationById(String orgId, String serviceId) {
         return wrapExceptions(() -> {
             log.info("Get service from Registry, orgId: {}, serviceId: {}", orgId, serviceId);

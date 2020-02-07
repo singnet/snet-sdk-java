@@ -41,6 +41,11 @@ public class OrganizationMetadata {
         return paymentGroups;
     }
 
+    /**
+     * Return payment group by id.
+     * @param paymentGroupId id of the payment group to be returned.
+     * @return payment group instance.
+     */
     public Optional<PaymentGroup> getPaymentGroupById(PaymentGroupId paymentGroupId) {
         return paymentGroups.stream()
             .filter(group -> group.getPaymentGroupId().equals(paymentGroupId))
