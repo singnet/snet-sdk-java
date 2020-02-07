@@ -28,7 +28,7 @@ public interface DaemonConnection {
      * returns same value each time. If implementation supports failover
      * between endpoint groups then the name of the group can be changed after
      * failover happened.
-     * @see EndpointGroup#getGroupName()
+     * @see io.singularitynet.sdk.registry.EndpointGroup#getGroupName
      * @return name of the endpoint group
      */
     String getEndpointGroupName();
