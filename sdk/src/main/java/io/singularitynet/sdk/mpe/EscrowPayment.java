@@ -12,10 +12,18 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * MultiPartyEscrow payment channel payment. It contains information about
+ * payment channel and next check signature.
+ */
 @EqualsAndHashCode
 @ToString
 public class EscrowPayment implements Payment {
 
+    /**
+     * Escrow payment type contant.
+     * @see io.singularitynet.sdk.payment.PaymentSerializer#register
+     */
     public static final String PAYMENT_TYPE_ESCROW = "escrow";
 
     static {
@@ -45,6 +53,11 @@ public class EscrowPayment implements Payment {
         headers.put(SNET_PAYMENT_CHANNEL_SIGNATURE, signature.getBytes());
     }
 
+    /**
+     * Deserialize escrow payment from metadata.
+     * @param headers metadata to get information from.
+     * @return escrow payment deserialized.
+     */
     public static EscrowPayment fromMetadata(Metadata headers) {
         BigInteger channelId = headers.get(SNET_PAYMENT_CHANNEL_ID);
         BigInteger channelNonce = headers.get(SNET_PAYMENT_CHANNEL_NONCE);

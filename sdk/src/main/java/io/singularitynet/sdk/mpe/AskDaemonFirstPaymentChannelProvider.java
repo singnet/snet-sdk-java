@@ -14,7 +14,8 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
-/** This class uses straightforward strategy to implement
+/**
+ * This class uses straightforward strategy to implement
  * PaymentChannelStateProvider interface. Each time client tries to get channel
  * state it makes gRPC call to the daemon. It is simple but ineffective
  * strategy. Nevetherless it can be useful when calls are rare and there are

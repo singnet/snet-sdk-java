@@ -23,6 +23,10 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
+/**
+ * Class adapts web3j generated contract API to the SDK data structures and
+ * calling conventions.
+ */
 public class MultiPartyEscrowContract {
 
     private final static Logger log = LoggerFactory.getLogger(MultiPartyEscrowContract.class);
@@ -30,11 +34,21 @@ public class MultiPartyEscrowContract {
     private final Web3j web3j;
     private final MultiPartyEscrow mpe;
 
+    /**
+     * New adapter from web3j generated contract.
+     * @param web3j web3j instance.
+     * @param mpe MultiPartyEscrow generated contract.
+     */
     public MultiPartyEscrowContract(Web3j web3j, MultiPartyEscrow mpe) {
         this.web3j = web3j;
         this.mpe = mpe;
     }
 
+    /**
+     * Get channel state from Ethereum blockchain by channel id.
+     * @param channelId channel id.
+     * return blockchain payment channel state.
+     */
     public Optional<PaymentChannel> getChannelById(BigInteger channelId) {
         return Utils.wrapExceptions(() -> {
             log.info("Get channel state from MultiPartyEscrow, channelId: {}", channelId);
@@ -58,10 +72,28 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    /**
+     * Get MultiPartyEscrow contract address.
+     * @return contract address.
+     */
     public Address getContractAddress() {
         return new Address(mpe.getContractAddress());
     }
 
+    /**
+     * Open MultiPartyEscrow channel.
+     * @param signer address of the identity which will be able to sign checks
+     * in this channel.
+     * @param recipient checks recipient.
+     * @see io.singularitynet.sdk.registry.PaymentDetails#getPaymentAddress
+     * @param groupId payment group id.
+     * @see io.singularitynet.sdk.registry.PaymentGroup#getPaymentGroupId
+     * @param value number of cogs to add into channel.
+     * @param expiration payment channel expiration time in Ethereum blocks.
+     * Method adds current Ethereum block plus 1 to this value to guarantee
+     * that it is later then the next transaction block.
+     * @return opened payment channel data.
+     */
     public PaymentChannel openChannel(Address signer, Address recipient,
             PaymentGroupId groupId, BigInteger value, BigInteger expiration) {
         return Utils.wrapExceptions(() -> {
@@ -97,6 +129,11 @@ public class MultiPartyEscrowContract {
             .build();
     }
 
+    /**
+     * Transfer AGI tokens to another address within MultiPartyEscrow contract.
+     * @param receiver target address.
+     * @param value number of cogs to transfer.
+     */
     public void transfer(Address receiver, BigInteger value) {
         Utils.wrapExceptions(() -> {
             mpe.transfer(receiver.toString(), value).send();
@@ -105,6 +142,13 @@ public class MultiPartyEscrowContract {
     }
 
     // TODO: use server side filtering to restrict number of channels
+    /**
+     * Return stream of the channel open events up to the latest block.
+     * @return payment channel stream. Elements of the stream contains channel
+     * state on the moment of the channel opening. It doesn't contain later
+     * channel modifications.
+     * @see io.singularitynet.sdk.mpe.MultiPartyEscrowContract#getChannelById
+     */
     public Stream<PaymentChannel> getChannelOpenEvents() {
         return Utils.wrapExceptions(() -> {
             EthFilter filter = new EthFilter(DefaultBlockParameterName.EARLIEST,
@@ -131,6 +175,12 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    /**
+     * Add funds to the payment channel.
+     * @param channelId id of the channel to be updated.
+     * @param amount number of cogs to add.
+     * @return number of cogs added.
+     */
     public BigInteger channelAddFunds(BigInteger channelId, BigInteger amount) {
         return Utils.wrapExceptions(() -> {
             TransactionReceipt transaction = mpe.channelAddFunds(
@@ -141,6 +191,14 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    /**
+     * Extend payment channel expiration date.
+     * @param channelId id of the channel to update.
+     * @param expiration new expiration block. Should be later than current
+     * expiration block.  Method adds current Ethereum block plus 1 to this
+     * value to guarantee that it is later then the next transaction block.
+     * @return new expiration block.
+     */
     public BigInteger channelExtend(BigInteger channelId, BigInteger expiration) {
         return Utils.wrapExceptions(() -> {
             TransactionReceipt transaction = mpe.channelExtend(
@@ -151,8 +209,19 @@ public class MultiPartyEscrowContract {
         });
     }
 
+    /**
+     * Pair of number of cogs added and expiration block.
+     */
     public static class ExtendAndAddFundsResponse {
+
+        /**
+         * Expiration block.
+         */
         public final BigInteger expiration;
+
+        /**
+         * Number of cogs added.
+         */
         public final BigInteger valueIncrement;
 
         ExtendAndAddFundsResponse(BigInteger expiration,
@@ -162,6 +231,15 @@ public class MultiPartyEscrowContract {
         }
     }
 
+    /**
+     * Extend expiration time and add funds to the channel in same operation.
+     * This operation can be more gas efficient if you need doing both updates.
+     * @param channelId id of the channel to be updated.
+     * @param expiration new expiration block. Should be later than current
+     * expiration block.  Method adds current Ethereum block plus 1 to this
+     * value to guarantee that it is later then the next transaction block.
+     * @return pair of number of cogs added and new expiration block.
+     */
     public ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,
             BigInteger expiration, BigInteger amount) {
         return Utils.wrapExceptions(() -> {

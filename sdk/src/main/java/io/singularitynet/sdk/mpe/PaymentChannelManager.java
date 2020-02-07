@@ -9,8 +9,10 @@ import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
 /**
- * This interface provides payment channel management methods for specific
- * organization.
+ * This interface provides methods to manage payment channel blockchain state.
+ * It doesn't deal with part of the channel state which is kept on the daemon
+ * side. To get this part use PaymentChannelStateProvider.
+ * @see io.singularitynet.sdk.mpe.PaymentChannelStateProvider
  */
 public interface PaymentChannelManager {
 
@@ -19,7 +21,7 @@ public interface PaymentChannelManager {
      * identity. Method returns a stream of opened payment channels.
      * @param paymentGroupId id of the payment group.
      * @param identity identity which is able to make payments using channel.
-     * @return list of actual payment channel states.
+     * @return list of latest blockchain payment channel states.
      */
     Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId,
             WithAddress identity);

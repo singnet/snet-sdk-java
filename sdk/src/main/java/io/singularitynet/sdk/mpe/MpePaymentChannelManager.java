@@ -10,10 +10,17 @@ import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
+/**
+ * Blockchain payment channel manager implementation.
+ */
 public class MpePaymentChannelManager implements PaymentChannelManager {
 
     private final MultiPartyEscrowContract mpe;
     
+    /**
+     * Constructor.
+     * @param mpe MultiPartyEscrow contract adapter.
+     */
     public MpePaymentChannelManager(MultiPartyEscrowContract mpe) {
         this.mpe = mpe;
     }

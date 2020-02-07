@@ -9,6 +9,7 @@ import java.math.BigInteger;
  * can be done by various different ways. The straightforward way is calling
  * daemon each time to get the state. Another way is calculating number of
  * successful and error calls to predict channel state.
+ * @see io.singularitynet.sdk.mpe.PaymentChannelManager
  */
 public interface PaymentChannelStateProvider {
     

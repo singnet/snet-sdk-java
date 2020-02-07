@@ -84,10 +84,21 @@ public class PaymentChannel {
         return spentAmount;
     }
 
+    /**
+     * Return current channel balance which is difference between channel value
+     * and spent amount.
+     * @return number of cogs left in channel.
+     */
     public BigInteger getBalance() {
         return getValue().subtract(getSpentAmount());
     }
 
+    /**
+     * Check if channel is accessible by given identity address. 
+     * @param identity identity address.
+     * @return true if either signer or sender of the channel is equal to the
+     * given identity address.
+     */
     public boolean isAccessibleBy(WithAddress identity) {
         return getSigner().equals(identity.getAddress())
             || getSender().equals(identity.getAddress());

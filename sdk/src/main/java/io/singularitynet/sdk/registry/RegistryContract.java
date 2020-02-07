@@ -21,7 +21,7 @@ public class RegistryContract {
 
     /**
      * New adapter from web3j generated contract.
-     * @param web3j generated contract.
+     * @param registry web3j generated contract.
      */
     public RegistryContract(Registry registry) {
         this.registry = registry;
