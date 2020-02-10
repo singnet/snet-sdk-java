@@ -119,25 +119,26 @@ public class EscrowPayment implements Payment {
         }
     
         public EscrowPayment build() {
-            Signature signature = signer.sign(getMessage());
+            byte[] message = getMessage(paymentChannel, amount);
+            Signature signature = signer.sign(message);
             return new EscrowPayment(paymentChannel.getChannelId(),
                     paymentChannel.getNonce(), amount, signature);
         }
 
-        private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
+    }
 
-        byte[] getMessage() {
-            return Utils.wrapExceptions(() -> {
-                ByteArrayOutputStream message = new ByteArrayOutputStream();
-                message.write(PAYMENT_MESSAGE_PREFIX);
-                message.write(paymentChannel.getMpeContractAddress().toByteArray());
-                message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
-                message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
-                message.write(Utils.bigIntToBytes32(amount));
-                return message.toByteArray();
-            });
-        }
+    private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
 
+    public static byte[] getMessage(PaymentChannel paymentChannel, BigInteger amount) {
+        return Utils.wrapExceptions(() -> {
+            ByteArrayOutputStream message = new ByteArrayOutputStream();
+            message.write(PAYMENT_MESSAGE_PREFIX);
+            message.write(paymentChannel.getMpeContractAddress().toByteArray());
+            message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
+            message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
+            message.write(Utils.bigIntToBytes32(amount));
+            return message.toByteArray();
+        });
     }
 
 }

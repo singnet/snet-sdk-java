@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.mpe;
+package io.singularitynet.sdk.daemon;
 
 import java.math.BigInteger;
 import java.util.stream.Stream;
@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
-import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
+import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
+import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
+import io.singularitynet.sdk.mpe.EscrowPayment;
 
 /**
  * This class uses straightforward strategy to implement
@@ -94,10 +96,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
 
     private static void verifySignature(PaymentChannel channel, BigInteger amount,
             Signature signature, String type) {
-        byte[] payment = EscrowPayment.newBuilder()
-            .setPaymentChannel(channel)
-            .setAmount(amount)
-            .getMessage();
+        byte[] payment = EscrowPayment.getMessage(channel, amount);
         Address address = CryptoUtils.getSignerAddress(payment, signature);
         Preconditions.checkState(channel.getSigner().equals(address) ||
                 channel.getSender().equals(address), 
