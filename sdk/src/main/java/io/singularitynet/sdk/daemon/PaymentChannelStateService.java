@@ -40,9 +40,20 @@ public class PaymentChannelStateService {
         PaymentChannelStateReply.Builder builder = PaymentChannelStateReply.newBuilder()
             .setCurrentNonce(toBigInt(grpcReply.getCurrentNonce()));
 
-        if (grpcReply.getCurrentSignedAmount() != ByteString.EMPTY) {
+        if (!grpcReply.getCurrentSignedAmount().isEmpty()) {
             builder.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
+        }
+
+        if (!grpcReply.getCurrentSignature().isEmpty()) {
             builder.setCurrentSignature(new Signature(grpcReply.getCurrentSignature().toByteArray()));
+        }
+
+        if (!grpcReply.getOldNonceSignedAmount().isEmpty()) {
+            builder.setOldNonceSignedAmount(toBigInt(grpcReply.getOldNonceSignedAmount()));
+        }
+
+        if (!grpcReply.getOldNonceSignature().isEmpty()) {
+            builder.setOldNonceSignature(new Signature(grpcReply.getOldNonceSignature().toByteArray()));
         }
 
         PaymentChannelStateReply reply = builder.build();
