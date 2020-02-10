@@ -58,7 +58,7 @@ public class ProviderControlService {
 
         ControlService.StartClaimRequest request = ControlService.StartClaimRequest.newBuilder()
             .setMpeAddress(mpeContractAddress.toString())
-            .setChannelId(toBytesString(channelId))
+            .setChannelId(GrpcUtils.toBytesString(channelId))
             .setSignature(ByteString.copyFrom(signature.getBytes()))
             .build();
 
@@ -69,9 +69,9 @@ public class ProviderControlService {
 
     private static PaymentReply asPaymentReply(ControlService.PaymentReply reply) {
         PaymentReply.Builder builder = PaymentReply.newBuilder()
-            .setChannelId(toBigInt(reply.getChannelId()))
-            .setChannelNonce(toBigInt(reply.getChannelNonce()))
-            .setSignedAmount(toBigInt(reply.getSignedAmount()));
+            .setChannelId(GrpcUtils.toBigInt(reply.getChannelId()))
+            .setChannelNonce(GrpcUtils.toBigInt(reply.getChannelNonce()))
+            .setSignedAmount(GrpcUtils.toBigInt(reply.getSignedAmount()));
 
         if (!reply.getSignature().isEmpty()) {
             builder.setSignature(new Signature(reply.getSignature().toByteArray()));
@@ -80,17 +80,7 @@ public class ProviderControlService {
         return builder.build();
     }
 
-    //FIXME: reuse implementation from PaymentChannelStateService
-    private static ByteString toBytesString(BigInteger value) {
-        return ByteString.copyFrom(Utils.bigIntToBytes32(value));
-    }
-
-    //FIXME: reuse implementation from PaymentChannelStateService
-    private static BigInteger toBigInt(ByteString value) {
-        return Utils.bytes32ToBigInt(value.toByteArray());
-    }
-
-    static class MessageSigningHelper {
+    private static class MessageSigningHelper {
 
         private static final byte[] START_CLAIM_PREFIX = Utils.strToBytes("__start_claim");
 
