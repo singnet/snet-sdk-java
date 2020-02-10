@@ -70,6 +70,40 @@ package io.singularitynet.sdk.registry {
 
 }
 
+package io.singularitynet.sdk.mpe {
+
+    class MultiPartyEscrowContract {
+        Optional<PaymentChannel> getChannelById(BigInteger channelId);
+        Address getContractAddress();
+        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
+        void transfer(Address receiver, BigInteger value);
+        Stream<PaymentChannel> getChannelOpenEvents();
+        BigInteger channelAddFunds(BigInteger channelId, BigInteger amount);
+        BigInteger channelExtend(BigInteger channelId, BigInteger expiration);
+        ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,\n\tBigInteger expiration, BigInteger amount);
+    }
+
+    interface PaymentChannelStateProvider {
+        PaymentChannel getChannelStateById(BigInteger channelId);
+    }
+
+    class EscrowPayment
+    Payment ()- EscrowPayment
+
+    interface BlockchainPaymentChannelManager {
+        Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
+        PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,\n\tWithAddress signer, BigInteger value, BigInteger expiration);
+        PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
+        PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
+        PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,\n\tBigInteger expiration, BigInteger amount);
+    }
+
+    class MpePaymentChannelManager
+    BlockchainPaymentChannelManager <|.. MpePaymentChannelManager
+    MpePaymentChannelManager o-- MultiPartyEscrowContract
+
+}
+
 package io.singularitynet.sdk.daemon {
     
     interface DaemonConnection {
@@ -90,46 +124,13 @@ package io.singularitynet.sdk.daemon {
     PaymentChannelStateService o-- Ethereum
     PaymentChannelStateService -- DaemonConnection
 
-}
-
-package io.singularitynet.sdk.mpe {
-
-    class MultiPartyEscrowContract {
-        Optional<PaymentChannel> getChannelById(BigInteger channelId);
-        Address getContractAddress();
-        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
-        void transfer(Address receiver, BigInteger value);
-        Stream<PaymentChannel> getChannelOpenEvents();
-        BigInteger channelAddFunds(BigInteger channelId, BigInteger amount);
-        BigInteger channelExtend(BigInteger channelId, BigInteger expiration);
-        ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,\n\tBigInteger expiration, BigInteger amount);
-    }
-
-    interface PaymentChannelStateProvider {
-        PaymentChannel getChannelStateById(BigInteger channelId);
-    }
-
     class AskDaemonFirstPaymentChannelProvider
-    PaymentChannelStateProvider <|.. AskDaemonFirstPaymentChannelProvider
+    PaymentChannelStateProvider ()- AskDaemonFirstPaymentChannelProvider
     AskDaemonFirstPaymentChannelProvider o-- MultiPartyEscrowContract
     AskDaemonFirstPaymentChannelProvider *-- PaymentChannelStateService
 
-    class EscrowPayment
-    Payment ()- EscrowPayment
-
-    interface BlockchainPaymentChannelManager {
-        Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
-        PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,\n\tWithAddress signer, BigInteger value, BigInteger expiration);
-        PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
-        PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
-        PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,\n\tBigInteger expiration, BigInteger amount);
-    }
-
-    class MpePaymentChannelManager
-    BlockchainPaymentChannelManager <|.. MpePaymentChannelManager
-    MpePaymentChannelManager o-- MultiPartyEscrowContract
-
 }
+
 
 package io.singularitynet.sdk.client {
 
