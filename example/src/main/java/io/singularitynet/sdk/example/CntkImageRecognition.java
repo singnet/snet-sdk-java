@@ -24,15 +24,15 @@ public class CntkImageRecognition {
         Configuration config = StaticConfiguration.newBuilder()
             .setEthereumJsonRpcEndpoint("https://ropsten.infura.io")
             .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
-            .setSignerType(Configuration.SignerType.PRIVATE_KEY)
-            .setSignerPrivateKey(Utils.hexToBytes(privateKey))
+            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
+            .setIdentityPrivateKey(Utils.hexToBytes(privateKey))
             .build();
 
         Sdk sdk = new Sdk(config);
         try {
 
             PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                    channelId);
+                    sdk, channelId);
             ServiceClient serviceClient = sdk.newServiceClient("snet", "cntk-image-recon",
                     "default_group", paymentStrategy); 
             try {

@@ -6,16 +6,24 @@ import java.io.ByteArrayOutputStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import io.singularitynet.sdk.daemon.Payment;
-import io.singularitynet.sdk.daemon.PaymentSerializer;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.payment.Payment;
+import io.singularitynet.sdk.payment.PaymentSerializer;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * MultiPartyEscrow payment channel payment. It contains information about
+ * payment channel and next check signature.
+ */
 @EqualsAndHashCode
 @ToString
 public class EscrowPayment implements Payment {
 
+    /**
+     * Escrow payment type contant.
+     * @see io.singularitynet.sdk.payment.PaymentSerializer#register
+     */
     public static final String PAYMENT_TYPE_ESCROW = "escrow";
 
     static {
@@ -38,13 +46,18 @@ public class EscrowPayment implements Payment {
 
     @Override
     public void toMetadata(Metadata headers) {
-        headers.put(Payment.SNET_PAYMENT_TYPE, EscrowPayment.PAYMENT_TYPE_ESCROW);
+        headers.put(PaymentSerializer.SNET_PAYMENT_TYPE, EscrowPayment.PAYMENT_TYPE_ESCROW);
         headers.put(SNET_PAYMENT_CHANNEL_ID, channelId);
         headers.put(SNET_PAYMENT_CHANNEL_NONCE, channelNonce);
         headers.put(SNET_PAYMENT_CHANNEL_AMOUNT, amount);
         headers.put(SNET_PAYMENT_CHANNEL_SIGNATURE, signature.getBytes());
     }
 
+    /**
+     * Deserialize escrow payment from metadata.
+     * @param headers metadata to get information from.
+     * @return escrow payment deserialized.
+     */
     public static EscrowPayment fromMetadata(Metadata headers) {
         BigInteger channelId = headers.get(SNET_PAYMENT_CHANNEL_ID);
         BigInteger channelNonce = headers.get(SNET_PAYMENT_CHANNEL_NONCE);
@@ -85,7 +98,7 @@ public class EscrowPayment implements Payment {
     
         private PaymentChannel paymentChannel;
         private BigInteger amount;
-        private Signer signer;
+        private Identity signer;
     
         public Builder() {
         }
@@ -100,31 +113,32 @@ public class EscrowPayment implements Payment {
             return this;
         }
 
-        public Builder setSigner(Signer signer) {
+        public Builder setSigner(Identity signer) {
             this.signer = signer;
             return this;
         }
     
         public EscrowPayment build() {
-            Signature signature = signer.sign(getMessage());
+            byte[] message = getMessage(paymentChannel, amount);
+            Signature signature = signer.sign(message);
             return new EscrowPayment(paymentChannel.getChannelId(),
                     paymentChannel.getNonce(), amount, signature);
         }
 
-        private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
+    }
 
-        byte[] getMessage() {
-            return Utils.wrapExceptions(() -> {
-                ByteArrayOutputStream message = new ByteArrayOutputStream();
-                message.write(PAYMENT_MESSAGE_PREFIX);
-                message.write(paymentChannel.getMpeContractAddress().toByteArray());
-                message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
-                message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
-                message.write(Utils.bigIntToBytes32(amount));
-                return message.toByteArray();
-            });
-        }
+    private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
 
+    public static byte[] getMessage(PaymentChannel paymentChannel, BigInteger amount) {
+        return Utils.wrapExceptions(() -> {
+            ByteArrayOutputStream message = new ByteArrayOutputStream();
+            message.write(PAYMENT_MESSAGE_PREFIX);
+            message.write(paymentChannel.getMpeContractAddress().toByteArray());
+            message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
+            message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
+            message.write(Utils.bigIntToBytes32(amount));
+            return message.toByteArray();
+        });
     }
 
 }

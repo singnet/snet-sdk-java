@@ -2,27 +2,49 @@
 
 title SingularityNet Java SDK
 
+package io.singularitynet.sdk.payment {
+
+    interface Payment {
+        void toMetadata(Metadata headers);
+    }
+
+    class PaymentSerializer {
+        static final Metadata.Key<String> SNET_PAYMENT_TYPE;
+        static final Metadata.AsciiMarshaller<BigInteger> ASCII_BIGINTEGER_MARSHALLER;
+
+        static void register(String type, Function<Metadata, Payment> reader);
+        static Optional<Payment> fromMetadata(Metadata headers);
+        static void toMetadata(Payment payment, Metadata headers);
+    }
+
+    PaymentSerializer -- Payment
+
+}
+
 package io.singularitynet.sdk.ethereum {
 
     interface WithAddress {
         Address getAddress();
     }
 
-    interface Signer {
+    interface Identity {
         Signature sign(byte[] message);
     }
-    WithAddress <|-- Signer
+    WithAddress <|-- Identity
 
     class PrivateKeyIdentity {
         Credentials getCredentials();
     }
-    Signer <|.. PrivateKeyIdentity
+    Identity <|.. PrivateKeyIdentity
 
     class MnemonicIdentity
     PrivateKeyIdentity <|-- MnemonicIdentity
 
-}
+    class Ethereum {
+        BigInteger getEthBlockNumber();
+    }
 
+}
 
 package io.singularitynet.sdk.registry {
 
@@ -48,6 +70,40 @@ package io.singularitynet.sdk.registry {
 
 }
 
+package io.singularitynet.sdk.mpe {
+
+    class MultiPartyEscrowContract {
+        Optional<PaymentChannel> getChannelById(BigInteger channelId);
+        Address getContractAddress();
+        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
+        void transfer(Address receiver, BigInteger value);
+        Stream<PaymentChannel> getChannelOpenEvents();
+        BigInteger channelAddFunds(BigInteger channelId, BigInteger amount);
+        BigInteger channelExtend(BigInteger channelId, BigInteger expiration);
+        ExtendAndAddFundsResponse channelExtendAndAddFunds(BigInteger channelId,\n\tBigInteger expiration, BigInteger amount);
+    }
+
+    interface PaymentChannelStateProvider {
+        PaymentChannel getChannelStateById(BigInteger channelId);
+    }
+
+    class EscrowPayment
+    Payment ()- EscrowPayment
+
+    interface BlockchainPaymentChannelManager {
+        Stream<PaymentChannel> getChannelsAccessibleBy(PaymentGroupId paymentGroupId, WithAddress identity);
+        PaymentChannel openPaymentChannel(PaymentGroup paymentGroup,\n\tWithAddress signer, BigInteger value, BigInteger expiration);
+        PaymentChannel addFundsToChannel(PaymentChannel channel, BigInteger amount);
+        PaymentChannel extendChannel(PaymentChannel channel, BigInteger expiration);
+        PaymentChannel extendAndAddFundsToChannel(PaymentChannel channel,\n\tBigInteger expiration, BigInteger amount);
+    }
+
+    class MpePaymentChannelManager
+    BlockchainPaymentChannelManager <|.. MpePaymentChannelManager
+    MpePaymentChannelManager o-- MultiPartyEscrowContract
+
+}
+
 package io.singularitynet.sdk.daemon {
     
     interface DaemonConnection {
@@ -57,53 +113,33 @@ package io.singularitynet.sdk.daemon {
         void shutdownNow();
     }
 
-    class FirstEndpointDaemonConnection
-    DaemonConnection <|.. FirstEndpointDaemonConnection
-    FirstEndpointDaemonConnection o-- MetadataProvider
+    class RandomEndpointDaemonConnection
+    DaemonConnection <|.. RandomEndpointDaemonConnection
+    RandomEndpointDaemonConnection o-- MetadataProvider
 
     class PaymentChannelStateService {
         PaymentChannelStateReply getChannelState(BigInteger channelId);
     }
-    PaymentChannelStateService o-- Signer
+    PaymentChannelStateService o-- Identity
+    PaymentChannelStateService o-- Ethereum
     PaymentChannelStateService -- DaemonConnection
 
-    interface Payment {
-        void toMetadata(Metadata headers);
-    }
-
-}
-
-package io.singularitynet.sdk.mpe {
-    class MultiPartyEscrowContract {
-        Optional<PaymentChannel> getChannelById(BigInteger channelId);
-        Address getContractAddress();
-        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger expiration);
-        void transfer(Address receiver, BigInteger value);
-    }
-
-    interface PaymentChannelProvider {
-        PaymentChannel getChannelById(BigInteger channelId);
-        PaymentChannel openChannel(Address signer, Address recipient,\n\tPaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks);
-    }
-
     class AskDaemonFirstPaymentChannelProvider
-    PaymentChannelProvider <|.. AskDaemonFirstPaymentChannelProvider
-    AskDaemonFirstPaymentChannelProvider *-- MultiPartyEscrowContract
+    PaymentChannelStateProvider ()- AskDaemonFirstPaymentChannelProvider
+    AskDaemonFirstPaymentChannelProvider o-- MultiPartyEscrowContract
     AskDaemonFirstPaymentChannelProvider *-- PaymentChannelStateService
 
-    class EscrowPayment
-    Payment ()- EscrowPayment
-
 }
+
 
 package io.singularitynet.sdk.client {
 
     interface Configuration {
         URL getEthereumJsonRpcEndpoint();
         URL getIpfsEndpoint();
-        SignerType getSignerType();
-        Optional<String> getSignerMnemonic();
-        Optional<byte[]> getSignerPrivateKey();
+        IdentityType getIdentityType();
+        Optional<String> getIdentityMnemonic();
+        Optional<byte[]> getIdentityPrivateKey();
         Optional<Address> getRegistryAddress();
         Optional<Address> getMultiPartyEscrowAddress();
     }
@@ -121,7 +157,7 @@ package io.singularitynet.sdk.client {
     interface DependencyFactory {
         Web3j getWeb3j();
         IPFS getIpfs();
-        Signer getSigner();
+        Identity getIdentity();
         Registry getRegistry();
         MultiPartyEscrow getMultiPartyEscrow();
     }
@@ -133,22 +169,30 @@ package io.singularitynet.sdk.client {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
     }
 
-    abstract class PaymentChannelPaymentStrategy {
+    abstract class EscrowPaymentStrategy {
         protected PaymentChannel selectChannel(ServiceClient serviceClient);
     }
-    PaymentStrategy <|.. PaymentChannelPaymentStrategy
+    PaymentStrategy <|.. EscrowPaymentStrategy
+    EscrowPaymentStrategy o-- Identity
 
     class FixedPaymentChannelPaymentStrategy
-    PaymentChannelPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
     
     class OnDemandPaymentChannelPaymentStrategy
-    PaymentChannelPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
+    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
+    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
 
     class Sdk {
         Sdk(Configuration config);
         Sdk(DependencyFactory factory);
 
         ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
+        Ethereum getEthereum();
+        void transfer(Address toAddress, BigInteger amount);
+        Identity getIdentity();
+        MetadataProvider getMetadataProvider(String orgId, String serviceId);
+        BlockchainPaymentChannelManager getBlockchainPaymentChannelManager();
         void shutdown();
     }
     Sdk -- Configuration
@@ -157,10 +201,9 @@ package io.singularitynet.sdk.client {
 
     interface ServiceClient {
         MetadataProvider getMetadataProvider();
-        PaymentChannelProvider getPaymentChannelProvider();
-        Signer getSigner();
+        PaymentChannelStateProvider getPaymentChannelStateProvider();
         T getGrpcStub(Function<Channel, T> constructor);
-        DaemonConnection getDaemonConnection();
+        String getEndpointGroupName();
         void shutdownNow();
     }
 
@@ -168,9 +211,8 @@ package io.singularitynet.sdk.client {
     ServiceClient <|.. BaseServiceClient
     BaseServiceClient *-- DaemonConnection
     BaseServiceClient *-- MetadataProvider
-    BaseServiceClient *-- PaymentChannelProvider
+    BaseServiceClient *-- PaymentChannelStateProvider
     BaseServiceClient *-- PaymentStrategy
-    BaseServiceClient *-- Signer
 
 }
 

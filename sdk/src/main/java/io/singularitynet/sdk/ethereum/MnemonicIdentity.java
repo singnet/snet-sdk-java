@@ -5,6 +5,11 @@ import java.util.Arrays;
 import org.web3j.crypto.MnemonicUtils;
 import org.web3j.crypto.Bip32ECKeyPair;
 
+/**
+ * Identity which private key is calculated using mnemonic and BIP32 wallet
+ * generation algorithm.
+ * @see <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP32</a>
+ */
 public class MnemonicIdentity extends PrivateKeyIdentity {
 
     private static final int[] PATH_PREFIX = new int[] {
@@ -14,6 +19,11 @@ public class MnemonicIdentity extends PrivateKeyIdentity {
         0
     };
 
+    /**
+     * New mnemonic from string and wallet index.
+     * @param mnemonic mnemonic string.
+     * @param walletIndex wallet index.
+     */
     public MnemonicIdentity(String mnemonic, int walletIndex) {
         super(wallet(mnemonic, walletIndex));
     }

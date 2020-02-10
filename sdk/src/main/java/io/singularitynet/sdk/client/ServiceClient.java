@@ -3,10 +3,8 @@ package io.singularitynet.sdk.client;
 import io.grpc.Channel;
 import java.util.function.Function;
 
-import io.singularitynet.sdk.mpe.PaymentChannelProvider;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.ethereum.Signer;
-import io.singularitynet.sdk.daemon.DaemonConnection;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -21,15 +19,12 @@ public interface ServiceClient {
     MetadataProvider getMetadataProvider();
 
     /**
-     * Return an instance of the payment channel provider.
-     * @return payment channel provider instance.
+     * Return actual payment channel state provider. As part of payment channel
+     * state is kept on the daemon side the provider needs live connection to
+     * the daemon.
+     * @return actual payment channel state provider.
      */
-    PaymentChannelProvider getPaymentChannelProvider();
-
-    /**
-     * Return the signer to sign payments.
-     */
-    Signer getSigner();
+    PaymentChannelStateProvider getPaymentChannelStateProvider();
 
     /**
      * Construct new gRPC stub to call the platform service.
@@ -41,18 +36,16 @@ public interface ServiceClient {
     <T> T getGrpcStub(Function<Channel, T> constructor);
 
     /**
-     * Return connection to daemon. The connection can be used for tracking
-     * properties which can be changed after failover or reconnection.
-     * @see DaemonConnection#getEndpointGroupName()
-     * @return instance of the connection to the daemon.
+     * Return current endpoint group name. Endpoint group name can be changed
+     * after failover or reconnection.
+     * @return name of the current endpoint group to which client  is
+     * connected.
      */
-    DaemonConnection getDaemonConnection();
+    String getEndpointGroupName();
 
     /**
-     * Closes platform service connection. This call causes calling
-     * DaemonConnection.shutdownNow().
+     * Closes platform service connection.
      */
     void shutdownNow();
-
 
 }

@@ -1,9 +1,11 @@
 package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import java.util.concurrent.Callable;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Random;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
@@ -128,6 +130,13 @@ public class Utils {
                 return args;
             }
         };
+    }
+
+    private static final Random random = new Random();
+
+    public static <T> T getRandomItem(List<T> items) {
+        int index = random.nextInt(items.size());
+        return items.get(index);
     }
 
 }

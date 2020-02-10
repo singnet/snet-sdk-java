@@ -2,8 +2,9 @@ package io.singularitynet.sdk.registry;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import com.google.gson.annotations.SerializedName;
 
 import io.singularitynet.sdk.ethereum.Address;
@@ -46,6 +47,12 @@ public class ServiceMetadata {
 
     public List<EndpointGroup> getEndpointGroups() {
         return endpointGroups;
+    }
+
+    public Optional<EndpointGroup> getEndpointGroupByName(String groupName) {
+        return endpointGroups.stream()
+            .filter(group -> group.getGroupName().equals(groupName))
+            .findFirst();
     }
 
     public static class Builder {
