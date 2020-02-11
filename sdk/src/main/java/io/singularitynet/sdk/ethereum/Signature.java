@@ -8,23 +8,42 @@ import java.io.ByteArrayOutputStream;
 import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * Ethereum message signature.
+ */
 @EqualsAndHashCode
 public class Signature {
 
     private final Sign.SignatureData data;
 
+    /**
+     * New signature from web3j signature data.
+     * @param signature web3j signature data.
+     */
     public Signature(Sign.SignatureData signature) {
         this.data = signature;
     }
 
+    /**
+     * New signature from byte array.
+     * @param signature signature packed into byte array.
+     */
     public Signature(byte[] signature) {
         this.data = bytesToSignature(signature);
     }
 
+    /**
+     * Return web3j signature data
+     * @return web3j signature data.
+     */
     public Sign.SignatureData getSignatureData() {
         return data;
     }
 
+    /**
+     * Return signature bytes.
+     * @return signature packed into byte array.
+     */
     public byte[] getBytes() {
         return signatureToBytes(data);
     }

@@ -183,7 +183,7 @@ public class StyleTransferActivity extends AppCompatActivity
                 try
                 {
                     SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
-                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(BigInteger.valueOf(channelID));
+                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(sdk.getSdk(), BigInteger.valueOf(channelID));
                     serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
                             "default_group", paymentStrategy);
                 }

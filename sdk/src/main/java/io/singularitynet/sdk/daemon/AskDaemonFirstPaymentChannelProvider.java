@@ -1,37 +1,51 @@
-package io.singularitynet.sdk.mpe;
+package io.singularitynet.sdk.daemon;
 
 import java.math.BigInteger;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.web3j.protocol.core.Ethereum;
 
 import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
-import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
+import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
+import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
+import io.singularitynet.sdk.mpe.EscrowPayment;
 
-public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvider {
+/**
+ * This class uses straightforward strategy to implement
+ * PaymentChannelStateProvider interface. Each time client tries to get channel
+ * state it makes gRPC call to the daemon. It is simple but ineffective
+ * strategy. Nevetherless it can be useful when calls are rare and there are
+ * few clients using the same payment channel. Under such conditions it allows
+ * sharing channel state via daemon without additional synchronization.
+ */
+public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelStateProvider {
 
     private final static Logger log = LoggerFactory.getLogger(AskDaemonFirstPaymentChannelProvider.class);
 
-    private final Ethereum ethereum;
     private final MultiPartyEscrowContract mpe;
     private final PaymentChannelStateService stateService;
 
-    public AskDaemonFirstPaymentChannelProvider(Ethereum ethereum,
+    /**
+     * Constructor.
+     * @param mpe MultiPartyEscrowContract instance which is used to get
+     * channel state from the blockchain.
+     * @param stateService client to the daemon payment channel state service.
+     */
+    public AskDaemonFirstPaymentChannelProvider(
             MultiPartyEscrowContract mpe,
             PaymentChannelStateService stateService) {
-        this.ethereum = ethereum;
         this.mpe = mpe;
         this.stateService = stateService;
     }
 
     @Override
-    public PaymentChannel getChannelById(BigInteger channelId) {
+    public PaymentChannel getChannelStateById(BigInteger channelId) {
         log.debug("Getting the channel state, channelId: {}", channelId);
         PaymentChannel channel = mpe.getChannelById(channelId).get();
         PaymentChannelStateReply reply = stateService.getChannelState(channelId);
@@ -44,16 +58,6 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
             channel = mergeChannelState(channel, reply);
         }
         log.debug("Channel state, channel: {}", channel);
-        return channel;
-    }
-
-    @Override
-    public PaymentChannel openChannel(Address signer, Address recipient,
-            PaymentGroupId groupId, BigInteger value, BigInteger lifetimeInBlocks) {
-        BigInteger currentBlock = Utils.wrapExceptions(() -> ethereum.ethBlockNumber().send().getBlockNumber());
-        BigInteger expiration = currentBlock.add(lifetimeInBlocks);
-        PaymentChannel channel = mpe.openChannel(signer, recipient, groupId,
-                value, expiration);
         return channel;
     }
 
@@ -92,10 +96,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelProvi
 
     private static void verifySignature(PaymentChannel channel, BigInteger amount,
             Signature signature, String type) {
-        byte[] payment = EscrowPayment.newBuilder()
-            .setPaymentChannel(channel)
-            .setAmount(amount)
-            .getMessage();
+        byte[] payment = EscrowPayment.getMessage(channel, amount);
         Address address = CryptoUtils.getSignerAddress(payment, signature);
         Preconditions.checkState(channel.getSigner().equals(address) ||
                 channel.getSender().equals(address), 

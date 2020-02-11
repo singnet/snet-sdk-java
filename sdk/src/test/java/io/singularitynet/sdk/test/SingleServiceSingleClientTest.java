@@ -41,7 +41,7 @@ public class SingleServiceSingleClientTest {
         service.clearEndpointGroups().addEndpointGroup(endpointGroup);
         env.registerService(orgId, serviceId);
 
-        Signer signer = env.newSigner();
+        Identity signer = env.newIdentity();
 
         paymentChannel = env.newPaymentChannel(endpointGroup.getPaymentGroupId(), signer).build();
         env.daemon().setChannelStateIsAbsent(paymentChannel);
@@ -52,7 +52,7 @@ public class SingleServiceSingleClientTest {
                 env.registry().get(), env.mpe().get());
 
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                paymentChannel.getChannelId());
+                sdk, paymentChannel.getChannelId());
         serviceClient = sdk.newServiceClient(orgId, serviceId,
                 endpointGroup.getGroupName(), paymentStrategy);
 

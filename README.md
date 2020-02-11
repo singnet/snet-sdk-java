@@ -23,7 +23,7 @@ execute:
 docker run -d \
     --name java-sdk-integration-environment \
     -p 5002:5002 -p 8545:8545 -p 7000:7000 \
-    singularitynet/java-sdk-integration-test-env
+    singularitynet/java-sdk-integration-test-env:2.0.2
 ```
 Then you can run build with integration testing using:
 ```

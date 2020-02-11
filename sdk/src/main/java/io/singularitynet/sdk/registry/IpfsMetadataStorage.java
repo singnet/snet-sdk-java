@@ -9,12 +9,19 @@ import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * Metadata storage based on IPFS implementation.
+ */
 public class IpfsMetadataStorage implements MetadataStorage {
 
     private final static Logger log = LoggerFactory.getLogger(IpfsMetadataStorage.class);
 
     private final IPFS ipfs;
 
+    /**
+     * New metadata storage for IPFS client instance.
+     * @param ipfs IPFS client instance.
+     */
     public IpfsMetadataStorage(IPFS ipfs) {
         this.ipfs = ipfs;
     }

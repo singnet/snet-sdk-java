@@ -2,8 +2,9 @@ package io.singularitynet.sdk.registry;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import com.google.gson.annotations.SerializedName;
 
 @EqualsAndHashCode
@@ -38,6 +39,17 @@ public class OrganizationMetadata {
 
     public List<PaymentGroup> getPaymentGroups() {
         return paymentGroups;
+    }
+
+    /**
+     * Return payment group by id.
+     * @param paymentGroupId id of the payment group to be returned.
+     * @return payment group instance.
+     */
+    public Optional<PaymentGroup> getPaymentGroupById(PaymentGroupId paymentGroupId) {
+        return paymentGroups.stream()
+            .filter(group -> group.getPaymentGroupId().equals(paymentGroupId))
+            .findFirst();
     }
 
     public static class Builder {

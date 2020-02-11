@@ -7,7 +7,8 @@ import java.math.BigInteger;
 import com.google.protobuf.ByteString;
 
 import io.singularitynet.sdk.test.Environment;
-import io.singularitynet.sdk.ethereum.Signer;
+import io.singularitynet.sdk.ethereum.Ethereum;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.daemon.escrow.StateService.ChannelStateRequest;
@@ -31,9 +32,9 @@ public class PaymentChannelStateServiceTest {
         long channelId = 42;
 
         env.setCurrentEthereumBlockNumber(ethereumBlockNumber);
-        Signer signer = new PrivateKeyIdentity(new BigInteger(privateKey));
+        Identity signer = new PrivateKeyIdentity(new BigInteger(privateKey));
         PaymentChannelStateService.MessageSigningHelper helper =
-            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, env.web3j(), signer);
+            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, new Ethereum(env.web3j()), signer);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(ByteString.copyFrom(Utils.bigIntToBytes32(BigInteger.valueOf(channelId))));
 

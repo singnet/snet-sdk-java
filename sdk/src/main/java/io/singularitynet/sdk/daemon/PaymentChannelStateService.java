@@ -5,17 +5,15 @@ import java.io.ByteArrayOutputStream;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.web3j.protocol.core.Ethereum;
-import org.web3j.protocol.core.methods.response.EthBlockNumber;
 
 import io.singularitynet.daemon.escrow.*;
 import io.singularitynet.daemon.escrow.StateService.*;
 import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc.*;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Signer;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Ethereum;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
-import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 
 public class PaymentChannelStateService {
 
@@ -25,8 +23,8 @@ public class PaymentChannelStateService {
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
-            MultiPartyEscrowContract mpe, Ethereum ethereum, Signer signer) {
-        this.signingHelper = new MessageSigningHelper(mpe.getContractAddress(), ethereum, signer);
+            Address mpeAddress, Ethereum ethereum, Identity signer) {
+        this.signingHelper = new MessageSigningHelper(mpeAddress, ethereum, signer);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 
@@ -66,10 +64,10 @@ public class PaymentChannelStateService {
 
         private final byte[] mpeContractAddress;
         private final Ethereum ethereum;
-        private final Signer signer;
+        private final Identity signer;
 
         public MessageSigningHelper(Address mpeAddress, Ethereum ethereum,
-                Signer signer) {
+                Identity signer) {
             this.mpeContractAddress = mpeAddress.toByteArray();
             this.ethereum = ethereum;
             this.signer = signer;
@@ -77,7 +75,7 @@ public class PaymentChannelStateService {
 
         public void signChannelStateRequest(ChannelStateRequest.Builder request) {
             Utils.wrapExceptions(() -> {
-                long block = ethereum.ethBlockNumber().send().getBlockNumber().longValue();
+                long block = ethereum.getEthBlockNumber().longValue();
 
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bytes.write(GET_CHANNEL_STATE_PREFIX);

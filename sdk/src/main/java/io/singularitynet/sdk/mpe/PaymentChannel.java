@@ -5,6 +5,7 @@ import lombok.ToString;
 import java.math.BigInteger;
 
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
 @EqualsAndHashCode
@@ -81,6 +82,26 @@ public class PaymentChannel {
 
     public BigInteger getSpentAmount() {
         return spentAmount;
+    }
+
+    /**
+     * Return current channel balance which is difference between channel value
+     * and spent amount.
+     * @return number of cogs left in channel.
+     */
+    public BigInteger getBalance() {
+        return getValue().subtract(getSpentAmount());
+    }
+
+    /**
+     * Check if channel is accessible by given identity address. 
+     * @param identity identity address.
+     * @return true if either signer or sender of the channel is equal to the
+     * given identity address.
+     */
+    public boolean isAccessibleBy(WithAddress identity) {
+        return getSigner().equals(identity.getAddress())
+            || getSender().equals(identity.getAddress());
     }
 
     public static class Builder {

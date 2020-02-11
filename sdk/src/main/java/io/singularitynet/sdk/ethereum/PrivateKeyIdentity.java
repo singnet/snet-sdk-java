@@ -9,18 +9,33 @@ import org.web3j.crypto.Credentials;
 
 import io.singularitynet.sdk.common.Utils;
 
-public class PrivateKeyIdentity implements Signer {
+/**
+ * Identity which private key is provided explicitly via constructor.
+ */
+public class PrivateKeyIdentity implements Identity {
 
     private final ECKeyPair key;
 
+    /**
+     * New identity from web3j specific key representation.
+     * @param key web3j key pair.
+     */
     public PrivateKeyIdentity(ECKeyPair key) {
         this.key = key;
     }
 
+    /**
+     * New identity from BigInteger.
+     * @param privateKey private key packed into BigInteger.
+     */
     public PrivateKeyIdentity(BigInteger privateKey) {
         this(ECKeyPair.create(privateKey));
     }
 
+    /**
+     * New identity from byte array.
+     * @param privateKey private key packed into byte array.
+     */
     public PrivateKeyIdentity(byte[] privateKey) {
         this(ECKeyPair.create(privateKey));
     }
@@ -36,6 +51,11 @@ public class PrivateKeyIdentity implements Signer {
         return new Address(Keys.getAddress(key.getPublicKey()));
     }
 
+    // TODO: think about replacing it by getECKeyPair 
+    /**
+     * Return web3j credentials instance.
+     * @return new web3j Credentials instance.
+     */
     public Credentials getCredentials() {
         return Credentials.create(key);
     }

@@ -10,8 +10,14 @@ import com.google.gson.reflect.TypeToken;
 
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * Ethereum contract utility class.
+ */
 public class ContractUtils {
 
+    /**
+     * Maps Ethereum contract name to the contract resource filename.
+     */
     private static final Map<String, String> NETWORK_CONFIG_BY_CONTRACT_NAME = new HashMap<String, String>() {{
         put("Registry", "networks/Registry.json");
         put("MultiPartyEscrow", "networks/MultiPartyEscrow.json");
@@ -20,6 +26,12 @@ public class ContractUtils {
     private ContractUtils() {
     }
 
+    /**
+     * Read Ethereum address of the contract.
+     * @param networkId id of the Ethereum network.
+     * @param contractName name of the contract.
+     * @return Ethereum address of the contract.
+     */
     public static Address readContractAddress(String networkId, String contractName) {
         return Utils.wrapExceptions(() -> {
             String networkJson = NETWORK_CONFIG_BY_CONTRACT_NAME.get(contractName);

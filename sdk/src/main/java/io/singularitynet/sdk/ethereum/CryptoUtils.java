@@ -7,11 +7,20 @@ import org.web3j.crypto.Hash;
 
 import io.singularitynet.sdk.common.Utils;
 
+/**
+ * Crypto utility class
+ */
 public class CryptoUtils {
 
     private CryptoUtils() {
     }
 
+    /**
+     * Extract signer address from the signature.
+     * @param message Etherum message signed.
+     * @param signature message signature.
+     * @return signer's Ethereum address.
+     */
     public static Address getSignerAddress(byte[] message, Signature signature) {
         return Utils.wrapExceptions(() -> {
             Sign.SignatureData signatureData = signature.getSignatureData();

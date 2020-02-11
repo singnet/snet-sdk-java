@@ -114,12 +114,12 @@ public class Environment {
         return uint256;
     }
 
-    private Map<Address, Signer> signerByAddress = new HashMap<>();
+    private Map<Address, Identity> identityByAddress = new HashMap<>();
 
-    public Signer newSigner() {
-        Signer signer = new PrivateKeyIdentity(Utils.base64ToBytes("1PeCDRD7vLjqiGoHl7A+yPuJIy8TdbNc1vxOyuPjxBM="));
-        signerByAddress.put(signer.getAddress(), signer);
-        return signer;
+    public Identity newIdentity() {
+        Identity identity = new PrivateKeyIdentity(Utils.base64ToBytes("1PeCDRD7vLjqiGoHl7A+yPuJIy8TdbNc1vxOyuPjxBM="));
+        identityByAddress.put(identity.getAddress(), identity);
+        return identity;
     }
 
     private Map<PaymentGroupId, PaymentGroup.Builder> paymentGroupById = new HashMap<>();
@@ -222,7 +222,7 @@ public class Environment {
         }
     }
 
-    public PaymentChannel.Builder newPaymentChannel(PaymentGroupId groupId, Signer signer) {
+    public PaymentChannel.Builder newPaymentChannel(PaymentGroupId groupId, Identity signer) {
         BigInteger channelId = BigInteger.valueOf((long)(Math.random() * 100));
         PaymentGroup group = paymentGroupById.get(groupId).build();
         PaymentChannel.Builder paymentChannel = PaymentChannel.newBuilder()
@@ -244,7 +244,7 @@ public class Environment {
         return EscrowPayment.newBuilder()
             .setPaymentChannel(paymentChannel)
             .setAmount(BigInteger.valueOf(11))
-            .setSigner(signerByAddress.get(paymentChannel.getSigner()));
+            .setSigner(identityByAddress.get(paymentChannel.getSigner()));
     }
 
     public PaymentChannelStateReply.Builder newPaymentChannelStateReply(EscrowPayment payment) {
