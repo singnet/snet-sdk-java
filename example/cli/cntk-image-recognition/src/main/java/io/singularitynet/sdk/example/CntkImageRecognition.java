@@ -1,9 +1,11 @@
 package io.singularitynet.sdk.example;
 
 import java.math.BigInteger;
+import java.util.Properties;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.Configuration;
+import io.singularitynet.sdk.client.ConfigurationUtils;
 import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.PaymentStrategy;
@@ -21,9 +23,12 @@ public class CntkImageRecognition {
         String privateKey = args[0];
         BigInteger channelId = new BigInteger(args[1]);
 
-        Configuration config = StaticConfiguration.newBuilder()
-            .setEthereumJsonRpcEndpoint("https://ropsten.infura.io")
-            .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
+        Properties props = new Properties();
+        props.load(CntkImageRecognition.class.getClassLoader()
+                .getResourceAsStream("ethereum.properties"));
+
+        StaticConfiguration config = StaticConfiguration.newBuilder(
+                ConfigurationUtils.fromProperties(props))
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(Utils.hexToBytes(privateKey))
             .build();

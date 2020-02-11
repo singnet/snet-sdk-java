@@ -31,6 +31,20 @@ public class StaticConfiguration implements Configuration {
         return new Builder();
     }
 
+    public static Builder newBuilder(Configuration config) {
+        Builder builder = new Builder()
+            .setEthereumJsonRpcEndpoint(config.getEthereumJsonRpcEndpoint())
+            .setIpfsEndpoint(config.getIpfsEndpoint())
+            .setIdentityType(config.getIdentityType());
+        config.getIdentityMnemonic().ifPresent(builder::setIdentityMnemonic);
+        config.getIdentityPrivateKey().ifPresent(builder::setIdentityPrivateKey);
+        config.getRegistryAddress().ifPresent(builder::setRegistryAddress);
+        config.getMultiPartyEscrowAddress().ifPresent(builder::setMultiPartyEscrowAddress);
+        config.getGasPrice().ifPresent(builder::setGasPrice);
+        config.getGasLimit().ifPresent(builder::setGasLimit);
+        return builder;
+    }
+
     public Builder toBuilder() {
         return new Builder(this);
     }

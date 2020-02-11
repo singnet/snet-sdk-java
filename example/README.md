@@ -1,4 +1,21 @@
-# Running example
+# Running examples
+
+## Build examples
+
+### Provide Ethereum JSON RPC endpoint
+
+You can use [Infura](https://infura.io/):
+- register on the website
+- get your project id
+- add `ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/<your-project-id>`
+  into `ethereum.properties` file
+
+### Run build
+
+Execute:
+```
+mvn install
+```
 
 ## Ethereum identity preparation
 
@@ -79,6 +96,7 @@ $ mvn exec:java -Dexec.mainClass="io.singularitynet.sdk.example.CntkImageRecogni
               <serviceId>example-service</serviceId> <!-- service id -->
               <outputDir>${project.build.directory}/proto</outputDir> <!-- output dir -->
               <javaPackage>io.singularitynet.service.exampleservice</javaPackage> <!-- java package for classes generated -->
+              <ethereumJsonRpcEndpoint>https://mainnet.infura.io/v3/infura-project-id</ethereumJsonRpcEndpoint>
             </configuration>
 
             <goals>
