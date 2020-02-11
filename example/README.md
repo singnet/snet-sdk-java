@@ -98,5 +98,5 @@ $ mvn exec:java -Dexec.mainClass="io.singularitynet.sdk.example.CntkImageRecogni
 - [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
 - [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
 
-4. Write Java client app using sdk, see [CntkImageRecognition.java](./src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java) as example
+4. Write Java client app using sdk, see [CntkImageRecognition.java](./cli/cntk-image-recognition/src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java) as example
 
