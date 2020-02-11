@@ -197,7 +197,7 @@
                   <images>
                     <image>
                       <alias>sdk-integration-test-env</alias>
-                      <name>singularitynet/java-sdk-integration-test-env:${java-sdk-integration-test-env.version}</name>
+                      <name>${java-sdk-integration-test-env.image}:${java-sdk-integration-test-env.version}</name>
                       <run>
                         <cmd>start_example_service.sh</cmd>
                         <ports>

@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import lombok.ToString;
 
 import io.singularitynet.sdk.ethereum.Ethereum;
-import io.singularitynet.sdk.ethereum.WithAddress;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PaymentGroup;
