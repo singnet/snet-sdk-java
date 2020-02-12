@@ -2,9 +2,13 @@
 
 ## Build examples
 
-### Provide Ethereum JSON RPC endpoint
+### Set Ethereum settings
 
-You can use [Infura](https://infura.io/):
+Copy [ethereum.properties.template](./ethereum.properties.template) to
+`ethereum.properties` and fill `ethereum.json.rpc.endpoint` field by Ethereum
+RPC endpoint URL.
+
+You can use [Infura](https://infura.io/) as Ethereum RPC endpoint:
 - register on the website
 - get your project id
 - add `ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/<your-project-id>`
