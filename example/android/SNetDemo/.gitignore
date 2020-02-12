@@ -14,4 +14,4 @@
 .cxx
 /app/build
 /app/libs
-/app/src/main/res/values/channel_key.xml
+/ethereum.properties
