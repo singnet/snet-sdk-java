@@ -27,3 +27,22 @@ jobs:
       - run:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)
+
+      - run:
+          name: Build CLI examples
+          command: |
+            cd ./example
+            cat <<EOF >./ethereum.properties
+            ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/${SINGNET_INFURA_PROJECT_ID}
+            EOF
+            mvn install
+
+      - run:
+          name: Build Android examples
+          command: |
+            cd ./example/android/SNetDemo
+            cat <<EOF >./ethereum.properties
+            cat <<EOF >./ethereum.properties
+            ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/${SINGNET_INFURA_PROJECT_ID}
+            EOF
+            ./gradlew
