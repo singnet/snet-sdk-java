@@ -20,14 +20,21 @@ buildscript {
     }
 }
 
+def ethereumProperties = new Properties()
+file("ethereum.properties").withInputStream { ethereumProperties.load(it) }
+
 allprojects {
     repositories {
         google()
         jcenter()
         
     }
+    project.ext {
+        ethereumJsonRpcEndpoint = new URL(ethereumProperties.getProperty("ethereum.json.rpc.endpoint"))
+    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

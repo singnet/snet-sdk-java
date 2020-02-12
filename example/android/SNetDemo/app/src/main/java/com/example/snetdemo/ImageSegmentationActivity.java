@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -32,9 +31,8 @@ import com.google.protobuf.ByteString;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 
-import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.service.semanticsegmentation.Segmentation;
@@ -89,7 +87,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
     private String errorMessage = "";
     private boolean isExceptionCaught = false;
 
-    private int channelID;
     private ServiceClient serviceClient;
 
     @Override
@@ -147,9 +144,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
             btn_GrabCameraImage.setEnabled(false);
         }
 
-        // See README.md on how to initialize channel ID via resources
-        channelID = this.getResources().getInteger(R.integer.channel_id);
-
         AsyncTask task = new AsyncTask<Object, Object, Object>()
         {
 
@@ -167,7 +161,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 try
                 {
                     SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
-                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(sdk.getSdk(), BigInteger.valueOf(channelID));
+                    PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
                     serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
                             "default_group", paymentStrategy);
                 }

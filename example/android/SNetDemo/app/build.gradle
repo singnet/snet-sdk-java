@@ -55,4 +55,18 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+
+    sourceSets {
+        main {
+            assets {
+                srcDirs "${buildDir}/generated/assets"
+            }
+        }
+    }
 }
+
+task copyEthereumProperties(type: Copy) {
+    from file('../ethereum.properties')
+    into "${buildDir}/generated/assets"
+}
+preBuild.dependsOn copyEthereumProperties

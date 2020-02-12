@@ -55,6 +55,7 @@ tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingul
     serviceId = 'semantic-segmentation'
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.semanticsegmentation'
+    ethereumJsonRpcEndpoint = project.ext.ethereumJsonRpcEndpoint
 }
 
 

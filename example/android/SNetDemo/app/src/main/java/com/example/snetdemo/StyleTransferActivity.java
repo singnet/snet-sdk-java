@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -33,9 +32,8 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 
-import io.singularitynet.sdk.client.FixedPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.service.styletransfer.StyleTransferGrpc;
@@ -98,8 +96,6 @@ public class StyleTransferActivity extends AppCompatActivity
     private String errorMessage = "";
     private boolean isExceptionCaught = false;
 
-
-    private int channelID;
     private ServiceClient serviceClient;
 
 
@@ -156,8 +152,6 @@ public class StyleTransferActivity extends AppCompatActivity
             btn_GrabCameraImage.setEnabled(false);
         }
 
-        channelID = this.getResources().getInteger(R.integer.channel_id);
-
         AsyncTask task = new AsyncTask<Object, Object, Object>()
         {
 
@@ -177,7 +171,7 @@ public class StyleTransferActivity extends AppCompatActivity
                 try
                 {
                     SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
-                    PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(sdk.getSdk(), BigInteger.valueOf(channelID));
+                    PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
                     serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
                             "default_group", paymentStrategy);
                 }

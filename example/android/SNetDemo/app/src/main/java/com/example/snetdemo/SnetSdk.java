@@ -2,31 +2,24 @@ package com.example.snetdemo;
 
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.Properties;
 
-import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.client.ConfigurationUtils;
 import io.singularitynet.sdk.client.Configuration;
-import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.Sdk;
 
 public class SnetSdk implements Closeable
 {
     private final Sdk sdk;
 
-    public SnetSdk(Context context)
+    public SnetSdk(Context context) throws IOException
     {
-        Resources res = context.getResources();
-        // See README.md on how to set channel signer private key via resources
-        String privateKey = res.getString(R.string.channel_key);
-        String infuraID = res.getString(R.string.infura_id);
-        Configuration config = StaticConfiguration.newBuilder()
-            .setEthereumJsonRpcEndpoint("https://mainnet.infura.io/v3/" + infuraID)
-            .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
-            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
-            .setIdentityPrivateKey(Utils.hexToBytes(privateKey))
-            .build();
+        Properties props = new Properties();
+        props.load(context.getAssets().open("ethereum.properties"));
+        Configuration config = ConfigurationUtils.fromProperties(props);
         sdk = new Sdk(config);
 
     }

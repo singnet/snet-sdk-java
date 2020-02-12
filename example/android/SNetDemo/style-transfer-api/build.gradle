@@ -54,6 +54,7 @@ tasks.register('getStyleTransferApi', io.singularitynet.sdk.gradle.GetSingularit
     serviceId = 'style-transfer'
     outputDir = file("$buildDir/proto")
     javaPackage = 'io.singularitynet.service.styletransfer'
+    ethereumJsonRpcEndpoint = project.ext.ethereumJsonRpcEndpoint
 }
 
 android {
