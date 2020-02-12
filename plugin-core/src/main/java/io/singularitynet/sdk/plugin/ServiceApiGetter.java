@@ -15,6 +15,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.exceptions.ClientConnectionException;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.ReadonlyTransactionManager;
 import io.ipfs.api.IPFS;
@@ -95,22 +96,25 @@ public class ServiceApiGetter {
     }
 
     public void run() throws PluginException {
-        log.info("Downloading API of orgId: {}, serviceId: {}, javaPackage: {}, into: {}",
+        log.info("Downloading API of orgId: {}, serviceId: {}, javaPackage: {}, into: {}, ethereumJsonRpcEndpoint: {}",
                 parameters.getOrgId(), parameters.getServiceId(),
-                parameters.getJavaPackage(), parameters.getOutputDir());
-        log.debug("ethereumJsonRpcEndpoint: {}, ipfsRpcEndpoint: {}, " +
-                "getterEthereumAddress: {}, registryAddress: {}",
-                parameters.getEthereumJsonRpcEndpoint(), parameters.getIpfsRpcEndpoint(),
-                parameters.getGetterEthereumAddress(),
+                parameters.getJavaPackage(), parameters.getOutputDir(),
+                parameters.getEthereumJsonRpcEndpoint());
+        log.debug("ipfsRpcEndpoint: {}, getterEthereumAddress: {}, registryAddress: {}",
+                parameters.getIpfsRpcEndpoint(), parameters.getGetterEthereumAddress(),
                 (parameters.getRegistryAddress() == null ? "<network default>" : parameters.getRegistryAddress()));
 
         if (ipfs == null) {
             Web3j web3j = Web3j.build(new HttpService(parameters.getEthereumJsonRpcEndpoint().toExternalForm()));
             try {
+                web3j.ethBlockNumber().send();
                 registry = getRegistryContract(web3j);
                 ipfs = new IPFS(parameters.getIpfsRpcEndpoint().getHost(),
                         parameters.getIpfsRpcEndpoint().getPort());
                 runInternal();
+            } catch (IOException | ClientConnectionException e) {
+                throw new PluginException("Could not perform operation on Ethereum RPC endpoint provided: "
+                        + parameters.getEthereumJsonRpcEndpoint(), e);
             } finally {
                 web3j.shutdown();
             }
