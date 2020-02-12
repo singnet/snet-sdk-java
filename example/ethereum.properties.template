@@ -1,0 +1,3 @@
+# Put Ethereum JSON RPC endpoint below
+ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/4lmypoyrubrw0x1pltvintxy6wrodgg7
+ipfs.endpoint=http://ipfs.singularitynet.io:80
