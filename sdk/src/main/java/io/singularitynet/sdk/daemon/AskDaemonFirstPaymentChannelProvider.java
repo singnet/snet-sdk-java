@@ -72,6 +72,9 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
             verifySignature(blockchainState, daemonState.getCurrentSignedAmount(),
                     daemonState.getCurrentSignature(), "last current nonce");
             spentAmount = daemonState.getCurrentSignedAmount();
+            return blockchainState.toBuilder()
+                .setSpentAmount(daemonState.getCurrentSignedAmount())
+                .build();
         } else {
             log.info("The channel nonce is different for the daemon and blockchain, blockchainState: {}, daemonState: {}",
                     blockchainState, daemonState);
@@ -80,18 +83,25 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
                     .equals(ONE), "Difference between current channel nonce " +
                     "and daemon channel nonce is bigger than 1. Channel id: %s",
                     blockchainState.getChannelId());
+
             verifySignature(blockchainState, daemonState.getOldNonceSignedAmount(),
                     daemonState.getOldNonceSignature(), "last old nonce");
-            verifySignature(blockchainState.toBuilder().setNonce(daemonState.getCurrentNonce()).build(),
-                    daemonState.getCurrentSignedAmount(),
-                    daemonState.getCurrentSignature(), "last current nonce");
-            spentAmount = daemonState.getCurrentSignedAmount().add(
-                    daemonState.getOldNonceSignedAmount());
+            spentAmount = BigInteger.ZERO;
+
+            if (daemonState.getCurrentSignature() != null) {
+                verifySignature(blockchainState.toBuilder().setNonce(daemonState.getCurrentNonce()).build(),
+                        daemonState.getCurrentSignedAmount(),
+                        daemonState.getCurrentSignature(), "last current nonce");
+                spentAmount = daemonState.getCurrentSignedAmount();
+            }
+
+            return blockchainState.toBuilder()
+                .setNonce(daemonState.getCurrentNonce())
+                .setValue(blockchainState.getValue().subtract(daemonState.getOldNonceSignedAmount()))
+                .setSpentAmount(spentAmount)
+                .build();
         }
 
-        return blockchainState.toBuilder()
-            .setSpentAmount(daemonState.getCurrentSignedAmount())
-            .build();
     }
 
     private static void verifySignature(PaymentChannel channel, BigInteger amount,

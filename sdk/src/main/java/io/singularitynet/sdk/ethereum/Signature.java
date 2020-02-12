@@ -64,7 +64,7 @@ public class Signature {
     }
 
     private static Sign.SignatureData bytesToSignature(byte[] signature) {
-        Preconditions.checkState(signature.length == 65, "Incorrect signature length: not equal to 65");
+        Preconditions.checkState(signature.length == 65, "Incorrect signature length: %s not equal to 65", signature.length);
         byte[] r = new byte[32];
         byte[] s = new byte[32];
         byte[] v = new byte[1];

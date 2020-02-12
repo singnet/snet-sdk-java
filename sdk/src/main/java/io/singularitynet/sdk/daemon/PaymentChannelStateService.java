@@ -32,30 +32,33 @@ public class PaymentChannelStateService {
         log.info("Requesting payment channel state from daemon");
 
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
-            .setChannelId(toBytesString(channelId));
+            .setChannelId(GrpcUtils.toBytesString(channelId));
 
         signingHelper.signChannelStateRequest(request); 
 
         ChannelStateReply grpcReply = stub.getChannelState(request.build());
         PaymentChannelStateReply.Builder builder = PaymentChannelStateReply.newBuilder()
-            .setCurrentNonce(toBigInt(grpcReply.getCurrentNonce()));
+            .setCurrentNonce(GrpcUtils.toBigInt(grpcReply.getCurrentNonce()));
 
-        if (grpcReply.getCurrentSignedAmount() != ByteString.EMPTY) {
-            builder.setCurrentSignedAmount(toBigInt(grpcReply.getCurrentSignedAmount()));
+        if (!grpcReply.getCurrentSignedAmount().isEmpty()) {
+            builder.setCurrentSignedAmount(GrpcUtils.toBigInt(grpcReply.getCurrentSignedAmount()));
+        }
+
+        if (!grpcReply.getCurrentSignature().isEmpty()) {
             builder.setCurrentSignature(new Signature(grpcReply.getCurrentSignature().toByteArray()));
+        }
+
+        if (!grpcReply.getOldNonceSignedAmount().isEmpty()) {
+            builder.setOldNonceSignedAmount(GrpcUtils.toBigInt(grpcReply.getOldNonceSignedAmount()));
+        }
+
+        if (!grpcReply.getOldNonceSignature().isEmpty()) {
+            builder.setOldNonceSignature(new Signature(grpcReply.getOldNonceSignature().toByteArray()));
         }
 
         PaymentChannelStateReply reply = builder.build();
         log.info("Payment channel state received: {}", reply);
         return reply;
-    }
-
-    private static ByteString toBytesString(BigInteger value) {
-        return ByteString.copyFrom(Utils.bigIntToBytes32(value));
-    }
-
-    private static BigInteger toBigInt(ByteString value) {
-        return Utils.bytes32ToBigInt(value.toByteArray());
     }
 
     static class MessageSigningHelper {

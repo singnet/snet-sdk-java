@@ -36,7 +36,7 @@ public class PaymentChannelStateServiceTest {
         PaymentChannelStateService.MessageSigningHelper helper =
             new PaymentChannelStateService.MessageSigningHelper(mpeAddress, new Ethereum(env.web3j()), signer);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
-            .setChannelId(ByteString.copyFrom(Utils.bigIntToBytes32(BigInteger.valueOf(channelId))));
+            .setChannelId(GrpcUtils.toBytesString(BigInteger.valueOf(channelId)));
 
         helper.signChannelStateRequest(request);
 
