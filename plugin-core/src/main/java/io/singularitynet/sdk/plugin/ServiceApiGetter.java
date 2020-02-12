@@ -51,10 +51,6 @@ public class ServiceApiGetter {
             return asURL(DEFAULT_IPFS_ENDPOINT);
         }
 
-        public URL getEthereumJsonRpcEndpoint() {
-            return asURL(DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT);
-        }
-
         public String getGetterEthereumAddress() {
             return DEFAULT_GETTER_ETHEREUM_ADDRESS;
         }
@@ -73,8 +69,6 @@ public class ServiceApiGetter {
     }
 
     public static final String DEFAULT_IPFS_ENDPOINT = "http://ipfs.singularitynet.io:80";
-    //FIXME: make it required field
-    public static final String DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT = "https://mainnet.infura.io";
     public static final String DEFAULT_GETTER_ETHEREUM_ADDRESS = "0xdcE9c76cCB881AF94F7FB4FaC94E4ACC584fa9a5";
     public static final String DEFAULT_REGISTRY_ADDRESS = "";
 

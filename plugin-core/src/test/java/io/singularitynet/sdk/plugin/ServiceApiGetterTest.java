@@ -86,6 +86,7 @@ public class ServiceApiGetterTest {
             public String getServiceId() { return SERVICE_ID; }
             public File getOutputDir() { return outputDir; }
             public String getJavaPackage() { return "org.example.exampleservice"; }
+            public URL getEthereumJsonRpcEndpoint() { return Utils.wrapExceptions(() -> new URL("http://localhost:8545")); }
         };
         ServiceApiGetter getter = new ServiceApiGetter(registry, ipfs, params);
 
