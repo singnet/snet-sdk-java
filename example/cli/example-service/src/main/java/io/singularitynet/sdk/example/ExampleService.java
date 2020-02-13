@@ -1,9 +1,7 @@
 package io.singularitynet.sdk.example;
 
-import java.math.BigInteger;
 import java.util.Properties;
 
-import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.ConfigurationUtils;
 import io.singularitynet.sdk.client.Sdk;

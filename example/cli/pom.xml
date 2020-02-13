@@ -7,6 +7,7 @@
     <groupId>io.singularitynet</groupId>
     <artifactId>snet-sdk-java-pom</artifactId>
     <version>0.2.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -14,8 +15,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>cli/cntk-image-recognition</module>
-    <module>cli/example-service</module>
+    <module>cntk-image-recognition</module>
+    <module>example-service</module>
   </modules>
 
   <build>
@@ -34,9 +35,9 @@
                 <rules>
                   <requireFilesExist>
                     <files>
-                      <file>${project.parent.relativePath}/ethereum.properties</file>
+                      <file>${project.parent.basedir}/ethereum.properties</file>
                     </files>
-                    <message>Please copy ${project.parent.relativePath}/ethereum.properties.template to ${project.parent.relativePath}/ethereum.properties and fill it (see ${project.parent.relativePath}/README.md)</message>
+                    <message>Please create ${project.parent.basedir}/ethereum.properties file and write SDK configuration into it</message>
                   </requireFilesExist>
                 </rules>
                 <fail>true</fail>
@@ -56,7 +57,7 @@
               </goals>
               <configuration>
                 <files>
-                  <file>${project.parent.relativePath}/ethereum.properties</file>
+                  <file>${project.parent.basedir}/ethereum.properties</file>
                 </files>
               </configuration>
             </execution>
