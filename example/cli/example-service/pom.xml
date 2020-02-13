@@ -10,7 +10,8 @@
     <relativePath>../..</relativePath>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion> <artifactId>example-service-example</artifactId>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>example-service-example</artifactId>
   <packaging>jar</packaging>
 
   <name>example-service-example</name>
