@@ -28,6 +28,9 @@ android {
         }
     }
 
+    lintOptions {
+        lintConfig file("../lint.xml")
+    }
 }
 
 repositories {
