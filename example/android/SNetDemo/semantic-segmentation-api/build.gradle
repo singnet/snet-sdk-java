@@ -54,7 +54,6 @@ dependencies {
 }
 
 tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
-    ethereumJsonRpcEndpoint = new URL('https://mainnet.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2')
     orgId = 'snet'
     serviceId = 'semantic-segmentation'
     outputDir = file("$buildDir/proto")
@@ -90,4 +89,3 @@ protobuf {
         }
     }
 }
-
