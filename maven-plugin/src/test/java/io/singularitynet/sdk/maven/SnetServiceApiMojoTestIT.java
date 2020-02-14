@@ -14,9 +14,6 @@ import org.apache.commons.io.IOUtils;
 
 public class SnetServiceApiMojoTestIT
 {
-    // TODO: use org.junit.Assume to run tests on local Ethereum environment
-    // when it is started
-
     private static final File testProjectDir = new File("target/test-classes/project-to-test/");
 
     @Rule
