@@ -5,35 +5,7 @@
 [![Release](https://jitpack.io/v/singnet/snet-sdk-java.svg)](https://jitpack.io/#singnet/snet-sdk-java)
 [![Javadoc](https://img.shields.io/badge/javadoc-master--SNAPSHOT-brightgreen)](https://jitpack.io/com/github/singnet/snet-sdk-java/snet-sdk-java/master-SNAPSHOT/javadoc)
 
-## How to build
-
-Integration testing is disabled by default. To run full build including
-integration tests use:
-```
-mvn install -DskipITs=false -P run-integration-environment
-```
-
-The command about automatically starts integration environment docker before
-running tests and stops after it. To start integration environment manually
-execute:
-```
-docker run -d \
-    --name java-sdk-integration-environment \
-    -p 5002:5002 -p 8545:8545 -p 7000:7000 \
-    singularitynet/java-sdk-integration-test-env:2.0.2
-```
-Then you can run build with integration testing using:
-```
-mvn install -DskipITs=false
-```
-
-Running integration tests is a time consuming process so to make fast build
-running unit tests only use:
-```
-mvn install
-```
-
-## Implementing SingularityNet service client
+## Implementing SingularityNet service client in Java
 
 1. Create new maven project, see [Maven getting started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
 
@@ -136,6 +108,34 @@ as example:
         // Shutdown SDK
         sdk.shutdown();
     }
+```
+
+## How to build
+
+Integration testing is disabled by default. To run full build including
+integration tests use:
+```
+mvn install -DskipITs=false -P run-integration-environment
+```
+
+The command about automatically starts integration environment docker before
+running tests and stops after it. To start integration environment manually
+execute:
+```
+docker run -d \
+    --name java-sdk-integration-environment \
+    -p 5002:5002 -p 8545:8545 -p 7000:7000 \
+    singularitynet/java-sdk-integration-test-env:2.0.2
+```
+Then you can run build with integration testing using:
+```
+mvn install -DskipITs=false
+```
+
+Running integration tests is a time consuming process so to make fast build
+running unit tests only use:
+```
+mvn install
 ```
 
 ## Class diagram
