@@ -38,8 +38,8 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
     @ToString.Exclude
     private final BlockchainPaymentChannelManager blockchainChannelManager;
 
-    private final BigInteger expirationAdvance;
-    private final BigInteger callsAdvance;
+    private final BigInteger channelLifetime;
+    private final BigInteger numberOfCalls;
         
     /**
      * New on demand payment channel strategy with default parameter values.
@@ -52,19 +52,19 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
     /**
      * New on demand payment channel strategy.
      * @param sdk SDK instance.
-     * @param expirationAdvance number of blocks to be added to the service
+     * @param channelLifetime number of blocks to be added to the service
      * provider expiration threshold when opening or updating channels.
      * @see io.singularitynet.sdk.registry.PaymentDetails#getPaymentExpirationThreshold
-     * @param callsAdvance number of calls by fixed price to be made after
+     * @param numberOfCalls number of calls by fixed price to be made after
      * channel is opened or updated.
      */
-    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, BigInteger expirationAdvance,
-            BigInteger callsAdvance) {
+    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, BigInteger channelLifetime,
+            BigInteger numberOfCalls) {
         super(sdk);
         this.ethereum = sdk.getEthereum();
         this.blockchainChannelManager = sdk.getBlockchainPaymentChannelManager();
-        this.expirationAdvance = expirationAdvance;
-        this.callsAdvance = callsAdvance;
+        this.channelLifetime = channelLifetime;
+        this.numberOfCalls = numberOfCalls;
     }
 
     @Override
@@ -108,21 +108,21 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
                 }
 
                 if (channel.getExpiration().compareTo(minExpiration) > 0) {
-                    BigInteger amount = callsAdvance.multiply(price);
+                    BigInteger amount = numberOfCalls.multiply(price);
                     log.info("Channel found: {}, adding funds: {} cogs", channel, amount);
                     return Stream.of(() -> blockchainChannelManager.addFundsToChannel(
                                 channel, amount));
                 }
 
                 if (channel.getBalance().compareTo(price) >= 0) {
-                    BigInteger lifetime = expirationThreshold.add(expirationAdvance);
+                    BigInteger lifetime = expirationThreshold.add(channelLifetime);
                     log.info("Channel found: {}, extending expiration date on: {} blocks", channel, lifetime);
                     return Stream.of(() -> blockchainChannelManager.extendChannel(
                                 channel, lifetime));
                 }
 
-                BigInteger amount = callsAdvance.multiply(price);
-                BigInteger lifetime = expirationThreshold.add(expirationAdvance);
+                BigInteger amount = numberOfCalls.multiply(price);
+                BigInteger lifetime = expirationThreshold.add(channelLifetime);
                 log.info("Channel found: {}, adding funds: {} cogs, and extending lifetime: {}",
                         channel, amount, lifetime);
                 return Stream.<Supplier<PaymentChannel>>of(() -> blockchainChannelManager
@@ -137,8 +137,8 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         PaymentChannel channel = blockchainChannelManager.openPaymentChannel(
                 paymentGroup,
                 getSigner(),
-                callsAdvance.multiply(price),
-                expirationThreshold.add(expirationAdvance));
+                numberOfCalls.multiply(price),
+                expirationThreshold.add(channelLifetime));
         log.info("New channel opened: {}", channel);
         return channel;
     }
