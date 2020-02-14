@@ -8,7 +8,7 @@
 ## Implementing SingularityNet service client in Java
 
 1. Create new maven project, see [Maven getting
-   started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
+   started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
    Add [Jitpack](https://jitpack.io/) maven repo into the project to be able
    using SingularityNet Java SDK artifacts:
 ```xml
@@ -77,11 +77,12 @@
 ```
 
 4. Use `protobuf-maven-plugin` to generate Java stubs of service API:
-- [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
-- [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
+   - [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
+   - [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
 
-5. Write Java client app using SDK API, see [CntkImageRecognition.java](./example/cli/cntk-image-recognition/src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java)
-as example:
+5. Write Java client app using SDK API, see
+   [CntkImageRecognition.java](./example/cli/cntk-image-recognition/src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java)
+   as example:
 
 ```java
     // Create SDK configuration
