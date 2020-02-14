@@ -1,0 +1,93 @@
+apply plugin: 'com.android.library'
+apply plugin: 'io.singularitynet.sdk'
+apply plugin: 'com.google.protobuf'
+
+def grpcVersion = '1.20.0'
+def protobufVersion = '3.5.1'
+def protocVersion = protobufVersion
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.2"
+
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        lintConfig file("../lint.xml")
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation "io.grpc:grpc-okhttp:${grpcVersion}"
+    implementation 'org.slf4j:slf4j-android:1.7.30'
+    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:master-SNAPSHOT'
+}
+
+tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+    ethereumJsonRpcEndpoint = new URL('https://mainnet.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2')
+    orgId = 'snet'
+    serviceId = 'semantic-segmentation'
+    outputDir = file("$buildDir/proto")
+    javaPackage = 'io.singularitynet.service.semanticsegmentation'
+    ethereumJsonRpcEndpoint = project.ext.ethereumJsonRpcEndpoint
+}
+
+
+android {
+    sourceSets {
+        main {
+            proto {
+                srcDir "$buildDir/proto"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+    generateProtoTasks {
+        all()*.builtins { remove java }
+        all()*.plugins {
+            grpc {}
+            java {}
+        }
+    }
+}
+

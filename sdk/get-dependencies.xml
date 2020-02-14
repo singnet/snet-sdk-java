@@ -49,7 +49,10 @@
 
   <target name="check-daemon-proto">
     <condition property="daemon-proto-present">
-      <available file="${project.build.directory}/proto/state_service.proto"/>
+      <and>
+        <available file="${project.build.directory}/proto/state_service.proto"/>
+        <available file="${project.build.directory}/proto/control_service.proto"/>
+      </and>
     </condition>
     <echo message="Check deamon proto presence: ${daemon-proto-present}"/>
   </target>
@@ -65,9 +68,13 @@
     <mkdir dir="${project.build.directory}/proto"/>
     <move file="${project.build.directory}/snet-daemon/proto/state_service.proto"
       todir="${project.build.directory}/proto" />
+    <move file="${project.build.directory}/snet-daemon/proto/control_service.proto"
+      todir="${project.build.directory}/proto" />
     <!-- TODO: Next step should be removed when daemon v2.0.3 is released -->
     <echo message='option java_package = "io.singularitynet.daemon.escrow";'
       file="${project.build.directory}/proto/state_service.proto" append="true"/>
+    <echo message='option java_package = "io.singularitynet.daemon.escrow";'
+      file="${project.build.directory}/proto/control_service.proto" append="true"/>
   </target>
 
 </project>

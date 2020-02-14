@@ -38,7 +38,7 @@ public class SnetServiceApiMojo extends AbstractMojo implements ServiceApiGetter
     private URL ipfsRpcEndpoint;
 
     @Getter
-    @Parameter(defaultValue = ServiceApiGetter.DEFAULT_ETHEREUM_JSON_RPC_ENDPOINT, property = "ethereumJsonRpcEndpoint", required = true)
+    @Parameter(property = "ethereumJsonRpcEndpoint", required = true)
     private URL ethereumJsonRpcEndpoint;
 
     @Getter
