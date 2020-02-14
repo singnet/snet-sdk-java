@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Optional;
+import java.util.Properties;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
@@ -68,4 +69,46 @@ public class ConfigurationUtilsTest {
         assertEquals("Gas limit", Optional.empty(), config.getGasLimit());
     }
 
+    @Test
+    public void fromPropertiesLoadAllProperties() throws MalformedURLException {
+        Properties props = new Properties();
+        props.setProperty("ethereum.json.rpc.endpoint", ethereumJsonRpcEndpoint);
+        props.setProperty("ipfs.endpoint", ipfsEndpoint);
+        props.setProperty("identity.type", identityType);
+        props.setProperty("identity.private.key.hex", privateKey);
+        props.setProperty("registry.address", registryAddress);
+        props.setProperty("multi.party.escrow.address", mpeAddress);
+        props.setProperty("gas.price", gasPrice);
+        props.setProperty("gas.limit", gasLimit);
+
+        Configuration config = ConfigurationUtils.fromProperties(props);
+
+        assertEquals("Ethereum JSON RPC endpoint", new URL(ethereumJsonRpcEndpoint), config.getEthereumJsonRpcEndpoint());
+        assertEquals("IPFS endpoint", new URL(ipfsEndpoint), config.getIpfsEndpoint());
+        assertEquals("Identity type", Enum.valueOf(Configuration.IdentityType.class, identityType), config.getIdentityType());
+        assertArrayEquals("Identity private key", Utils.hexToBytes(privateKey), config.getIdentityPrivateKey().get());
+        assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress().get());
+        assertEquals("MultiPartyEscrow address", new Address(mpeAddress), config.getMultiPartyEscrowAddress().get());
+        assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice().get());
+        assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit().get());
+    }
+
+    @Test
+    public void fromPropertiesLoadAllRequiredProperties() throws MalformedURLException {
+        Properties props = new Properties();
+        props.setProperty("ethereum.json.rpc.endpoint", ethereumJsonRpcEndpoint);
+        props.setProperty("ipfs.endpoint", ipfsEndpoint);
+        props.setProperty("identity.type", identityType);
+
+        Configuration config = ConfigurationUtils.fromProperties(props);
+
+        assertEquals("Ethereum JSON RPC endpoint", new URL(ethereumJsonRpcEndpoint), config.getEthereumJsonRpcEndpoint());
+        assertEquals("IPFS endpoint", new URL(ipfsEndpoint), config.getIpfsEndpoint());
+        assertEquals("Identity type", Enum.valueOf(Configuration.IdentityType.class, identityType), config.getIdentityType());
+        assertEquals("Identity private key", Optional.empty(), config.getIdentityPrivateKey());
+        assertEquals("Registry address", Optional.empty(), config.getRegistryAddress());
+        assertEquals("MultiPartyEscrow address", Optional.empty(), config.getMultiPartyEscrowAddress());
+        assertEquals("Gas price", Optional.empty(), config.getGasPrice());
+        assertEquals("Gas limit", Optional.empty(), config.getGasLimit());
+    }
 }
