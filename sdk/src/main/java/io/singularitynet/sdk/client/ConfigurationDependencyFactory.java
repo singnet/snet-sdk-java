@@ -1,8 +1,10 @@
 package io.singularitynet.sdk.client;
 
+import java.io.IOException;
 import java.net.URL;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.exceptions.ClientConnectionException;
 import org.web3j.tx.gas.StaticGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.RawTransactionManager;
@@ -52,6 +54,12 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
 
         log.info("Open connection to Ethereum RPC endpoint, ethereumJsonRpcEndpoint: {}", config.getEthereumJsonRpcEndpoint());
         this.web3j = Web3j.build(new HttpService(config.getEthereumJsonRpcEndpoint().toString()));
+        try {
+            web3j.ethBlockNumber().send();
+        } catch (IOException | ClientConnectionException e) {
+            throw new IllegalArgumentException("Could not perform operation on Ethereum RPC endpoint provided: "
+                    + config.getEthereumJsonRpcEndpoint(), e);
+        }
 
         URL ipfsEndpoint = config.getIpfsEndpoint();
         log.info("Open connection to IPFS RPC endpoint, ipfsEndpoint: {}", ipfsEndpoint);

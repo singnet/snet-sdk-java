@@ -3,11 +3,14 @@ package io.singularitynet.sdk.plugin;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.ExpectedException;
 
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,6 +86,7 @@ public class ServiceApiGetterTest {
             public String getServiceId() { return SERVICE_ID; }
             public File getOutputDir() { return outputDir; }
             public String getJavaPackage() { return "org.example.exampleservice"; }
+            public URL getEthereumJsonRpcEndpoint() { return Utils.wrapExceptions(() -> new URL("http://localhost:8545")); }
         };
         ServiceApiGetter getter = new ServiceApiGetter(registry, ipfs, params);
 
@@ -91,5 +95,30 @@ public class ServiceApiGetterTest {
         assertEquals("API Protobuf file",
                 readFileAsString(getResourcePath("/example_service.proto")),
                 readFileAsString(outputDir.toPath().resolve("example_service.proto")));
+    }
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void throwExceptionOnWeb3jClientConnectionError() throws PluginException {
+        exceptionRule.expect(PluginException.class);
+        exceptionRule.expectMessage("Could not perform operation on Ethereum RPC endpoint provided: http://localhost:1");
+        ServiceApiGetter.Parameters params = new ServiceApiGetter.DefaultParameters() {
+            public String getOrgId() { return ORG_ID; }
+            public String getServiceId() { return SERVICE_ID; }
+            public File getOutputDir() { return null; }
+            public String getJavaPackage() { return "org.example.exampleservice"; }
+            public URL getEthereumJsonRpcEndpoint() { 
+                try {
+                    return new URL("http://localhost:1");
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        ServiceApiGetter getter = new ServiceApiGetter(null, null, params);
+
+        getter.run();
     }
 }

@@ -1,0 +1,55 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+
+        mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+    dependencies {
+
+        classpath 'com.github.singnet.snet-sdk-java:snet-sdk-gradle-plugin:master-SNAPSHOT'
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+def ethereumPropertiesFile = file("ethereum.properties");
+if (!ethereumPropertiesFile.exists()) {
+    ethereumPropertiesFile << '# Put Ethereum JSON RPC endpoint like in example below\n'
+    ethereumPropertiesFile << 'ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/4lmypoyrubrw0x1pltvintxy6wrodgg7\n'
+    ethereumPropertiesFile << '# Put Ethereum identity private key in hex like in example below\n'
+    ethereumPropertiesFile << 'identity.private.key.hex=000102030405060708090A0B0C0D0E0F102132435465768798A9BACBDCEDFE0F\n'
+    ethereumPropertiesFile << 'ipfs.endpoint=http://ipfs.singularitynet.io:80\n'
+    ethereumPropertiesFile << 'identity.type=PRIVATE_KEY\n'
+    ethereumPropertiesFile << 'gas.price=4100000000\n'
+    ethereumPropertiesFile << 'gas.limit=9000000\n'
+    throw new RuntimeException("Please fill ethereum.properties file first, see README.md");
+}
+def ethereumProperties = new Properties()
+ethereumPropertiesFile.withInputStream { ethereumProperties.load(it) }
+if (ethereumProperties.getProperty('ethereum.json.rpc.endpoint').equals('https://mainnet.infura.io/v3/4lmypoyrubrw0x1pltvintxy6wrodgg7')) {
+    throw new RuntimeException("Please fill ethereum.properties file first, see README.md");
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+    project.ext {
+        ethereumJsonRpcEndpoint = new URL(ethereumProperties.getProperty("ethereum.json.rpc.endpoint"))
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+

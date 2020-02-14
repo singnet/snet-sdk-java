@@ -1,2 +1,0 @@
-include ':app', ':style-transfer-api', ':semantic-segmentation', ':semantic-segmentation-api'
-rootProject.name='SNetDemo'
