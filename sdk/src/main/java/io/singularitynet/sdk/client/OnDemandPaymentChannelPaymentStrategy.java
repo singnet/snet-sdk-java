@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.registry.MetadataProvider;
@@ -29,7 +31,11 @@ import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 @ToString
 public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy {
 
+    private final static Logger log = LoggerFactory.getLogger(OnDemandPaymentChannelPaymentStrategy.class);
+
+    @ToString.Exclude
     private final Ethereum ethereum;
+    @ToString.Exclude
     private final BlockchainPaymentChannelManager blockchainChannelManager;
 
     private final BigInteger expirationAdvance;
@@ -63,9 +69,11 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
 
     @Override
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
+        log.debug("Selecting channel to make a call using service client");
         MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
 
         String groupName = serviceClient.getEndpointGroupName();
+        log.debug("Current endpoint group name: {}", groupName);
         EndpointGroup endpointGroup = metadataProvider
             .getServiceMetadata()
             // TODO: what does guarantee that endpoint group name is not
@@ -95,23 +103,30 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {
+                    log.debug("Channel found: {}", channel);
                     return Stream.of(() -> channel);
                 }
 
                 if (channel.getExpiration().compareTo(minExpiration) > 0) {
+                    BigInteger amount = callsAdvance.multiply(price);
+                    log.info("Channel found: {}, adding funds: {} cogs", channel, amount);
                     return Stream.of(() -> blockchainChannelManager.addFundsToChannel(
-                                channel, callsAdvance.multiply(price)));
+                                channel, amount));
                 }
 
                 if (channel.getBalance().compareTo(price) >= 0) {
+                    BigInteger lifetime = expirationThreshold.add(expirationAdvance);
+                    log.info("Channel found: {}, extending expiration date on: {} blocks", channel, lifetime);
                     return Stream.of(() -> blockchainChannelManager.extendChannel(
-                                channel, expirationThreshold.add(expirationAdvance)));
+                                channel, lifetime));
                 }
 
+                BigInteger amount = callsAdvance.multiply(price);
+                BigInteger lifetime = expirationThreshold.add(expirationAdvance);
+                log.info("Channel found: {}, adding funds: {} cogs, and extending lifetime: {}",
+                        channel, amount, lifetime);
                 return Stream.<Supplier<PaymentChannel>>of(() -> blockchainChannelManager
-                        .extendAndAddFundsToChannel(channel,
-                            expirationThreshold.add(expirationAdvance),
-                            callsAdvance.multiply(price)));
+                        .extendAndAddFundsToChannel(channel, lifetime, amount));
             })
             .findFirst();
 
@@ -119,11 +134,13 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             return channelSupplier.get().get();
         }
 
-        return blockchainChannelManager.openPaymentChannel(
+        PaymentChannel channel = blockchainChannelManager.openPaymentChannel(
                 paymentGroup,
                 getSigner(),
                 callsAdvance.multiply(price),
                 expirationThreshold.add(expirationAdvance));
+        log.info("New channel opened: {}", channel);
+        return channel;
     }
 
 }

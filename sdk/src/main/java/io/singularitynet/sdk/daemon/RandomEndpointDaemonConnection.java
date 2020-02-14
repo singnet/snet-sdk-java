@@ -108,7 +108,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
                 return next.newCall(method, callOptions);
             }
 
-            log.debug("New gRPC call intercepted, method: {}, callOptions: {}", method, callOptions);
+            log.debug("New gRPC call intercepted, method: {}, callOptions: {}, gRPC channel: {}", method, callOptions, next);
             return delegate.interceptCall(method, callOptions, next);
         }
 
