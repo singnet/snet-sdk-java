@@ -26,7 +26,7 @@ jobs:
             mvn -DskipITs=false install
 
       - save_cache:
-          key: maven-artifacts
+          key: maven-artifacts-{{ .Revision }}
           paths:
             - ~/.m2
           name: Save maven artifacts
@@ -56,7 +56,7 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: maven-artifacts
+          key: maven-artifacts-{{ .Revision }}
           name: Restoring maven artifacts from previous job
 
       - run:
