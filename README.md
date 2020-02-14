@@ -7,7 +7,22 @@
 
 ## Implementing SingularityNet service client in Java
 
-1. Create new maven project, see [Maven getting started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
+1. Create new maven project, see [Maven getting
+   started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
+   Add [Jitpack](https://jitpack.io/) maven repo into the project to be able
+   using SingularityNet Java SDK artifacts:
+```xml
+<project>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
+</project>
+```
 
 2. Use `snet-sdk-maven-plugin` to get service protobuf API within your project:
 
