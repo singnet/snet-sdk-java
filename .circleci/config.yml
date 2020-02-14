@@ -25,6 +25,12 @@ jobs:
           command: |
             mvn -DskipITs=false install
 
+      - save_cache:
+          key: maven-artifacts
+          paths:
+            - ~/.m2
+          name: Save maven artifacts
+
       - run:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)
@@ -48,6 +54,10 @@ jobs:
 
     steps:
       - checkout
+
+      - restore_cache:
+          key: maven-artifacts
+          name: Restoring maven artifacts from previous job
 
       - run:
           name: Build Android examples
