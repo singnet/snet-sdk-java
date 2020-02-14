@@ -16,6 +16,9 @@ import io.singularitynet.sdk.ethereum.Address;
  */
 public class ConfigurationUtils {
 
+    private ConfigurationUtils() {
+    }
+
     /**
      * Load configuration from properties.
      * @param props properties containing configuration values.
