@@ -24,4 +24,22 @@ public class CachingMetadataProviderTest {
         verify(original, times(1)).getOrganizationMetadata();
     }
 
+    @Test
+    public void getServiceMetadataOnce() {
+        ServiceMetadata serviceMetadata = mock(ServiceMetadata.class);
+        MetadataProvider original = mock(MetadataProvider.class);
+        when(original.getServiceMetadata()).thenReturn(serviceMetadata);
+
+        CachingMetadataProvider provider = new CachingMetadataProvider(original);
+        ServiceMetadata result;
+
+        result = provider.getServiceMetadata();
+        assertEquals("Service metadata sample", serviceMetadata, result);
+        verify(original, times(1)).getServiceMetadata();
+
+        result = provider.getServiceMetadata();
+        assertEquals("Service metadata sample", serviceMetadata, result);
+        verify(original, times(1)).getServiceMetadata();
+    }
+
 }

@@ -7,12 +7,14 @@ package io.singularitynet.sdk.registry;
 public class CachingMetadataProvider implements MetadataProvider {
 
     private final OrganizationMetadata orgMetadata;
+    private final ServiceMetadata serviceMetadata;
 
     /**
      * @param delegate underlaying metadata provider.
      */
     public CachingMetadataProvider(MetadataProvider delegate) {
         this.orgMetadata = delegate.getOrganizationMetadata();
+        this.serviceMetadata = delegate.getServiceMetadata();
     }
 
     @Override
@@ -22,6 +24,6 @@ public class CachingMetadataProvider implements MetadataProvider {
 
     @Override
     public ServiceMetadata getServiceMetadata() {
-        return null;
+        return serviceMetadata;
     }
 }
