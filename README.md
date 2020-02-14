@@ -45,7 +45,7 @@ mvn install
       <plugin>
         <groupId>com.github.singnet.snet-sdk-java</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>master-SNAPSHOT</version>
 
         <executions>
           <execution>
@@ -83,7 +83,7 @@ mvn install
 	<dependency>
 	    <groupId>com.github.singnet.snet-sdk-java</groupId>
 	    <artifactId>snet-sdk-java</artifactId>
-	    <version>0.2.0-SNAPSHOT</version>
+	    <version>master-SNAPSHOT</version>
 	</dependency>
 ```
 
