@@ -15,7 +15,7 @@ contains SingularityNet SDK dependencies.
 Add SingularityNet and Protobuf plugins into the classpath using
 `buildscript/dependencies` section:
 ```
-        classpath 'com.github.singnet.snet-sdk-java:snet-sdk-gradle-plugin:master-SNAPSHOT'
+        classpath 'com.github.singnet.snet-sdk-java:snet-sdk-gradle-plugin:0.2.0'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
 ```
 
@@ -41,7 +41,7 @@ Add SingularityNet Java SDK into `dependencies` section:
 ```
 implementation 'io.grpc:grpc-okhttp:1.20.0'
 implementation 'org.slf4j:slf4j-android:1.7.30'
-implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:master-SNAPSHOT'
+implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.2.0'
 ```
 
 Add one Gradle task to download and unpack each SingularityNet service API you
