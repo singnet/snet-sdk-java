@@ -47,7 +47,7 @@ dependencies {
 
     implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.2.0'
+    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:master-SNAPSHOT'
 
     implementation project(":style-transfer-api")
     implementation project(":semantic-segmentation-api")
