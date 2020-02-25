@@ -13,12 +13,12 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <platform-contracts.version>0.3.4</platform-contracts.version>
-    <snet-daemon.version>2.0.2</snet-daemon.version>
+    <snet-daemon.version>3.0.0</snet-daemon.version>
     <protobuf.version>3.5.1</protobuf.version>
     <grpc.version>1.20.0</grpc.version>
     <web3j.version>4.2.0-android</web3j.version>
     <java-sdk-integration-test-env.image>singularitynet/java-sdk-integration-test-env</java-sdk-integration-test-env.image>
-    <java-sdk-integration-test-env.version>2.0.2</java-sdk-integration-test-env.version>
+    <java-sdk-integration-test-env.version>3.0.0</java-sdk-integration-test-env.version>
   </properties>
 
   <repositories>
