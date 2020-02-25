@@ -1,6 +1,7 @@
 package com.example.snetdemo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +34,10 @@ import com.google.protobuf.ByteString;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.PaymentStrategy;
@@ -51,6 +58,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
     final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
     final int REQUEST_CODE_IMAGE_CAPTURE = 11;
+    final int REQUEST_CODE_PERMISSIONS = 1234;
 
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
     final int PROGRESS_DECODING_SERIVCE_RESPONSE = 3;
@@ -89,6 +97,93 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
     private ServiceClient serviceClient;
 
+    String[] appPermissions={
+            Manifest.permission.INTERNET,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
+
+    private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
+    {
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            textViewProgress.setText("Opening service channel");
+
+            disableActivityGUI();
+        }
+
+        protected Object doInBackground(Object... param)
+        {
+            try
+            {
+                SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
+                PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
+                serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
+                        "default_group", paymentStrategy);
+            }
+            catch (Exception e)
+            {
+                Log.e(TAG, "Client connection error", e);
+
+                errorMessage = e.toString();
+                isExceptionCaught = true;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Object obj)
+        {
+
+            if (isExceptionCaught)
+            {
+                isExceptionCaught = false;
+                new AlertDialog.Builder(ImageSegmentationActivity.this)
+                        .setTitle("ERROR")
+                        .setMessage(errorMessage)
+
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                                ImageSegmentationActivity.this.finish();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }
+            else {
+                enableActivityGUI();
+            }
+        }
+    }
+
+    private class CloseServiceChannelTask extends AsyncTask<Object, Object, Object>
+    {
+        protected Object doInBackground(Object... objects)
+        {
+            if (serviceClient != null)
+            {
+                serviceClient.shutdownNow();
+            }
+            return null;
+        }
+    }
+
+    private void initApp()
+    {
+        new OpenServiceChannelTask().execute();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -98,23 +193,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
         setContentView(R.layout.activity_image_segmentation);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(new String[]{Manifest.permission.INTERNET}, 1);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-        }
 
         setTitle("Image Segmentation Demo");
 
@@ -131,11 +209,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
         textViewProgress = findViewById(R.id.textViewProgress);
         textViewProgress.setVisibility(View.INVISIBLE);
+        textViewProgress.setText("");
 
         textViewResponseTime = findViewById(R.id.textViewResponseTime);
         textViewResponseTime.setText("Service response time (ms):");
         textViewResponseTime.setVisibility(View.INVISIBLE);
-
 
         PackageManager pm = this.getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
@@ -144,83 +222,133 @@ public class ImageSegmentationActivity extends AppCompatActivity
             btn_GrabCameraImage.setEnabled(false);
         }
 
-        AsyncTask task = new AsyncTask<Object, Object, Object>()
+        disableActivityGUI();
+
+        if( checkAndRequestPermissions() )
         {
+            initApp();
+        }
 
-            protected void onPreExecute()
+    }
+    public boolean checkAndRequestPermissions()
+    {
+        List<String> permissionsRequired = new ArrayList<>();
+        for(String p : appPermissions)
+        {
+            if(ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
             {
-                super.onPreExecute();
-                textViewProgress.setText("Opening service channel");
+                permissionsRequired.add(p);
+            }
+        }
+        if( !permissionsRequired.isEmpty())
+        {
+            requestPermissions(permissionsRequired.toArray(
+                    new String[permissionsRequired.size()]),
+                    REQUEST_CODE_PERMISSIONS);
+            return false;
+        }
 
-                disableActivityGUI();
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    )
+    {
+        if (requestCode == REQUEST_CODE_PERMISSIONS)
+        {
+            HashMap<String, Integer> permissionResults = new HashMap<>();
+            int deniedCount = 0;
+            for (int i = 0; i < grantResults.length; i++)
+            {
+                if(grantResults[i] == PackageManager.PERMISSION_DENIED)
+                {
+                    permissionResults.put(permissions[i], grantResults[i]);
+                    deniedCount++;
+                }
+
             }
 
-            @Override
-            protected Object doInBackground(Object... param)
+            if(deniedCount == 0)
             {
-                try
+                initApp();
+            }
+            else
+            {
+                for (Map.Entry<String, Integer> entry : permissionResults.entrySet())
                 {
-                    SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
-                    PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
-                    serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
-                            "default_group", paymentStrategy);
-                }
-                catch (Exception e)
-                {
-                    Log.e(TAG, "Client connection error", e);
+                    String permName = entry.getKey();
 
-                    errorMessage = e.toString();
-                    isExceptionCaught = true;
+                    if (shouldShowRequestPermissionRationale(permName))
+                    {
+                        String msg = "This app needs all of the requested permissions to work without any issues. Grant permissions?";
+                        new AlertDialog.Builder(ImageSegmentationActivity.this)
+                                .setTitle("Attention!")
+                                .setMessage(msg)
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        checkAndRequestPermissions();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                })
+
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                    }
+                    else
+                    {
+                        String msg = "Please allow all of the required permissions. Open Settings?";
+                        new AlertDialog.Builder(ImageSegmentationActivity.this)
+                                .setTitle("Attention!")
+                                .setMessage(msg)
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                Uri.fromParts("package", getPackageName(), null));
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+
+                                        finish();
+
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                        break;
+                    }
                 }
-                return null;
             }
 
-            protected void onPostExecute(Object obj)
-            {
 
-                if (isExceptionCaught)
-                {
-                    isExceptionCaught = false;
-                    new AlertDialog.Builder(ImageSegmentationActivity.this)
-                            .setTitle("ERROR")
-                            .setMessage(errorMessage)
-
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ImageSegmentationActivity.this.finish();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-
-                }
-                else {
-                    enableActivityGUI();
-                }
-            }
-
-
-        };
-        task.execute();
-
+        }
     }
 
     @Override
     protected void onDestroy()
     {
-        new AsyncTask<Object, Object, Object>() {
-
-            @Override
-            protected Object doInBackground(Object... objects)
-            {
-                if (serviceClient != null) {
-                    serviceClient.shutdownNow();
-                }
-
-                return null;
-            }
-
-        }.execute();
+        new CloseServiceChannelTask().execute();
         super.onDestroy();
     }
 
@@ -258,171 +386,166 @@ public class ImageSegmentationActivity extends AppCompatActivity
     }
 
 
+    private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
+    {
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+
+            disableActivityGUI();
+
+        }
+
+        protected Void doInBackground(Object... param)
+        {
+            publishProgress(new Integer(PROGRESS_LOADING_IMAGE));
+            Bitmap bitmap = null;
+            try
+            {
+                bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this,
+                        Uri.fromFile(new File(imageInputPath)),
+                        maxImageWidth, maxImageHeight);
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "Exception on loading bitmap", e);
+
+                errorMessage = e.toString();
+                isExceptionCaught = true;
+
+                return null;
+            }
+
+            byte[] bytesInput = BitmapToJPEGByteArray(bitmap);
+            publishProgress(new Integer(PROGRESS_WAITING_FOR_SERIVCE_RESPONSE));
+            Segmentation.Request request = Segmentation.Request.newBuilder()
+                    .setImg(Segmentation.Image.newBuilder()
+                            .setContent(ByteString.copyFrom(bytesInput))
+                            .setMimetype("image/jpeg")
+                            .build()
+                    )
+                    .setVisualise(true)
+                    .build();
+
+            long startTime = System.nanoTime();
+            Segmentation.Result response = null;
+
+            try
+            {
+                response = serviceClient.getGrpcStub(SemanticSegmentationGrpc::newBlockingStub).segment(request);
+            }
+            catch (Exception e)
+            {
+                Log.e(TAG, "Exception on service call", e);
+
+                errorMessage = e.toString();
+                isExceptionCaught = true;
+
+                return null;
+            }
+
+            serviceResponseTime = System.nanoTime() - startTime;
+
+            publishProgress(new Integer(PROGRESS_DECODING_SERIVCE_RESPONSE));
+
+            Segmentation.Image dbgImage = response.getDebugImg();
+            byte[] decodedBytes = dbgImage.getContent().toByteArray();
+            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+            ImageSegmentationActivity.this.decodedBitmap = decodedBitmap;
+            File fr = null;
+            try {
+                fr = createImageFile("segmented_image_");
+            }
+            catch (IOException e)
+            {
+                Log.e(TAG, "Exception on file creation", e);
+                errorMessage = e.toString();
+                isExceptionCaught = true;
+
+                return null;
+            }
+            imageSegmentedPath = fr.getAbsolutePath();
+            try (FileOutputStream out = new FileOutputStream(fr))
+            {
+                ImageSegmentationActivity.this.decodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            } catch (IOException e)
+            {
+                Log.e(TAG, "Exception on saving bitmap", e);
+                errorMessage = e.toString();
+                isExceptionCaught = true;
+
+                return null;
+            }
+
+            publishProgress(PROGRESS_FINISHED);
+
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress)
+        {
+            int v = progress[0].intValue();
+            switch (v)
+            {
+                case PROGRESS_WAITING_FOR_SERIVCE_RESPONSE:
+                    textViewProgress.setVisibility(View.VISIBLE);
+                    textViewProgress.setText("Waiting for response");
+                    break;
+                case PROGRESS_DECODING_SERIVCE_RESPONSE:
+                    textViewProgress.setText("Decoding response");
+                    break;
+                case PROGRESS_LOADING_IMAGE:
+                    textViewProgress.setText("Loading Image");
+                    break;
+                case PROGRESS_FINISHED:
+                    textViewProgress.setVisibility(View.INVISIBLE);
+                    break;
+            }
+
+        }
+
+        protected void onPostExecute(Object obj)
+        {
+            if (isExceptionCaught)
+            {
+                isExceptionCaught = false;
+                new AlertDialog.Builder(ImageSegmentationActivity.this)
+                        .setTitle("ERROR")
+                        .setMessage(errorMessage)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+            else
+            {
+                imv_Input.setImageBitmap(decodedBitmap);
+                galleryAddPic(ImageSegmentationActivity.this, imageSegmentedPath);
+
+                serviceResponseTime /= 1e6;
+                textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
+                textViewResponseTime.setVisibility(View.VISIBLE);
+
+                isInputImageUploaded = false;
+
+            }
+
+            enableActivityGUI();
+
+        }
+    }
+
     public void sendRunImageSegmentationMessage(View view)
     {
         if(this.isInputImageUploaded)
         {
-            AsyncTask task = new AsyncTask<Object, Integer, Object>()
-            {
-                protected void onPreExecute()
-                {
-                    super.onPreExecute();
-
-                    disableActivityGUI();
-
-                }
-
-                protected Void doInBackground(Object... param)
-                {
-                    publishProgress(new Integer(PROGRESS_LOADING_IMAGE));
-                    Bitmap bitmap = null;
-                    try
-                    {
-                        bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this,
-                                Uri.fromFile(new File(imageInputPath)),
-                                maxImageWidth, maxImageHeight);
-                    }
-                    catch (IOException e)
-                    {
-                        Log.e(TAG, "Exception on loading bitmap", e);
-
-                        errorMessage = e.toString();
-                        isExceptionCaught = true;
-
-                        return null;
-                    }
-
-                    byte[] bytesInput = BitmapToJPEGByteArray(bitmap);
-                    publishProgress(new Integer(PROGRESS_WAITING_FOR_SERIVCE_RESPONSE));
-                    Segmentation.Request request = Segmentation.Request.newBuilder()
-                            .setImg(Segmentation.Image.newBuilder()
-                                    .setContent(ByteString.copyFrom(bytesInput))
-                                    .setMimetype("image/jpeg")
-                                    .build()
-                            )
-                            .setVisualise(true)
-                            .build();
-
-                    long startTime = System.nanoTime();
-                    Segmentation.Result response = null;
-
-                    try
-                    {
-                        response = serviceClient.getGrpcStub(SemanticSegmentationGrpc::newBlockingStub).segment(request);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.e(TAG, "Exception on service call", e);
-
-                        errorMessage = e.toString();
-                        isExceptionCaught = true;
-
-                        return null;
-                    }
-
-                    serviceResponseTime = System.nanoTime() - startTime;
-
-                    publishProgress(new Integer(PROGRESS_DECODING_SERIVCE_RESPONSE));
-
-                    Segmentation.Image dbgImage = response.getDebugImg();
-                    byte[] decodedBytes = dbgImage.getContent().toByteArray();
-                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-
-                    ImageSegmentationActivity.this.decodedBitmap = decodedBitmap;
-                    File fr = null;
-                    try {
-                         fr = createImageFile("segmented_image_");
-                    }
-                    catch (IOException e)
-                    {
-                        Log.e(TAG, "Exception on file creation", e);
-                        errorMessage = e.toString();
-                        isExceptionCaught = true;
-
-                        return null;
-                    }
-                    imageSegmentedPath = fr.getAbsolutePath();
-                    try (FileOutputStream out = new FileOutputStream(fr))
-                    {
-                        ImageSegmentationActivity.this.decodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-                    } catch (IOException e)
-                    {
-                        Log.e(TAG, "Exception on saving bitmap", e);
-                        errorMessage = e.toString();
-                        isExceptionCaught = true;
-
-                        return null;
-                    }
-
-                    publishProgress(PROGRESS_FINISHED);
-
-                    return null;
-                }
-
-                protected void onProgressUpdate(Integer... progress)
-                {
-                    int v = progress[0].intValue();
-                    switch (v)
-                    {
-                        case PROGRESS_WAITING_FOR_SERIVCE_RESPONSE:
-                            textViewProgress.setVisibility(View.VISIBLE);
-                            textViewProgress.setText("Waiting for response");
-                            break;
-                        case PROGRESS_DECODING_SERIVCE_RESPONSE:
-                            textViewProgress.setText("Decoding response");
-                            break;
-                        case PROGRESS_LOADING_IMAGE:
-                            textViewProgress.setText("Loading Image");
-                            break;
-                        case PROGRESS_FINISHED:
-                            textViewProgress.setVisibility(View.INVISIBLE);
-                            break;
-                    }
-
-                }
-
-                protected void onPostExecute(Object obj)
-                {
-                    if (isExceptionCaught)
-                    {
-                        isExceptionCaught = false;
-                        new AlertDialog.Builder(ImageSegmentationActivity.this)
-                                .setTitle("ERROR")
-                                .setMessage(errorMessage)
-
-                                // Specifying a listener allows you to take an action before dismissing the dialog.
-                                // The dialog is automatically dismissed when a dialog button is clicked.
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Continue with delete operation
-                                    }
-                                })
-
-//                                // A null listener allows the button to dismiss the dialog and take no further action.
-//                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
-                    else
-                    {
-                        imv_Input.setImageBitmap(decodedBitmap);
-                        galleryAddPic(ImageSegmentationActivity.this, imageSegmentedPath);
-
-                        serviceResponseTime /= 1e6;
-                        textViewResponseTime.setText("Service response time (ms): " + String.valueOf(serviceResponseTime));
-                        textViewResponseTime.setVisibility(View.VISIBLE);
-
-                        isInputImageUploaded = false;
-
-                    }
-
-                    enableActivityGUI();
-
-                }
-            };
-
-            task.execute();
+            new CallingServiceTask().execute();
             isInputImageUploaded = false;
         }
     }
@@ -507,6 +630,19 @@ public class ImageSegmentationActivity extends AppCompatActivity
                 catch (IOException e)
                 {
                     Log.e(TAG, "Exception on image file creation", e);
+
+                    new AlertDialog.Builder(ImageSegmentationActivity.this)
+                            .setTitle("ERROR")
+                            .setMessage(e.toString())
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    dialog.dismiss();
+                                }
+                            })
+
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
                 }
 
                 if (photoFile != null)
