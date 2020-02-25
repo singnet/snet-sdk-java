@@ -63,10 +63,15 @@ package io.singularitynet.sdk.registry {
         ServiceMetadata getServiceMetadata();
         OrganizationMetadata getOrganizationMetadata();
     }
+
     class RegistryMetadataProvider
     MetadataProvider <|.. RegistryMetadataProvider
     RegistryMetadataProvider *-- RegistryContract
     RegistryMetadataProvider *-- MetadataStorage
+
+    class CachingMetadataProvider
+    MetadataProvider <|.. CachingMetadataProvider
+    CachingMetadataProvider *-- RegistryMetadataProvider
 
 }
 

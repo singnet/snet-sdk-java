@@ -12,6 +12,7 @@ import io.singularitynet.sdk.registry.RegistryContract;
 import io.singularitynet.sdk.registry.MetadataStorage;
 import io.singularitynet.sdk.registry.IpfsMetadataStorage;
 import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.registry.CachingMetadataProvider;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.daemon.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
@@ -151,8 +152,9 @@ public class Sdk {
      * @return metadata provider instance.
      */
     public MetadataProvider getMetadataProvider(String orgId, String serviceId) {
-        return new RegistryMetadataProvider(orgId, serviceId, registryContract,
-                metadataStorage);
+        return new CachingMetadataProvider(
+                new RegistryMetadataProvider(orgId, serviceId, registryContract,
+                    metadataStorage));
     }
 
     /**

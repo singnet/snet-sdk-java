@@ -2,38 +2,27 @@
 
 [![CircleCI](https://circleci.com/gh/singnet/snet-sdk-java.svg?style=svg)](https://circleci.com/gh/singnet/snet-sdk-java)
 [![codecov](https://codecov.io/gh/singnet/snet-sdk-java/branch/master/graph/badge.svg)](https://codecov.io/gh/singnet/snet-sdk-java)
+[![Release](https://jitpack.io/v/singnet/snet-sdk-java.svg)](https://jitpack.io/#singnet/snet-sdk-java)
+[![Javadoc](https://img.shields.io/badge/javadoc-master--SNAPSHOT-brightgreen)](https://jitpack.io/com/github/singnet/snet-sdk-java/snet-sdk-java/master-SNAPSHOT/javadoc)
 
-## How to build
+## Implementing SingularityNet service client in Java
 
-Integration testing is disabled by default. To run full build including
-integration tests use:
-```
-mvn install -DskipITs=false -P run-integration-environment
-```
+1. Create new maven project, see [Maven getting
+   started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
+   Add [Jitpack](https://jitpack.io/) maven repo into the project to be able
+   using SingularityNet Java SDK artifacts:
+```xml
+<project>
 
-The command about automatically starts integration environment docker before
-running tests and stops after it. To start integration environment manually
-execute:
-```
-docker run -d \
-    --name java-sdk-integration-environment \
-    -p 5002:5002 -p 8545:8545 -p 7000:7000 \
-    singularitynet/java-sdk-integration-test-env:2.0.2
-```
-Then you can run build with integration testing using:
-```
-mvn install -DskipITs=false
-```
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 
-Running integration tests is a time consuming process so to make fast build
-running unit tests only use:
+</project>
 ```
-mvn install
-```
-
-## Implementing SingularityNet service client
-
-1. Create new maven project, see [Maven getting started](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
 
 2. Use `snet-sdk-maven-plugin` to get service protobuf API within your project:
 
@@ -88,11 +77,12 @@ mvn install
 ```
 
 4. Use `protobuf-maven-plugin` to generate Java stubs of service API:
-- [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
-- [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
+   - [grpc-java README.md](https://github.com/grpc/grpc-java/blob/master/README.md)
+   - [protobuf-maven-plugin documentation](https://www.xolstice.org/protobuf-maven-plugin/)
 
-5. Write Java client app using SDK API, see [CntkImageRecognition.java](./example/cli/cntk-image-recognition/src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java)
-as example:
+5. Write Java client app using SDK API, see
+   [CntkImageRecognition.java](./example/cli/cntk-image-recognition/src/main/java/io/singularitynet/sdk/example/CntkImageRecognition.java)
+   as example:
 
 ```java
     // Create SDK configuration
@@ -134,6 +124,34 @@ as example:
         // Shutdown SDK
         sdk.shutdown();
     }
+```
+
+## How to build
+
+Integration testing is disabled by default. To run full build including
+integration tests use:
+```
+mvn install -DskipITs=false -P run-integration-environment
+```
+
+The command about automatically starts integration environment docker before
+running tests and stops after it. To start integration environment manually
+execute:
+```
+docker run -d \
+    --name java-sdk-integration-environment \
+    -p 5002:5002 -p 8545:8545 -p 7000:7000 \
+    singularitynet/java-sdk-integration-test-env:2.0.2
+```
+Then you can run build with integration testing using:
+```
+mvn install -DskipITs=false
+```
+
+Running integration tests is a time consuming process so to make fast build
+running unit tests only use:
+```
+mvn install
 ```
 
 ## Class diagram
