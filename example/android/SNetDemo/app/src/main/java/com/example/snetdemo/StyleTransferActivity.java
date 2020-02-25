@@ -104,6 +104,7 @@ public class StyleTransferActivity extends AppCompatActivity
     private String errorMessage = "";
     private boolean isExceptionCaught = false;
 
+    private SnetSdk sdk;
     private ServiceClient serviceClient;
 
     String[] appPermissions={
@@ -128,7 +129,7 @@ public class StyleTransferActivity extends AppCompatActivity
         {
             try
             {
-                SnetSdk sdk = new SnetSdk(StyleTransferActivity.this);
+                sdk = new SnetSdk(StyleTransferActivity.this);
                 PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
                 serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
                         "default_group", paymentStrategy);
@@ -176,6 +177,10 @@ public class StyleTransferActivity extends AppCompatActivity
             if (serviceClient != null)
             {
                 serviceClient.shutdownNow();
+            }
+            if (sdk != null)
+            {
+                sdk.close();
             }
 
             return null;

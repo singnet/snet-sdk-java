@@ -95,6 +95,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
     private String errorMessage = "";
     private boolean isExceptionCaught = false;
 
+    private SnetSdk sdk;
     private ServiceClient serviceClient;
 
     String[] appPermissions={
@@ -118,7 +119,7 @@ public class ImageSegmentationActivity extends AppCompatActivity
         {
             try
             {
-                SnetSdk sdk = new SnetSdk(ImageSegmentationActivity.this);
+                sdk = new SnetSdk(ImageSegmentationActivity.this);
                 PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
                 serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
                         "default_group", paymentStrategy);
@@ -135,7 +136,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
 
         protected void onPostExecute(Object obj)
         {
-
             if (isExceptionCaught)
             {
                 isExceptionCaught = false;
@@ -168,6 +168,11 @@ public class ImageSegmentationActivity extends AppCompatActivity
             {
                 serviceClient.shutdownNow();
             }
+            if( sdk != null )
+            {
+                sdk.close();
+            }
+
             return null;
         }
     }
@@ -269,7 +274,6 @@ public class ImageSegmentationActivity extends AppCompatActivity
                     permissionResults.put(permissions[i], grantResults[i]);
                     deniedCount++;
                 }
-
             }
 
             if(deniedCount == 0)
