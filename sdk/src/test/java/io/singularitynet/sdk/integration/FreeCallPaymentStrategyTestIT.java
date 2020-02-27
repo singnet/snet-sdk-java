@@ -13,6 +13,7 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.ethereum.Signature;
+import io.singularitynet.sdk.freecall.FreeCallPayment;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.FreeCallPaymentStrategy;
 import io.singularitynet.sdk.client.Sdk;
@@ -43,8 +44,9 @@ public class FreeCallPaymentStrategyTestIT {
         final Address userEthereumAddress = IntEnv.CALLER_ADDRESS;
         final BigInteger freeCallExpirationBlock = BigInteger.valueOf(1)
             .add(getLastEthereumBlock());
-        final String freeCallToken = newFreeCallPaymentToken(dappUserId,
-                userEthereumAddress, freeCallExpirationBlock);
+        final String freeCallToken = FreeCallPayment.generateFreeCallPaymentToken(
+                dappUserId, userEthereumAddress, freeCallExpirationBlock,
+                IntEnv.DEPLOYER_IDENTITY);
 
         Configuration config = IntEnv.newTestConfigurationBuilder()
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
@@ -76,19 +78,6 @@ public class FreeCallPaymentStrategyTestIT {
     private BigInteger getLastEthereumBlock() {
         return Utils.wrapExceptions(() -> web3j.ethBlockNumber().send()
                 .getBlockNumber());
-    }
-
-    private static String newFreeCallPaymentToken(String dappUserId,
-            Address userEthereumAddress, BigInteger expirationBlockNumber) {
-        return Utils.wrapExceptions(() -> {
-            PrivateKeyIdentity freeCallTokenSigner = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
-            ByteArrayOutputStream message = new ByteArrayOutputStream();
-            message.write(Utils.strToBytes(dappUserId));
-            message.write(userEthereumAddress.toByteArray());
-            message.write(Utils.bigIntToBytes32(expirationBlockNumber));
-            Signature signature = freeCallTokenSigner.sign(message.toByteArray());
-            return Utils.bytesToHex(signature.getBytes());
-        });
     }
 
     // FIXME: remove code duplication with

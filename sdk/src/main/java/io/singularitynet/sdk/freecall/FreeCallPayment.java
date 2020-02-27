@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.payment.PaymentSerializer;
+import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
@@ -142,5 +143,18 @@ public class FreeCallPayment implements Payment {
                 return message.toByteArray();
             });
         }
+    }
+
+    public static String generateFreeCallPaymentToken(String dappUserId,
+            Address userEthereumAddress, BigInteger expirationBlockNumber,
+            Identity signer) {
+        return Utils.wrapExceptions(() -> {
+            ByteArrayOutputStream message = new ByteArrayOutputStream();
+            message.write(Utils.strToBytes(dappUserId));
+            message.write(userEthereumAddress.toByteArray());
+            message.write(Utils.bigIntToBytes32(expirationBlockNumber));
+            Signature signature = signer.sign(message.toByteArray());
+            return Utils.bytesToHex(signature.getBytes());
+        });
     }
 }
