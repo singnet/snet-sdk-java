@@ -30,7 +30,7 @@ public class FreeCallPayment implements Payment {
     private static final Metadata.Key<BigInteger> SNET_CURRENT_BLOCK_NUMBER =
         Metadata.Key.of("snet-current-block-number", PaymentSerializer.ASCII_BIGINTEGER_MARSHALLER);
 
-    private final String userId;
+    private final String dappUserId;
     private final BigInteger tokenExpirationBlock;
     private final byte[] token;
     private final BigInteger currentBlockNumber;
@@ -39,7 +39,7 @@ public class FreeCallPayment implements Payment {
     @Override
     public void toMetadata(Metadata headers) {
         headers.put(PaymentSerializer.SNET_PAYMENT_TYPE, PAYMENT_TYPE_FREE_CALL);
-        headers.put(SNET_FREE_CALL_USER_ID, userId);
+        headers.put(SNET_FREE_CALL_USER_ID, dappUserId);
         headers.put(SNET_FREE_CALL_TOKEN_EXPIRY_BLOCK, tokenExpirationBlock);
         headers.put(SNET_FREE_CALL_AUTH_TOKEN, token);
         headers.put(SNET_CURRENT_BLOCK_NUMBER, currentBlockNumber);
@@ -47,26 +47,26 @@ public class FreeCallPayment implements Payment {
     }
 
     public static FreeCallPayment fromMetadata(Metadata headers) {
-        String userId = headers.get(SNET_FREE_CALL_USER_ID);
+        String dappUserId = headers.get(SNET_FREE_CALL_USER_ID);
         BigInteger tokenExpirationBlock = headers.get(SNET_FREE_CALL_TOKEN_EXPIRY_BLOCK);
         byte[] token = headers.get(SNET_FREE_CALL_AUTH_TOKEN);
         BigInteger currentBlockNumber = headers.get(SNET_CURRENT_BLOCK_NUMBER);
         byte[] signature = headers.get(PaymentSerializer.SNET_PAYMENT_SIGNATURE);
-        return new FreeCallPayment(userId, tokenExpirationBlock, token,
+        return new FreeCallPayment(dappUserId, tokenExpirationBlock, token,
                 currentBlockNumber, new Signature(signature));
     }
 
-    public FreeCallPayment(String userId, BigInteger tokenExpirationBlock,
+    public FreeCallPayment(String dappUserId, BigInteger tokenExpirationBlock,
             byte[] token, BigInteger currentBlockNumber, Signature signature) {
-        this.userId = userId;
+        this.dappUserId = dappUserId;
         this.tokenExpirationBlock = tokenExpirationBlock;
         this.token = token;
         this.currentBlockNumber = currentBlockNumber;
         this.signature = signature;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getDappUserId() {
+        return dappUserId;
     }
 
     public BigInteger getTokenExpirationBlock() {
