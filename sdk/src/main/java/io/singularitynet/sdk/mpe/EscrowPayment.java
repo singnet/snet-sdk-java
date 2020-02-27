@@ -36,8 +36,6 @@ public class EscrowPayment implements Payment {
         Metadata.Key.of("snet-payment-channel-nonce", PaymentSerializer.ASCII_BIGINTEGER_MARSHALLER);
     private static final Metadata.Key<BigInteger> SNET_PAYMENT_CHANNEL_AMOUNT =
         Metadata.Key.of("snet-payment-channel-amount", PaymentSerializer.ASCII_BIGINTEGER_MARSHALLER);
-    private static final Metadata.Key<byte[]> SNET_PAYMENT_CHANNEL_SIGNATURE =
-        Metadata.Key.of("snet-payment-channel-signature" + Metadata.BINARY_HEADER_SUFFIX, Metadata.BINARY_BYTE_MARSHALLER);
 
     private final BigInteger channelId;
     private final BigInteger channelNonce;
@@ -50,7 +48,7 @@ public class EscrowPayment implements Payment {
         headers.put(SNET_PAYMENT_CHANNEL_ID, channelId);
         headers.put(SNET_PAYMENT_CHANNEL_NONCE, channelNonce);
         headers.put(SNET_PAYMENT_CHANNEL_AMOUNT, amount);
-        headers.put(SNET_PAYMENT_CHANNEL_SIGNATURE, signature.getBytes());
+        headers.put(PaymentSerializer.SNET_PAYMENT_SIGNATURE, signature.getBytes());
     }
 
     /**
@@ -62,7 +60,7 @@ public class EscrowPayment implements Payment {
         BigInteger channelId = headers.get(SNET_PAYMENT_CHANNEL_ID);
         BigInteger channelNonce = headers.get(SNET_PAYMENT_CHANNEL_NONCE);
         BigInteger amount = headers.get(SNET_PAYMENT_CHANNEL_AMOUNT);
-        byte[] signature = headers.get(SNET_PAYMENT_CHANNEL_SIGNATURE);
+        byte[] signature = headers.get(PaymentSerializer.SNET_PAYMENT_SIGNATURE);
         return new EscrowPayment(channelId, channelNonce, amount, new Signature(signature));
     }
 
@@ -127,12 +125,12 @@ public class EscrowPayment implements Payment {
 
     }
 
-    private static final byte[] PAYMENT_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
+    private static final byte[] ESCROW_MESSAGE_PREFIX = Utils.strToBytes("__MPE_claim_message");
 
     public static byte[] getMessage(PaymentChannel paymentChannel, BigInteger amount) {
         return Utils.wrapExceptions(() -> {
             ByteArrayOutputStream message = new ByteArrayOutputStream();
-            message.write(PAYMENT_MESSAGE_PREFIX);
+            message.write(ESCROW_MESSAGE_PREFIX);
             message.write(paymentChannel.getMpeContractAddress().toByteArray());
             message.write(Utils.bigIntToBytes32(paymentChannel.getChannelId()));
             message.write(Utils.bigIntToBytes32(paymentChannel.getNonce()));
