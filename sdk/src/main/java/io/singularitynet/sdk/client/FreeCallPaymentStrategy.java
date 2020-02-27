@@ -41,7 +41,6 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
      * @param token token emitted by free call signer; in order to receive a
      * token one need to login to DApp using dappUserId and register an
      * Ethereum address of the signer there.
-     * @return new free call payment strategy instance
      */
     public FreeCallPaymentStrategy(Ethereum ethereum, Identity signer,
             String dappUserId, BigInteger tokenExpirationBlock, String token) {
