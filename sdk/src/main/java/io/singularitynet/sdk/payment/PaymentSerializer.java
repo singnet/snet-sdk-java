@@ -17,7 +17,14 @@ public class PaymentSerializer {
     /**
      * gRPC metadata key of SingularityNet payment type.
      */
-    public static final Metadata.Key<String> SNET_PAYMENT_TYPE = Metadata.Key.of("snet-payment-type", Metadata.ASCII_STRING_MARSHALLER);
+    public static final Metadata.Key<String> SNET_PAYMENT_TYPE =
+        Metadata.Key.of("snet-payment-type", Metadata.ASCII_STRING_MARSHALLER);
+
+    /**
+     * gRPC metadata key of the payment signature.
+     */
+    public static final Metadata.Key<byte[]> SNET_PAYMENT_SIGNATURE =
+        Metadata.Key.of("snet-payment-channel-signature" + Metadata.BINARY_HEADER_SUFFIX, Metadata.BINARY_BYTE_MARSHALLER);
 
     private static final Map<String, Function<Metadata, Payment>> readerByType = new HashMap<>();
 
