@@ -27,7 +27,7 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
             .setSigner(signer)
             .setDappUserId(dappUserId)
             .setTokenExpirationBlock(tokenExpirationBlock)
-            .setToken(Utils.hexToBytes(token));
+            .setToken(token);
     }
 
     @Override

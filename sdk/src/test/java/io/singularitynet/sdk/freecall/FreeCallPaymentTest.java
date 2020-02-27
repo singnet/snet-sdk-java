@@ -37,7 +37,7 @@ public class FreeCallPaymentTest {
             .setSigner(signer)
             .setDappUserId("user1")
             .setTokenExpirationBlock(new BigInteger("83081670000"))
-            .setToken(Utils.base64ToBytes("mtuHa2YH9XSGfFVwh8uN5X09XFrG0mmASlazR4Up+AQUhGe/2U7t/mSduhfxbdj65tZqMwDh0ido/cz+lpD5pQA="))
+            .setToken("9ADB876B6607F574867C557087CB8DE57D3D5C5AC6D269804A56B3478529F804148467BFD94EEDFE649DBA17F16DD8FAE6D66A3300E1D22768FDCCFE9690F9A500")
             .setCurrentBlockNumber(new BigInteger("8308167"))
             .setOrgId("ExampleOrganizationId")
             .setServiceId("ExampleServiceId")

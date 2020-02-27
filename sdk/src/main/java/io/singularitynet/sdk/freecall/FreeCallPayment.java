@@ -115,9 +115,8 @@ public class FreeCallPayment implements Payment {
             return this;
         }
 
-        // FIXME: use String here to allow user writing own strategy
-        public Builder setToken(byte[] token) {
-            this.token = token;
+        public Builder setToken(String token) {
+            this.token = Utils.hexToBytes(token);
             return this;
         }
 
