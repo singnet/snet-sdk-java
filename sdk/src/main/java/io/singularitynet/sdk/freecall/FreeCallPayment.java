@@ -65,6 +65,26 @@ public class FreeCallPayment implements Payment {
         this.signature = signature;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public BigInteger getTokenExpirationBlock() {
+        return tokenExpirationBlock;
+    }
+
+    public byte[] getToken() {
+        return token;
+    }
+
+    public BigInteger getCurrentBlockNumber() {
+        return currentBlockNumber;
+    }
+
+    public Signature getSignature() {
+        return signature;
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }
