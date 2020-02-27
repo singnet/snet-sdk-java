@@ -19,11 +19,6 @@ import io.singularitynet.sdk.client.FreeCallPaymentStrategy;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.ServiceClient;
 
-import io.singularitynet.sdk.test.CalculatorGrpc;
-import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
-import io.singularitynet.sdk.test.ExampleService.Numbers;
-import io.singularitynet.sdk.test.ExampleService.Result;
-
 public class FreeCallPaymentStrategyTestIT {
 
     private Web3j web3j;
@@ -64,7 +59,7 @@ public class FreeCallPaymentStrategyTestIT {
                     IntEnv.TEST_ENDPOINT_GROUP, freeCallStrategy);
             try {
 
-               makeServiceCall(serviceClient); 
+               IntEnv.makeServiceCall(serviceClient); 
 
             } finally {
                 serviceClient.shutdownNow();
@@ -80,17 +75,4 @@ public class FreeCallPaymentStrategyTestIT {
                 .getBlockNumber());
     }
 
-    // FIXME: remove code duplication with
-    // OnDemandPaymentChannelPaymentStrategyTestIT code
-    private static void makeServiceCall(ServiceClient serviceClient) {
-        CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
-        Numbers numbers = Numbers.newBuilder()
-            .setA(7)
-            .setB(6)
-            .build();
-        Result result = stub.mul(numbers);
-
-        assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
-    }
 }

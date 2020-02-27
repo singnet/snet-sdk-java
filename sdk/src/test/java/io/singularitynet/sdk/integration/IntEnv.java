@@ -1,10 +1,18 @@
 package io.singularitynet.sdk.integration;
 
+import static org.junit.Assert.*;
+
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.StaticConfiguration;
+import io.singularitynet.sdk.client.ServiceClient;
+
+import io.singularitynet.sdk.test.CalculatorGrpc;
+import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
+import io.singularitynet.sdk.test.ExampleService.Numbers;
+import io.singularitynet.sdk.test.ExampleService.Result;
 
 public class IntEnv {
 
@@ -35,6 +43,18 @@ public class IntEnv {
             .setIpfsEndpoint(IPFS_ENDPOINT)
             .setRegistryAddress(REGISTRY_CONTRACT_ADDRESS)
             .setMultiPartyEscrowAddress(MPE_CONTRACT_ADDRESS);
+    }
+
+    public static void makeServiceCall(ServiceClient serviceClient) {
+        CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
+
+        Numbers numbers = Numbers.newBuilder()
+            .setA(7)
+            .setB(6)
+            .build();
+        Result result = stub.mul(numbers);
+
+        assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
     }
 
 }
