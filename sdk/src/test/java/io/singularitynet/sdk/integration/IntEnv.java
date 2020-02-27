@@ -31,9 +31,6 @@ public class IntEnv {
     public static final String TEST_SERVICE_ID = "example-service";
     public static final String TEST_ENDPOINT_GROUP = "default_group";
 
-    // FIXME: replace by newTestConfigurationBuilder() call
-    public static final StaticConfiguration.Builder TEST_CONFIGURATION_BUILDER = newTestConfigurationBuilder();
-
     private IntEnv() {
     }
 

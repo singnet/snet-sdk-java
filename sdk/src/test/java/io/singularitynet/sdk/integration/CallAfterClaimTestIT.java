@@ -21,7 +21,7 @@ public class CallAfterClaimTestIT {
 
     @Before
     public void setUp() {
-        Configuration config = IntEnv.TEST_CONFIGURATION_BUILDER
+        Configuration config = IntEnv.newTestConfigurationBuilder()
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(IntEnv.CALLER_PRIVATE_KEY)
             .build();

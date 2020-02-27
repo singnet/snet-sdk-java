@@ -43,7 +43,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Before
     public void setUp() {
-        this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
+        this.configBuilder = IntEnv.newTestConfigurationBuilder();
         StaticConfiguration config = configBuilder
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
