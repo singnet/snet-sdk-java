@@ -36,6 +36,18 @@ public interface ServiceClient {
     <T> T getGrpcStub(Function<Channel, T> constructor);
 
     /**
+     * Return organization id of the service.
+     * @return organization id.
+     */
+    String getOrgId();
+
+    /**
+     * Return service id of the service.
+     * @return service id.
+     */
+    String getServiceId();
+
+    /**
      * Return current endpoint group name. Endpoint group name can be changed
      * after failover or reconnection.
      * @return name of the current endpoint group to which client  is

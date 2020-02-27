@@ -19,6 +19,7 @@ public class BaseServiceClient implements ServiceClient {
 
     private final static Logger log = LoggerFactory.getLogger(BaseServiceClient.class);
 
+    private final String serviceId;
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
     private final PaymentChannelStateProvider channelStateProvider;
@@ -26,16 +27,19 @@ public class BaseServiceClient implements ServiceClient {
 
     /**
      * Constructor.
+     * @param serviceId id of the service within organization.
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
      * @param channelStateProvider actual payment channel state provider.
      * @param paymentStrategy provides payment for the client call.
      */
     public BaseServiceClient(
+            String serviceId,
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
             PaymentChannelStateProvider channelStateProvider,
             PaymentStrategy paymentStrategy) {
+        this.serviceId = serviceId;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
@@ -56,6 +60,16 @@ public class BaseServiceClient implements ServiceClient {
     @Override
     public <T> T getGrpcStub(Function<Channel, T> constructor) {
         return daemonConnection.getGrpcStub(constructor);
+    }
+
+    @Override
+    public String getOrgId() {
+        return metadataProvider.getOrganizationMetadata().getOrgId();
+    }
+
+    @Override
+    public String getServiceId() {
+        return serviceId;
     }
 
     @Override
