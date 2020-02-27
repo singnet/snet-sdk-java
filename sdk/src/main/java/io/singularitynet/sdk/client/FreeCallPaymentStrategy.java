@@ -3,6 +3,8 @@ package io.singularitynet.sdk.client;
 import java.math.BigInteger;
 
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Ethereum;
@@ -20,6 +22,8 @@ import io.singularitynet.sdk.registry.EndpointGroup;
  */
 @ToString
 public class FreeCallPaymentStrategy implements PaymentStrategy {
+
+    private final static Logger log = LoggerFactory.getLogger(FreeCallPaymentStrategy.class);
 
     @ToString.Exclude
     private final Ethereum ethereum;
@@ -55,6 +59,7 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
 
         MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
         String groupName = serviceClient.getEndpointGroupName();
+        log.debug("Current endpoint group name: {}", groupName);
 
         EndpointGroup endpointGroup = metadataProvider
             .getServiceMetadata()
