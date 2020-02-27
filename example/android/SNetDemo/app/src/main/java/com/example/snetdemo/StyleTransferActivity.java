@@ -1,6 +1,5 @@
 package com.example.snetdemo;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -24,11 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
@@ -36,10 +31,6 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.PaymentStrategy;
@@ -54,14 +45,13 @@ import static com.example.snetdemo.ImageUtils.getPathFromUri;
 import static com.example.snetdemo.ImageUtils.handleSamplingAndRotationBitmap;
 
 
-public class StyleTransferActivity extends AppCompatActivity
+public class StyleTransferActivity extends SnetDemoActivity
 {
     final String TAG = "StyleTransferActivity";
     final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
     final int REQUEST_CODE_UPLOAD_STYLE_IMAGE = 11;
     final int REQUEST_CODE_IMAGE_CAPTURE = 12;
     final int REQUEST_CODE_SHOW_IMAGE = 13;
-    final int REQUEST_CODE_PERMISSIONS = 1234;
 
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
     final int PROGRESS_DECODING_SERIVCE_RESPONSE = 3;
@@ -107,13 +97,6 @@ public class StyleTransferActivity extends AppCompatActivity
     private SnetSdk sdk;
     private ServiceClient serviceClient;
 
-    String[] appPermissions={
-            Manifest.permission.INTERNET,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
-    };
-
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
         protected void onPreExecute()
@@ -152,7 +135,6 @@ public class StyleTransferActivity extends AppCompatActivity
                 new AlertDialog.Builder(StyleTransferActivity.this)
                         .setTitle("ERROR")
                         .setMessage(errorMessage)
-
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which)
                             {
@@ -187,7 +169,7 @@ public class StyleTransferActivity extends AppCompatActivity
         }
     }
 
-    private void initApp()
+    protected void initApp()
     {
         new OpenServiceChannelTask().execute();
     }
@@ -232,121 +214,7 @@ public class StyleTransferActivity extends AppCompatActivity
 
         disableActivityGUI();
 
-        if( checkAndRequestPermissions() )
-        {
-            initApp();
-        }
-    }
-
-    public boolean checkAndRequestPermissions()
-    {
-        List<String> permissionsRequired = new ArrayList<>();
-        for(String p : appPermissions)
-        {
-            if(ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED)
-            {
-                permissionsRequired.add(p);
-            }
-        }
-        if( !permissionsRequired.isEmpty())
-        {
-            requestPermissions(permissionsRequired.toArray(
-                    new String[permissionsRequired.size()]),
-                    REQUEST_CODE_PERMISSIONS);
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode,
-            @NonNull String[] permissions,
-            @NonNull int[] grantResults
-    )
-    {
-        if (requestCode == REQUEST_CODE_PERMISSIONS)
-        {
-            HashMap<String, Integer> permissionResults = new HashMap<>();
-            int deniedCount = 0;
-            for (int i = 0; i < grantResults.length; i++)
-            {
-                if(grantResults[i] == PackageManager.PERMISSION_DENIED)
-                {
-                    permissionResults.put(permissions[i], grantResults[i]);
-                    deniedCount++;
-                }
-
-            }
-
-            if(deniedCount == 0)
-            {
-                initApp();
-            }
-            else
-            {
-                for (Map.Entry<String, Integer> entry : permissionResults.entrySet())
-                {
-                    String permName = entry.getKey();
-
-                    if (shouldShowRequestPermissionRationale(permName))
-                    {
-                        String msg = "This app needs all of the requested permissions to work without any issues. Grant permissions?";
-                        new AlertDialog.Builder(StyleTransferActivity.this)
-                                .setTitle("Attention!")
-                                .setMessage(msg)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        checkAndRequestPermissions();
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        finish();
-                                    }
-                                })
-
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
-                    else
-                    {
-                        String msg = "Please allow all of the required permissions. Open Settings?";
-                        new AlertDialog.Builder(StyleTransferActivity.this)
-                                .setTitle("Attention!")
-                                .setMessage(msg)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                                Uri.fromParts("package", getPackageName(), null));
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-
-                                        finish();
-
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        finish();
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                        break;
-                    }
-                }
-            }
-        }
+        checkPermissionsAndInitApp();
     }
 
     @Override
@@ -430,7 +298,6 @@ public class StyleTransferActivity extends AppCompatActivity
         fileIntent.setType("image/*");
         startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_STYLE_IMAGE);
     }
-
 
     private void loadImageFromFileToImageView(ImageView imgView, Uri fileURI)
     {
@@ -680,7 +547,6 @@ public class StyleTransferActivity extends AppCompatActivity
                                 finish();
                             }
                         })
-
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
@@ -694,7 +560,6 @@ public class StyleTransferActivity extends AppCompatActivity
             new CallingServiceTask().execute();
         }
     }
-
 
     @Override
     public void onResume()
