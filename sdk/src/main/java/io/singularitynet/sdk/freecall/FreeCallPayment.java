@@ -12,9 +12,15 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
-// FIXME: add javadoc
+/**
+ * Free call payment implementation. Payment contains DApp user id, free call
+ * token and signature of the Ethereum identity which is owned by DApp user id.
+ */
 public class FreeCallPayment implements Payment {
 
+    /**
+     * Free call payment type.
+     */
     public static final String PAYMENT_TYPE_FREE_CALL = "free-call";
 
     static {
@@ -46,6 +52,11 @@ public class FreeCallPayment implements Payment {
         headers.put(PaymentSerializer.SNET_PAYMENT_SIGNATURE, signature.getBytes());
     }
 
+    /**
+     * Load free call payment from gRPC metadata
+     * @param headers gRPC metadata
+     * @return free call payment instance
+     */
     public static FreeCallPayment fromMetadata(Metadata headers) {
         String dappUserId = headers.get(SNET_FREE_CALL_USER_ID);
         BigInteger tokenExpirationBlock = headers.get(SNET_FREE_CALL_TOKEN_EXPIRY_BLOCK);

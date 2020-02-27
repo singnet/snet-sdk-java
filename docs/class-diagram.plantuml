@@ -10,6 +10,7 @@ package io.singularitynet.sdk.payment {
 
     class PaymentSerializer {
         static final Metadata.Key<String> SNET_PAYMENT_TYPE;
+        static final Metadata.Key<byte[]> SNET_PAYMENT_SIGNATURE;
         static final Metadata.AsciiMarshaller<BigInteger> ASCII_BIGINTEGER_MARSHALLER;
 
         static void register(String type, Function<Metadata, Payment> reader);
@@ -109,6 +110,13 @@ package io.singularitynet.sdk.mpe {
 
 }
 
+package io.singularitynet.sdk.freecall {
+
+    class FreeCallPayment
+    Payment ()- FreeCallPayment 
+
+}
+
 package io.singularitynet.sdk.daemon {
     
     interface DaemonConnection {
@@ -179,6 +187,7 @@ package io.singularitynet.sdk.client {
     }
     PaymentStrategy <|.. EscrowPaymentStrategy
     EscrowPaymentStrategy o-- Identity
+    EscrowPaymentStrategy -- EscrowPayment
 
     class FixedPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
@@ -187,6 +196,12 @@ package io.singularitynet.sdk.client {
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
     OnDemandPaymentChannelPaymentStrategy o-- Ethereum
     OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
+    
+    class FreeCallPaymentStrategy
+    PaymentStrategy <|.. FreeCallPaymentStrategy
+    FreeCallPaymentStrategy o-- Ethereum
+    FreeCallPaymentStrategy o-- Identity
+    FreeCallPaymentStrategy -- FreeCallPayment
 
     class Sdk {
         Sdk(Configuration config);
@@ -208,6 +223,8 @@ package io.singularitynet.sdk.client {
         MetadataProvider getMetadataProvider();
         PaymentChannelStateProvider getPaymentChannelStateProvider();
         T getGrpcStub(Function<Channel, T> constructor);
+        String getOrgId();
+        String getServiceId();
         String getEndpointGroupName();
         void shutdownNow();
     }
