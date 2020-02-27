@@ -8,7 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
-      - image: singularitynet/java-sdk-integration-test-env:2.0.2
+      - image: singularitynet/java-sdk-integration-test-env:3.0.0
 
     working_directory: ~/repo
 
