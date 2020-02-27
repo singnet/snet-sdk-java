@@ -2,6 +2,8 @@ package io.singularitynet.sdk.client;
 
 import java.math.BigInteger;
 
+import lombok.ToString;
+
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
@@ -10,11 +12,11 @@ import io.singularitynet.sdk.freecall.FreeCallPayment;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
 
-// FIXME: add toString()
 // FIXME: add javadoc
+@ToString
 public class FreeCallPaymentStrategy implements PaymentStrategy {
 
-    // FIXME: remove this field from toString()
+    @ToString.Exclude
     private final Ethereum ethereum;
     private final FreeCallPayment.Builder paymentBuilder;
 
