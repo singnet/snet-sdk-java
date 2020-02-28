@@ -60,25 +60,36 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
     private ImageView imv_Input;
 
+    private RelativeLayout loadingPanel;
     private TextView textViewProgress;
     private TextView textViewResponseTime;
 
     private Bitmap decodedBitmap = null;
-
-    private RelativeLayout loadingPanel;
 
     private long serviceResponseTime = 0;
 
     String imageInputPath = null;
     String imageSegmentedPath = null;
 
+    private CameraImageCapturer cameraCapturer;
+
     private SnetSdk sdk;
     private ServiceClient serviceClient;
 
-    private CameraImageCapturer cameraCapturer;
-
     private OpenServiceChannelTask openServiceChannelTask;
     private CallingServiceTask callingServiceTask;
+
+    private void openSingularityNETServiceChannel() throws IOException
+    {
+        String serviceId = "semantic-segmentation";
+        String organizationId = "snet";
+        String endpointGroupName = "default_group";
+                
+        sdk = new SnetSdk(ImageSegmentationActivity.this);
+        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
+        serviceClient = sdk.getSdk().newServiceClient(organizationId, serviceId, 
+                endpointGroupName, paymentStrategy);
+    }
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
@@ -97,10 +108,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         {
             try
             {
-                sdk = new SnetSdk(ImageSegmentationActivity.this);
-                PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
-                serviceClient = sdk.getSdk().newServiceClient("snet", "semantic-segmentation",
-                        "default_group", paymentStrategy);
+                openSingularityNETServiceChannel();
             }
             catch (Exception e)
             {
@@ -120,7 +128,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
                 new AlertDialog.Builder(ImageSegmentationActivity.this)
                         .setTitle("ERROR")
                         .setMessage(errorMessage)
-
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which)
                             {
@@ -164,7 +171,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     @Override
     public void onResume(){
         super.onResume();
-
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -248,6 +254,23 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     }
 
 
+    private Segmentation.Result callSegmentationService(byte[] bytesInput) throws IOException
+    {
+        String mimeType = "image/jpeg";
+
+        Segmentation.Request request = Segmentation.Request.newBuilder()
+                .setImg(Segmentation.Image.newBuilder()
+                        .setContent(ByteString.copyFrom(bytesInput))
+                        .setMimetype(mimeType)
+                        .build()
+                )
+                .setVisualise(true)
+                .build();
+        Segmentation.Result response = serviceClient.getGrpcStub(SemanticSegmentationGrpc::newBlockingStub).segment(request);
+
+        return response;
+    }
+
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
     {
         private boolean isExceptionCaught = false;
@@ -264,7 +287,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         protected Void doInBackground(Object... param)
         {
             publishProgress(new Integer(PROGRESS_LOADING_IMAGE));
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             try
             {
                 bitmap = handleSamplingAndRotationBitmap(ImageSegmentationActivity.this,
@@ -283,21 +306,13 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
             byte[] bytesInput = BitmapToJPEGByteArray(bitmap);
             publishProgress(new Integer(PROGRESS_WAITING_FOR_SERIVCE_RESPONSE));
-            Segmentation.Request request = Segmentation.Request.newBuilder()
-                    .setImg(Segmentation.Image.newBuilder()
-                            .setContent(ByteString.copyFrom(bytesInput))
-                            .setMimetype("image/jpeg")
-                            .build()
-                    )
-                    .setVisualise(true)
-                    .build();
 
             long startTime = System.nanoTime();
-            Segmentation.Result response = null;
+            Segmentation.Result response;
 
             try
             {
-                response = serviceClient.getGrpcStub(SemanticSegmentationGrpc::newBlockingStub).segment(request);
+                response = callSegmentationService(bytesInput);
             }
             catch (Exception e)
             {
@@ -416,6 +431,12 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         }
     }
 
+    public void sendGrabCameraImageMessage(View view)
+    {
+        textViewResponseTime.setVisibility(View.INVISIBLE);
+        cameraCapturer.grabImage(this::onImageCaptured);
+    }
+
     public void sendUploadInputImageMessage(View view)
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -455,12 +476,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
         imageInputPath = currentPhotoPath;
         btn_RunImageSegmentation.setEnabled(true);
-    }
-
-    public void sendGrabCameraImageMessage(View view)
-    {
-        textViewResponseTime.setVisibility(View.INVISIBLE);
-        cameraCapturer.grabImage(this::onImageCaptured);
     }
 
 }

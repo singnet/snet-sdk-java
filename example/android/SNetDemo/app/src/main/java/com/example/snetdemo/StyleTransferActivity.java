@@ -83,13 +83,25 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     private RelativeLayout loadingPanel;
 
+    private CameraImageCapturer cameraCapturer;
+
     private SnetSdk sdk;
     private ServiceClient serviceClient;
 
-    private CameraImageCapturer cameraCapturer;
-
     private OpenServiceChannelTask openServiceChannelTask;
     private CallingServiceTask callingServiceTask;
+
+    private void openSingularityNETServiceChannel() throws IOException
+    {
+        String serviceId = "style-transfer";
+        String organizationId = "snet";
+        String endpointGroupName = "default_group";
+
+        sdk = new SnetSdk(StyleTransferActivity.this);
+        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
+        serviceClient = sdk.getSdk().newServiceClient(organizationId, serviceId,
+                endpointGroupName, paymentStrategy);
+    }
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
@@ -109,10 +121,7 @@ public class StyleTransferActivity extends SnetDemoActivity
         {
             try
             {
-                sdk = new SnetSdk(StyleTransferActivity.this);
-                PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
-                serviceClient = sdk.getSdk().newServiceClient("snet", "style-transfer",
-                        "default_group", paymentStrategy);
+                openSingularityNETServiceChannel();
             }
             catch (Exception e)
             {
@@ -195,8 +204,6 @@ public class StyleTransferActivity extends SnetDemoActivity
         textViewProgress.setText("");
         textViewProgress.setVisibility(View.INVISIBLE);
 
-//        btn_RunStyleTransfer.setEnabled(false);
-
         imv_Style = findViewById(R.id.imageViewStyle);
         imv_Input = findViewById(R.id.imageViewInput);
 
@@ -261,9 +268,9 @@ public class StyleTransferActivity extends SnetDemoActivity
     }
 
     @Override
-    public void onWindowFocusChanged(boolean focus) {
+    public void onWindowFocusChanged(boolean focus)
+    {
         super.onWindowFocusChanged(focus);
-        // get the imageviews width and height here
 
         int finalImgViewWidth;
         int finalImgViewHeight;
@@ -283,7 +290,6 @@ public class StyleTransferActivity extends SnetDemoActivity
 
             imgViewSizeFixed = true;
         }
-
     }
 
     public void sendUploadInputImageMessage(View view)
@@ -348,13 +354,6 @@ public class StyleTransferActivity extends SnetDemoActivity
         }
     }
 
-    @Override
-    public void onBackPressed()
-    {
-//        openServiceChannelTask.cancel(true);
-        super.onBackPressed();
-    }
-
     public void sendGrabCameraImageMessage(View view)
     {
         cameraCapturer.grabImage(this::onImageCaptured);
@@ -366,6 +365,18 @@ public class StyleTransferActivity extends SnetDemoActivity
         File f = new File(currentPhotoPath);
         loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
         imageInputPath = currentPhotoPath;
+    }
+
+    private StyleTransferOuterClass.Image callStyleTransferService(String inputBase64, String styleBase64) throws IOException
+    {
+        StyleTransferOuterClass.TransferImageStyleRequest request = StyleTransferOuterClass.TransferImageStyleRequest.newBuilder()
+                .setContent(inputBase64)
+                .setStyle(styleBase64)
+                .setPreserveColor(true)
+                .build();
+        StyleTransferOuterClass.Image response = serviceClient.getGrpcStub(StyleTransferGrpc::newBlockingStub).transferImageStyle(request);
+
+        return response;
     }
 
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
@@ -406,18 +417,14 @@ public class StyleTransferActivity extends SnetDemoActivity
             String styleBase64 = BitmapToJPEGBase64String(bitmapStyle);
 
             publishProgress(new Integer(PROGRESS_WAITING_FOR_SERIVCE_RESPONSE));
-            StyleTransferOuterClass.TransferImageStyleRequest request = StyleTransferOuterClass.TransferImageStyleRequest.newBuilder()
-                    .setContent(inputBase64)
-                    .setStyle(styleBase64)
-                    .setPreserveColor(true)
-                    .build();
+
 
             long startTime = System.nanoTime();
-            StyleTransferOuterClass.Image response = null;
+            StyleTransferOuterClass.Image response;
 
             try
             {
-                response = serviceClient.getGrpcStub(StyleTransferGrpc::newBlockingStub).transferImageStyle(request);
+                response = callStyleTransferService(inputBase64, styleBase64);
             }
             catch (Exception e)
             {
@@ -525,6 +532,7 @@ public class StyleTransferActivity extends SnetDemoActivity
 
         }
     }
+
     public void sendRunStyleTransferMessage(View view)
     {
         if(this.isInputImageUploaded && this.isStyleImageUploaded)

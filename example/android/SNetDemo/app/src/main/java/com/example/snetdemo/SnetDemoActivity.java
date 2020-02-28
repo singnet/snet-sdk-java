@@ -2,11 +2,15 @@ package com.example.snetdemo;
 
 import android.Manifest;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,5 +81,4 @@ abstract class SnetDemoActivity extends AppCompatActivity
             callback.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 }
