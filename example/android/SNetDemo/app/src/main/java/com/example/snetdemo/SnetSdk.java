@@ -1,6 +1,5 @@
 package com.example.snetdemo;
 
-
 import android.content.Context;
 
 import java.io.Closeable;
@@ -21,7 +20,6 @@ public class SnetSdk implements Closeable
         props.load(context.getAssets().open("ethereum.properties"));
         Configuration config = ConfigurationUtils.fromProperties(props);
         sdk = new Sdk(config);
-
     }
 
     public Sdk getSdk() {
