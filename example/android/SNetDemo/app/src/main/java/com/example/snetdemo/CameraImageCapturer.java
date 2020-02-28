@@ -23,15 +23,13 @@ class CameraImageCapturer
 {
     private final String TAG = "CameraImageCapturer";
 
-    private static final int REQUEST_CODE_IMAGE_CAPTURE = 12;
-
-    private final Activity activity;
+    private final SnetDemoActivity activity;
     private final boolean isDeviceWithCamera;
 
     private String currentPhotoPath = "";
     private Uri cameraImageURI;
 
-    public CameraImageCapturer(Activity activity) {
+    public CameraImageCapturer(SnetDemoActivity activity) {
         this.activity = activity;
         isDeviceWithCamera = this.activity.getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
@@ -42,7 +40,7 @@ class CameraImageCapturer
         return isDeviceWithCamera;
     }
 
-    public void grabImage() {
+    public void grabImage(final Consumer<String> consumer) {
 
         if(isDeviceWithCamera)
         {
@@ -82,7 +80,14 @@ class CameraImageCapturer
                             photoFile);
 
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI);
-                    activity.startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
+                    activity.startActivityForResult(takePictureIntent, new SnetDemoActivity.ActivityResultCallback()
+                    {
+                        @Override
+                        public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+                        {
+                            CameraImageCapturer.this.onActivityResult(requestCode, resultCode, data, consumer);
+                        }
+                    });
                 }
             }
 
@@ -90,21 +95,15 @@ class CameraImageCapturer
 
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, Consumer<String> consumer) {
-        if ( requestCode == REQUEST_CODE_IMAGE_CAPTURE)
-        {
-            if(resultCode==activity.RESULT_OK)
-            {
-                galleryAddPic(activity, currentPhotoPath);
-                consumer.accept(currentPhotoPath);
-            }
-            else if(resultCode==activity.RESULT_CANCELED)
-            {
-                File f = new File(currentPhotoPath);
-                if (f.exists())
-                {
-                    f.delete();
-                }
+    private void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, Consumer<String> consumer) {
+        Log.i(TAG, "Image capture result: " + resultCode);
+        if (resultCode == activity.RESULT_OK) {
+            galleryAddPic(activity, currentPhotoPath);
+            consumer.accept(currentPhotoPath);
+        } else if (resultCode == activity.RESULT_CANCELED) {
+            File f = new File(currentPhotoPath);
+            if (f.exists()) {
+                f.delete();
             }
         }
     }

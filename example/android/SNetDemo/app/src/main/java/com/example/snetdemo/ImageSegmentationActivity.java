@@ -247,7 +247,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         }
 
         btn_GrabCameraImage.setEnabled(cameraCapturer.hasCamera());
-
     }
 
 
@@ -455,19 +454,22 @@ public class ImageSegmentationActivity extends SnetDemoActivity
             return;
         }
 
-        cameraCapturer.onActivityResult(requestCode, resultCode, data, currentPhotoPath -> {
-            isInputImageUploaded = true;
-            File f = new File(currentPhotoPath);
-            loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-            imageInputPath = currentPhotoPath;
-            btn_RunImageSegmentation.setEnabled(true);
-        });
+    }
+
+    private void onImageCaptured(String currentPhotoPath)
+    {
+        Log.i(TAG, "Image captured: " + currentPhotoPath);
+        isInputImageUploaded = true;
+        File f = new File(currentPhotoPath);
+        loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
+        imageInputPath = currentPhotoPath;
+        btn_RunImageSegmentation.setEnabled(true);
     }
 
     public void sendGrabCameraImageMessage(View view)
     {
         textViewResponseTime.setVisibility(View.INVISIBLE);
-        cameraCapturer.grabImage();
+        cameraCapturer.grabImage(this::onImageCaptured);
     }
 
 }

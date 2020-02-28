@@ -348,13 +348,6 @@ public class StyleTransferActivity extends SnetDemoActivity
             enableActivityGUI();
         }
 
-        cameraCapturer.onActivityResult(requestCode, resultCode, data, currentPhotoPath -> {
-            isInputImageUploaded = true;
-            File f = new File(currentPhotoPath);
-            loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-            imageInputPath = currentPhotoPath;
-        });
-
         if( isInputImageUploaded && isStyleImageUploaded)
         {
             btn_RunStyleTransfer.setEnabled(true);
@@ -371,7 +364,15 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     public void sendGrabCameraImageMessage(View view)
     {
-        cameraCapturer.grabImage();
+        cameraCapturer.grabImage(this::onImageCaptured);
+    }
+
+    private void onImageCaptured(String currentPhotoPath) {
+        Log.i(TAG, "Image captured: " + currentPhotoPath);
+        isInputImageUploaded = true;
+        File f = new File(currentPhotoPath);
+        loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
+        imageInputPath = currentPhotoPath;
     }
 
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
