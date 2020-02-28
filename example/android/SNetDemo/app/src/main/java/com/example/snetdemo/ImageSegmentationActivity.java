@@ -44,8 +44,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 {
     private final String TAG = "ImageSegmentationActivity";
 
-    private static final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
-
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
     final int PROGRESS_DECODING_SERIVCE_RESPONSE = 3;
     final int PROGRESS_LOADING_IMAGE = 4;
@@ -74,9 +72,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     String imageInputPath = null;
     String imageSegmentedPath = null;
 
-    private String errorMessage = "";
-    private boolean isExceptionCaught = false;
-
     private SnetSdk sdk;
     private ServiceClient serviceClient;
 
@@ -87,6 +82,9 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
+        private boolean isExceptionCaught = false;
+        private String errorMessage = "";
+
         protected void onPreExecute()
         {
             super.onPreExecute();
@@ -252,6 +250,9 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
     {
+        private boolean isExceptionCaught = false;
+        private String errorMessage = "";
+
         protected void onPreExecute()
         {
             super.onPreExecute();
@@ -419,7 +420,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
         fileIntent.setType("image/*");
-        startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_INPUT_IMAGE);
+        startActivityForResult(fileIntent, this::onImageUploaded);
 
         textViewResponseTime.setVisibility(View.INVISIBLE);
     }
@@ -435,25 +436,15 @@ public class ImageSegmentationActivity extends SnetDemoActivity
                 .into(imgView);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    private void onImageUploaded(int requestCode, int resultCode, @Nullable Intent data)
     {
-        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            isInputImageUploaded = true;
+            loadImageFromFileToImageView(imv_Input, data.getData());
+            imageInputPath = getPathFromUri(this, data.getData());
 
-        if ( requestCode == REQUEST_CODE_UPLOAD_INPUT_IMAGE)
-        {
-            if(resultCode==RESULT_OK)
-            {
-                isInputImageUploaded = true;
-                loadImageFromFileToImageView(imv_Input, data.getData());
-                imageInputPath = getPathFromUri(this, data.getData());
-
-                btn_RunImageSegmentation.setEnabled(true);
-
-            }
-            return;
+            btn_RunImageSegmentation.setEnabled(true);
         }
-
     }
 
     private void onImageCaptured(String currentPhotoPath)

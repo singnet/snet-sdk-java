@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -48,9 +46,6 @@ import static com.example.snetdemo.ImageUtils.handleSamplingAndRotationBitmap;
 public class StyleTransferActivity extends SnetDemoActivity
 {
     final String TAG = "StyleTransferActivity";
-    final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
-    final int REQUEST_CODE_UPLOAD_STYLE_IMAGE = 11;
-//    final int REQUEST_CODE_IMAGE_CAPTURE = 12;
     final int REQUEST_CODE_SHOW_IMAGE = 13;
 
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
@@ -78,9 +73,6 @@ public class StyleTransferActivity extends SnetDemoActivity
     String imageStylePath = null;
     String imageResultPath = null;
 
-    String currentPhotoPath = "";
-    Uri cameraImageURI;
-
     private long serviceResponseTime = 0;
     private boolean isDeviceWithCamera = true;
 
@@ -90,9 +82,6 @@ public class StyleTransferActivity extends SnetDemoActivity
     private boolean imgViewSizeFixed = false;
 
     private RelativeLayout loadingPanel;
-
-    private String errorMessage = "";
-    private boolean isExceptionCaught = false;
 
     private SnetSdk sdk;
     private ServiceClient serviceClient;
@@ -104,6 +93,9 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
+        private String errorMessage = "";
+        private boolean isExceptionCaught = false;
+
         protected void onPreExecute()
         {
             super.onPreExecute();
@@ -298,14 +290,14 @@ public class StyleTransferActivity extends SnetDemoActivity
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
         fileIntent.setType("image/*");
-        startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_INPUT_IMAGE);
+        startActivityForResult(fileIntent, this::onInputImageUploaded);
     }
 
     public void sendUploadStyleImageMessage(View view)
     {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
         fileIntent.setType("image/*");
-        startActivityForResult(fileIntent, REQUEST_CODE_UPLOAD_STYLE_IMAGE);
+        startActivityForResult(fileIntent, this::onStyleImageUploaded);
     }
 
     private void loadImageFromFileToImageView(ImageView imgView, Uri fileURI)
@@ -319,40 +311,41 @@ public class StyleTransferActivity extends SnetDemoActivity
                 .into(imgView);
     }
 
+    private void onInputImageUploaded(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if (resultCode == RESULT_OK) {
+            isInputImageUploaded = true;
+            loadImageFromFileToImageView(imv_Input, data.getData());
+            imageInputPath = getPathFromUri(this, data.getData());
+        }
+        if( isInputImageUploaded && isStyleImageUploaded)
+        {
+            btn_RunStyleTransfer.setEnabled(true);
+        }
+    }
+
+    private void onStyleImageUploaded(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if (resultCode == RESULT_OK) {
+            isStyleImageUploaded = true;
+            loadImageFromFileToImageView(imv_Style, data.getData());
+            imageStylePath = getPathFromUri(this, data.getData());
+        }
+        if( isInputImageUploaded && isStyleImageUploaded)
+        {
+            btn_RunStyleTransfer.setEnabled(true);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if ( requestCode == REQUEST_CODE_UPLOAD_INPUT_IMAGE)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                isInputImageUploaded = true;
-                loadImageFromFileToImageView(imv_Input, data.getData());
-                imageInputPath = getPathFromUri(this, data.getData());
-            }
-        }
-        if (requestCode == REQUEST_CODE_UPLOAD_STYLE_IMAGE)
-        {
-            if(resultCode == RESULT_OK)
-            {
-                isStyleImageUploaded = true;
-                loadImageFromFileToImageView(imv_Style, data.getData());
-                imageStylePath = getPathFromUri(this, data.getData());
-            }
-        }
-
         if (requestCode == REQUEST_CODE_SHOW_IMAGE)
         {
             enableActivityGUI();
         }
-
-        if( isInputImageUploaded && isStyleImageUploaded)
-        {
-            btn_RunStyleTransfer.setEnabled(true);
-        }
-
     }
 
     @Override
@@ -377,6 +370,9 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
     {
+        private String errorMessage = "";
+        private boolean isExceptionCaught = false;
+
         protected void onPreExecute()
         {
             super.onPreExecute();
