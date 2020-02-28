@@ -4,13 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,7 +19,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.protobuf.ByteString;
@@ -47,8 +44,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 {
     private final String TAG = "ImageSegmentationActivity";
 
-    final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
-    final int REQUEST_CODE_IMAGE_CAPTURE = 11;
+    private static final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
 
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
     final int PROGRESS_DECODING_SERIVCE_RESPONSE = 3;
@@ -74,10 +70,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     private RelativeLayout loadingPanel;
 
     private long serviceResponseTime = 0;
-    private boolean isDeviceWithCamera = true;
-
-    String currentPhotoPath = "";
-    Uri cameraImageURI;
 
     String imageInputPath = null;
     String imageSegmentedPath = null;
@@ -87,6 +79,11 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
     private SnetSdk sdk;
     private ServiceClient serviceClient;
+
+    private CameraImageCapturer cameraCapturer;
+
+    private OpenServiceChannelTask openServiceChannelTask;
+    private CallingServiceTask callingServiceTask;
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
@@ -162,7 +159,8 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
     protected void initApp()
     {
-        new OpenServiceChannelTask().execute();
+       openServiceChannelTask =  new OpenServiceChannelTask();
+       openServiceChannelTask.execute();
     }
 
     @Override
@@ -175,7 +173,6 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_segmentation);
@@ -186,29 +183,21 @@ public class ImageSegmentationActivity extends SnetDemoActivity
 
         btn_UploadImageInput = findViewById(R.id.btn_uploadImageForSegmentation);
         btn_RunImageSegmentation = findViewById(R.id.btn_runImageSegmentation);
-        btn_RunImageSegmentation.setEnabled(false);
 
         btn_GrabCameraImage = findViewById(R.id.btn_grabCameraImage);
 
         imv_Input = findViewById(R.id.imageViewInput);
 
         loadingPanel = findViewById(R.id.loadingPanel);
-        loadingPanel.setVisibility(View.INVISIBLE);
 
         textViewProgress = findViewById(R.id.textViewProgress);
-        textViewProgress.setVisibility(View.INVISIBLE);
         textViewProgress.setText("");
 
         textViewResponseTime = findViewById(R.id.textViewResponseTime);
         textViewResponseTime.setText("Service response time (ms):");
         textViewResponseTime.setVisibility(View.INVISIBLE);
 
-        PackageManager pm = this.getPackageManager();
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
-        {
-            isDeviceWithCamera = false;
-            btn_GrabCameraImage.setEnabled(false);
-        }
+        cameraCapturer = new CameraImageCapturer(this);
 
         disableActivityGUI();
 
@@ -218,6 +207,14 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     @Override
     protected void onDestroy()
     {
+        if (openServiceChannelTask != null) {
+            openServiceChannelTask.cancel(true);
+        }
+
+        if (callingServiceTask != null) {
+            callingServiceTask.cancel(true);
+        }
+
         new CloseServiceChannelTask().execute();
         super.onDestroy();
     }
@@ -249,9 +246,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
             btn_RunImageSegmentation.setEnabled(true);
         }
 
-        if(isDeviceWithCamera) {
-            btn_GrabCameraImage.setEnabled(true);
-        }
+        btn_GrabCameraImage.setEnabled(cameraCapturer.hasCamera());
 
     }
 
@@ -415,7 +410,8 @@ public class ImageSegmentationActivity extends SnetDemoActivity
     {
         if(this.isInputImageUploaded)
         {
-            new CallingServiceTask().execute();
+            callingServiceTask = new CallingServiceTask();
+            callingServiceTask.execute();
             isInputImageUploaded = false;
         }
     }
@@ -456,77 +452,22 @@ public class ImageSegmentationActivity extends SnetDemoActivity
                 btn_RunImageSegmentation.setEnabled(true);
 
             }
+            return;
         }
 
-        if ( requestCode == REQUEST_CODE_IMAGE_CAPTURE)
-        {
-            if(resultCode==RESULT_OK)
-            {
-                isInputImageUploaded = true;
-                galleryAddPic(this, currentPhotoPath);
-
-                File f = new File(currentPhotoPath);
-                loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-                imageInputPath = currentPhotoPath;
-                btn_RunImageSegmentation.setEnabled(true);
-            }
-            else if(resultCode==RESULT_CANCELED)
-            {
-                File f = new File(currentPhotoPath);
-                if (f.exists())
-                {
-                    f.delete();
-                }
-            }
-        }
+        cameraCapturer.onActivityResult(requestCode, resultCode, data, currentPhotoPath -> {
+            isInputImageUploaded = true;
+            File f = new File(currentPhotoPath);
+            loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
+            imageInputPath = currentPhotoPath;
+            btn_RunImageSegmentation.setEnabled(true);
+        });
     }
 
     public void sendGrabCameraImageMessage(View view)
     {
-        if(isDeviceWithCamera)
-        {
-            textViewResponseTime.setVisibility(View.INVISIBLE);
-            File photoFile = null;
-
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null)
-            {
-                try
-                {
-                    photoFile = createImageFile("input_image_");
-                    currentPhotoPath = photoFile.getAbsolutePath();
-                }
-                catch (IOException e)
-                {
-                    Log.e(TAG, "Exception on image file creation", e);
-
-                    new AlertDialog.Builder(ImageSegmentationActivity.this)
-                            .setTitle("ERROR")
-                            .setMessage(e.toString())
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    dialog.dismiss();
-                                }
-                            })
-
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-
-                if (photoFile != null)
-                {
-                    cameraImageURI = FileProvider.getUriForFile(this,
-                            BuildConfig.APPLICATION_ID,
-                            photoFile);
-
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI);
-                    startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
-                }
-            }
-
-        }
+        textViewResponseTime.setVisibility(View.INVISIBLE);
+        cameraCapturer.grabImage();
     }
 
 }

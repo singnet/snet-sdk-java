@@ -50,7 +50,7 @@ public class StyleTransferActivity extends SnetDemoActivity
     final String TAG = "StyleTransferActivity";
     final int REQUEST_CODE_UPLOAD_INPUT_IMAGE = 10;
     final int REQUEST_CODE_UPLOAD_STYLE_IMAGE = 11;
-    final int REQUEST_CODE_IMAGE_CAPTURE = 12;
+//    final int REQUEST_CODE_IMAGE_CAPTURE = 12;
     final int REQUEST_CODE_SHOW_IMAGE = 13;
 
     final int PROGRESS_WAITING_FOR_SERIVCE_RESPONSE = 2;
@@ -96,6 +96,11 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     private SnetSdk sdk;
     private ServiceClient serviceClient;
+
+    private CameraImageCapturer cameraCapturer;
+
+    private OpenServiceChannelTask openServiceChannelTask;
+    private CallingServiceTask callingServiceTask;
 
     private class OpenServiceChannelTask extends AsyncTask<Object, Object, Object>
     {
@@ -171,7 +176,8 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     protected void initApp()
     {
-        new OpenServiceChannelTask().execute();
+        openServiceChannelTask =  new OpenServiceChannelTask();
+        openServiceChannelTask.execute();
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -197,7 +203,7 @@ public class StyleTransferActivity extends SnetDemoActivity
         textViewProgress.setText("");
         textViewProgress.setVisibility(View.INVISIBLE);
 
-        btn_RunStyleTransfer.setEnabled(false);
+//        btn_RunStyleTransfer.setEnabled(false);
 
         imv_Style = findViewById(R.id.imageViewStyle);
         imv_Input = findViewById(R.id.imageViewInput);
@@ -205,12 +211,7 @@ public class StyleTransferActivity extends SnetDemoActivity
         loadingPanel = findViewById(R.id.loadingPanel);
         loadingPanel.setVisibility(View.INVISIBLE);
 
-        PackageManager pm = this.getPackageManager();
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
-        {
-            isDeviceWithCamera = false;
-            btn_GrabCameraImage.setEnabled(false);
-        }
+        cameraCapturer = new CameraImageCapturer(this);
 
         disableActivityGUI();
 
@@ -220,6 +221,14 @@ public class StyleTransferActivity extends SnetDemoActivity
     @Override
     protected void onDestroy()
     {
+        if (openServiceChannelTask != null) {
+            openServiceChannelTask.cancel(true);
+        }
+
+        if (callingServiceTask != null) {
+            callingServiceTask.cancel(true);
+        }
+
         new CloseServiceChannelTask().execute();
         super.onDestroy();
     }
@@ -334,31 +343,17 @@ public class StyleTransferActivity extends SnetDemoActivity
             }
         }
 
-        if (requestCode == REQUEST_CODE_IMAGE_CAPTURE)
-        {
-            if(resultCode==RESULT_OK)
-            {
-                isInputImageUploaded = true;
-                galleryAddPic(this, currentPhotoPath);
-
-                File f = new File(currentPhotoPath);
-                loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-                imageInputPath = currentPhotoPath;
-
-            }
-            else if(resultCode==RESULT_CANCELED)
-            {
-                File f = new File(currentPhotoPath);
-                if (f.exists())
-                {
-                    f.delete();
-                }
-            }
-        }
         if (requestCode == REQUEST_CODE_SHOW_IMAGE)
         {
             enableActivityGUI();
         }
+
+        cameraCapturer.onActivityResult(requestCode, resultCode, data, currentPhotoPath -> {
+            isInputImageUploaded = true;
+            File f = new File(currentPhotoPath);
+            loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
+            imageInputPath = currentPhotoPath;
+        });
 
         if( isInputImageUploaded && isStyleImageUploaded)
         {
@@ -367,37 +362,16 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     }
 
+    @Override
+    public void onBackPressed()
+    {
+//        openServiceChannelTask.cancel(true);
+        super.onBackPressed();
+    }
+
     public void sendGrabCameraImageMessage(View view)
     {
-        if(isDeviceWithCamera)
-        {
-            File photoFile = null;
-
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null)
-            {
-                try
-                {
-                    photoFile = createImageFile("input_image_");
-                    currentPhotoPath = photoFile.getAbsolutePath();
-                }
-                catch (IOException e)
-                {
-                    Log.e(TAG, "Exception on image file creation", e);
-                }
-                if (photoFile != null)
-                {
-                    cameraImageURI = FileProvider.getUriForFile(this,
-                            BuildConfig.APPLICATION_ID,
-                            photoFile);
-
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageURI);
-                    startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
-                }
-            }
-
-        }
+        cameraCapturer.grabImage();
     }
 
     private class CallingServiceTask extends AsyncTask<Object, Integer, Object>
@@ -515,6 +489,7 @@ public class StyleTransferActivity extends SnetDemoActivity
                     break;
             }
         }
+        protected void onCancelled() {}
 
         protected void onPostExecute(Object obj)
         {
@@ -557,7 +532,8 @@ public class StyleTransferActivity extends SnetDemoActivity
     {
         if(this.isInputImageUploaded && this.isStyleImageUploaded)
         {
-            new CallingServiceTask().execute();
+            callingServiceTask = new CallingServiceTask();
+            callingServiceTask.execute();
         }
     }
 
