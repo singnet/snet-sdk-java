@@ -19,4 +19,20 @@ public interface Payment {
      */
     void toMetadata(Metadata headers);
 
+    /**
+     * Special payment to designate that payment cannot be returned.
+     */
+    static final Payment INVALID_PAYMENT = new Payment() {
+
+        @Override
+        public void toMetadata(Metadata headers) {
+        }
+
+        @Override
+        public String toString() {
+            return "INVALID_PAYMENT";
+        }
+
+    };
+
 }

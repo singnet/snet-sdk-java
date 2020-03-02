@@ -27,6 +27,11 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
 
     @ToString.Exclude
     private final Ethereum ethereum;
+
+    private final String dappUserId;
+    private final String freeCallToken;
+    private final BigInteger tokenExpirationBlock;
+    private final Identity signer;
     private final FreeCallPayment.Builder paymentBuilder;
 
     /**
@@ -45,6 +50,10 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
     public FreeCallPaymentStrategy(Ethereum ethereum, Identity signer,
             String dappUserId, BigInteger tokenExpirationBlock, String token) {
         this.ethereum = ethereum;
+        this.dappUserId = dappUserId;
+        this.tokenExpirationBlock = tokenExpirationBlock;
+        this.freeCallToken = token;
+        this.signer = signer;
         this.paymentBuilder = FreeCallPayment.newBuilder()
             .setSigner(signer)
             .setDappUserId(dappUserId)
@@ -66,6 +75,16 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
             // changed before actual call is made? Think about it when
             // implementing failover strategy.
             .getEndpointGroupByName(groupName).get();
+
+        if (endpointGroup.getFreeCalls() == 0) {
+            return Payment.INVALID_PAYMENT;
+        }
+        long freeCallAvailable = serviceClient.getFreeCallStateService()
+            .getFreeCallsAvailable(dappUserId, freeCallToken,
+                    tokenExpirationBlock, signer);
+        if (freeCallAvailable <= 0) {
+            return Payment.INVALID_PAYMENT;
+        }
         
         return paymentBuilder
             .setCurrentBlockNumber(ethereum.getEthBlockNumber())

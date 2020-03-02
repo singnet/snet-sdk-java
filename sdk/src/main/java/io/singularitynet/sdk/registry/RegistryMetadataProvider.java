@@ -8,6 +8,7 @@ import java.util.List;
 import java.net.URL;
 
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 
 /**
  * Metadata provider implementation which synchronously forwards calls to the
@@ -91,14 +92,24 @@ public class RegistryMetadataProvider implements MetadataProvider {
         public EndpointGroup deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             String paymentGroupId = context.deserialize(jsonObject.get("group_id"), String.class);
-            return EndpointGroup.newBuilder()
+            EndpointGroup.Builder builder = EndpointGroup.newBuilder()
                 .setGroupName(jsonObject.get("group_name").getAsString())
                 .setPricing(context.deserialize(jsonObject.get("pricing"),
                             Utils.parameterizedType(List.class, null, Pricing.class)))
                 .setEndpoints(context.deserialize(jsonObject.get("endpoints"),
                             Utils.parameterizedType(List.class, null, URL.class)))
-                .setPaymentGroupId(new PaymentGroupId(paymentGroupId))
-                .build();
+                .setPaymentGroupId(new PaymentGroupId(paymentGroupId));
+
+            if (jsonObject.has("free_calls")) {
+                builder.setFreeCalls(jsonObject.get("free_calls").getAsLong());
+            }
+
+            if (jsonObject.has("free_call_signer_address")) {
+                String freeCallSignerAddress = context.deserialize(jsonObject.get("free_call_signer_address"), String.class);
+                builder.setFreeCallSignerAddress(new Address(freeCallSignerAddress));
+            }
+
+            return builder.build();
         }
 
     }

@@ -6,8 +6,8 @@ import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.singularitynet.daemon.escrow.*;
 import io.singularitynet.daemon.escrow.StateService.*;
+import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc;
 import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc.*;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;

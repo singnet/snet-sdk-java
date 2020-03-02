@@ -2,9 +2,11 @@ package io.singularitynet.sdk.integration;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+import java.util.Random;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
@@ -35,7 +37,7 @@ public class FreeCallPaymentStrategyTestIT {
 
     @Test
     public void useFreeCallPayment() {
-        final String dappUserId = "user@mail.com";
+        final String dappUserId = randomDappUserId();
         final Address userEthereumAddress = IntEnv.CALLER_ADDRESS;
         final BigInteger freeCallExpirationBlock = BigInteger.valueOf(1)
             .add(getLastEthereumBlock());
@@ -70,9 +72,64 @@ public class FreeCallPaymentStrategyTestIT {
         }
     }
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    // FIXME: remove code duplication with previous test
+    @Test
+    public void freeCallRejectedWhenNotConfigured() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("No payment returned by PaymentStrategy");
+
+        final String dappUserId = randomDappUserId();
+        final Address userEthereumAddress = IntEnv.CALLER_ADDRESS;
+        final BigInteger freeCallExpirationBlock = BigInteger.valueOf(1)
+            .add(getLastEthereumBlock());
+        final String freeCallToken = FreeCallPayment.generateFreeCallPaymentToken(
+                dappUserId, userEthereumAddress, freeCallExpirationBlock,
+                IntEnv.DEPLOYER_IDENTITY);
+
+        Configuration config = IntEnv.newTestConfigurationBuilder()
+            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
+            .setIdentityPrivateKey(IntEnv.CALLER_PRIVATE_KEY)
+            .build();
+        Sdk sdk = new Sdk(config);
+        try {
+
+            Identity freeCallSigner = sdk.getIdentity();
+            FreeCallPaymentStrategy freeCallStrategy = new FreeCallPaymentStrategy(
+                    sdk.getEthereum(), freeCallSigner, dappUserId,
+                    freeCallExpirationBlock, freeCallToken);
+            ServiceClient serviceClient = sdk.newServiceClient(
+                    IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID,
+                    IntEnv.TEST_ENDPOINT_GROUP, freeCallStrategy);
+            boolean twoCalls = false;
+            try {
+
+               IntEnv.makeServiceCall(serviceClient); 
+               IntEnv.makeServiceCall(serviceClient); 
+               twoCalls = true;
+               IntEnv.makeServiceCall(serviceClient); 
+
+            } finally {
+                assertTrue("Two calls made successfully", twoCalls);
+                serviceClient.shutdownNow();
+            }
+
+        } finally {
+            sdk.shutdown();
+        }
+    }
+
     private BigInteger getLastEthereumBlock() {
         return Utils.wrapExceptions(() -> web3j.ethBlockNumber().send()
                 .getBlockNumber());
+    }
+
+    private static final Random random = new Random();
+
+    private static String randomDappUserId() {
+        return "user-" + random.nextInt() + "@mail.com";
     }
 
 }

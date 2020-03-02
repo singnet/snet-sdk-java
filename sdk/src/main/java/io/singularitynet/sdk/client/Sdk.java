@@ -18,6 +18,7 @@ import io.singularitynet.sdk.daemon.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
+import io.singularitynet.sdk.daemon.FreeCallStateService;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
@@ -116,9 +117,11 @@ public class Sdk {
                 connection, mpeContract.getContractAddress(), ethereum, identity);
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+        FreeCallStateService freeCallStateService = new FreeCallStateService(
+                orgId, serviceId, ethereum, metadataProvider, connection);
 
         return new BaseServiceClient(serviceId, connection, metadataProvider,
-                paymentChannelStateProvider, paymentStrategy); 
+                paymentChannelStateProvider, freeCallStateService, paymentStrategy); 
     }
 
     /**

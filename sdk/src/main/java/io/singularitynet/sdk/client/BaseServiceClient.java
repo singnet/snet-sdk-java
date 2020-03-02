@@ -10,6 +10,7 @@ import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
+import io.singularitynet.sdk.daemon.FreeCallStateService;
 
 /**
  * The class is responsible for providing all necessary facilities to call
@@ -23,6 +24,7 @@ public class BaseServiceClient implements ServiceClient {
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
     private final PaymentChannelStateProvider channelStateProvider;
+    private final FreeCallStateService freeCallStateService;
     private final PaymentStrategy paymentStrategy;
 
     /**
@@ -31,6 +33,7 @@ public class BaseServiceClient implements ServiceClient {
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
      * @param channelStateProvider actual payment channel state provider.
+     * @param freeCallStateService free call state service instance.
      * @param paymentStrategy provides payment for the client call.
      */
     public BaseServiceClient(
@@ -38,12 +41,14 @@ public class BaseServiceClient implements ServiceClient {
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
             PaymentChannelStateProvider channelStateProvider,
+            FreeCallStateService freeCallStateService,
             PaymentStrategy paymentStrategy) {
         this.serviceId = serviceId;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
         this.metadataProvider = metadataProvider;
         this.channelStateProvider = channelStateProvider;
+        this.freeCallStateService = freeCallStateService;
         this.paymentStrategy = paymentStrategy;
     }
 
@@ -55,6 +60,11 @@ public class BaseServiceClient implements ServiceClient {
     @Override
     public PaymentChannelStateProvider getPaymentChannelStateProvider() {
         return channelStateProvider;
+    }
+
+    @Override
+    public FreeCallStateService getFreeCallStateService() {
+        return freeCallStateService;
     }
 
     @Override
@@ -111,6 +121,9 @@ public class BaseServiceClient implements ServiceClient {
                     new GrpcCallParameters<>(method, callOptions, next),
                     serviceClient);
             log.debug("Payment calculated: {}", payment);
+            if (payment == Payment.INVALID_PAYMENT) {
+                throw new IllegalStateException("No payment returned by PaymentStrategy");
+            }
             return new ClientCallWrapper<>(next.newCall(method, callOptions),
                     headers -> payment.toMetadata(headers));
         }

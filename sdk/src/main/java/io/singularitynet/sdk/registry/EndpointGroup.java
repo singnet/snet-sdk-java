@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 
+import io.singularitynet.sdk.ethereum.Address;
+
 @EqualsAndHashCode
 @ToString
 public class EndpointGroup {
@@ -15,6 +17,8 @@ public class EndpointGroup {
     private final List<Pricing> pricing;
     private final List<URL> endpoints;
     @SerializedName("group_id") private final PaymentGroupId paymentGroupId;
+    private final long freeCalls;
+    private final Address freeCallSignerAddress;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -29,6 +33,8 @@ public class EndpointGroup {
         this.pricing = builder.pricing;
         this.endpoints = builder.endpoints;
         this.paymentGroupId = builder.paymentGroupId;
+        this.freeCalls = builder.freeCalls;
+        this.freeCallSignerAddress = builder.freeCallSignerAddress;
     }
 
     public String getGroupName() {
@@ -47,12 +53,22 @@ public class EndpointGroup {
         return paymentGroupId;
     }
 
+    public long getFreeCalls() {
+        return freeCalls;
+    }
+
+    public Address getFreeCallSignerAddress() {
+        return freeCallSignerAddress;
+    }
+
     public static class Builder {
 
         private String groupName;
         private List<Pricing> pricing = new ArrayList<>();
         private List<URL> endpoints = new ArrayList<>();
         private PaymentGroupId paymentGroupId;
+        private long freeCalls;
+        private Address freeCallSignerAddress;
 
         private Builder() {
         }
@@ -62,11 +78,17 @@ public class EndpointGroup {
             this.pricing = object.pricing;
             this.endpoints = object.endpoints;
             this.paymentGroupId = object.paymentGroupId;
+            this.freeCalls = object.freeCalls;
+            this.freeCallSignerAddress = object.freeCallSignerAddress;
         }
 
         public Builder setGroupName(String groupName) {
             this.groupName = groupName;
             return this;
+        }
+
+        public String getGroupName() {
+            return groupName;
         }
 
         public Builder setPricing(List<Pricing> pricing) {
@@ -82,7 +104,11 @@ public class EndpointGroup {
         public Builder clearPricing() {
             this.pricing.clear();
             return this;
-        } 
+        }
+
+        public List<Pricing> getPricing() {
+            return pricing;
+        }
 
         public Builder setEndpoints(List<URL> endpoints) {
             this.endpoints = endpoints;
@@ -94,9 +120,40 @@ public class EndpointGroup {
             return this;
         }
 
+        public Builder clearEndpoints() {
+            this.endpoints.clear();
+            return this;
+        }
+
+        public List<URL> getEndpoints() {
+            return endpoints;
+        }
+
         public Builder setPaymentGroupId(PaymentGroupId paymentGroupId) {
             this.paymentGroupId = paymentGroupId;
             return this;
+        }
+
+        public PaymentGroupId getPaymentGroupId() {
+            return paymentGroupId;
+        }
+
+        public Builder setFreeCalls(long freeCalls) {
+            this.freeCalls = freeCalls;
+            return this;
+        }
+
+        public long getFreeCalls() {
+            return freeCalls;
+        }
+
+        public Builder setFreeCallSignerAddress(Address freeCallSignerAddress) {
+            this.freeCallSignerAddress = freeCallSignerAddress;
+            return this;
+        }
+
+        public Address getFreeCallSignerAddress() {
+            return freeCallSignerAddress;
         }
 
         public EndpointGroup build() {
