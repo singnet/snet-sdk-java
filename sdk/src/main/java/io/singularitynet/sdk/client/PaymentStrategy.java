@@ -14,7 +14,8 @@ public interface PaymentStrategy {
      * @param parameters provides the information about the gRPC call context.
      * @param serviceClient provides the information about the platform service
      * context.
-     * @return instance of the Payment class.
+     * @return instance of the Payment class or Payment.INVALID_PAYMENT if
+     * constructing payment is not possible.
      */
     <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
 

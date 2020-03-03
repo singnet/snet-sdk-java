@@ -2,11 +2,21 @@ package io.singularitynet.sdk.client;
 
 import io.singularitynet.sdk.payment.Payment;
 
-// FIXME: add javadoc
+/**
+ * Payment strategy which combines a list of the underlying strategies. It gets
+ * payment from each strategy in the list until one of the returns valid
+ * payment. First valid payment is returned. If all strategies returned
+ * Payment.INVALID_PAYMENT then it is returned.
+ */
 public class CombinedPaymentStrategy implements PaymentStrategy {
 
     private final PaymentStrategy[] strategies;
 
+    /**
+     * Constructor.
+     * @param strategies list of strategies to be applied until first valid
+     * payment is received.
+     */
     public CombinedPaymentStrategy(PaymentStrategy... strategies) {
         this.strategies = strategies;
     }

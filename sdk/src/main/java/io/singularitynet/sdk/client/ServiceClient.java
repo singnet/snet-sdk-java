@@ -27,7 +27,10 @@ public interface ServiceClient {
      */
     PaymentChannelStateProvider getPaymentChannelStateProvider();
 
-    // FIXME: add javadoc
+    /**
+     * Return a service instance to get free calls state.
+     * @return free call service instance.
+     */
     FreeCallStateService getFreeCallStateService();
 
     /**
