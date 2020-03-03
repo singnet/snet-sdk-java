@@ -10,11 +10,6 @@ import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.daemon.*;
 import io.singularitynet.sdk.client.*;
 
-import io.singularitynet.sdk.test.CalculatorGrpc;
-import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
-import io.singularitynet.sdk.test.ExampleService.Numbers;
-import io.singularitynet.sdk.test.ExampleService.Result;
-
 public class CallAfterClaimTestIT {
 
     private Sdk sdk;
@@ -26,7 +21,7 @@ public class CallAfterClaimTestIT {
 
     @Before
     public void setUp() {
-        Configuration config = IntEnv.TEST_CONFIGURATION_BUILDER
+        Configuration config = IntEnv.newTestConfigurationBuilder()
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(IntEnv.CALLER_PRIVATE_KEY)
             .build();
@@ -65,24 +60,13 @@ public class CallAfterClaimTestIT {
 
     @Test
     public void callTwiceAfterClaim() {
-        makeServiceCall(serviceClient);
+        IntEnv.makeServiceCall(serviceClient);
 
         PaymentReply reply = controlService.startClaim(channelId); 
         assertEquals("Channel id in claim reply", channelId, reply.getChannelId());
 
-        makeServiceCall(serviceClient);
-        makeServiceCall(serviceClient);
+        IntEnv.makeServiceCall(serviceClient);
+        IntEnv.makeServiceCall(serviceClient);
     }
 
-    private void makeServiceCall(ServiceClient serviceClient) {
-        CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
-        Numbers numbers = Numbers.newBuilder()
-            .setA(7)
-            .setB(6)
-            .build();
-        Result result = stub.mul(numbers);
-
-        assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
-    }
 }

@@ -92,8 +92,8 @@ public class Sdk {
         this.paymentChannelManager = new MpePaymentChannelManager(mpeContract);
     }
 
-    // TODO: move BaseServiceClient related initialization into
-    // BaseServiceClient constructor.
+    // TODO: add BaseServiceClient constructor which performs all necessary
+    // initializations.
     /**
      * Return new instance of the ServiceClient for the given service.
      * @param orgId organization id.
@@ -117,7 +117,7 @@ public class Sdk {
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
 
-        return new BaseServiceClient(connection, metadataProvider,
+        return new BaseServiceClient(serviceId, connection, metadataProvider,
                 paymentChannelStateProvider, paymentStrategy); 
     }
 

@@ -29,11 +29,6 @@ import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
-import io.singularitynet.sdk.test.CalculatorGrpc;
-import io.singularitynet.sdk.test.CalculatorGrpc.CalculatorBlockingStub;
-import io.singularitynet.sdk.test.ExampleService.Numbers;
-import io.singularitynet.sdk.test.ExampleService.Result;
-
 public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     private StaticConfiguration.Builder configBuilder;
@@ -48,7 +43,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
     @Before
     public void setUp() {
-        this.configBuilder = IntEnv.TEST_CONFIGURATION_BUILDER;
+        this.configBuilder = IntEnv.newTestConfigurationBuilder();
         StaticConfiguration config = configBuilder
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(IntEnv.DEPLOYER_PRIVATE_KEY)
@@ -83,7 +78,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         run((sdk, serviceClient) -> {
             WithAddress caller = sdk.getIdentity();
 
-            makeServiceCall(serviceClient);
+            IntEnv.makeServiceCall(serviceClient);
 
             Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
             assertEquals("Number of payment channels", 1, channels.count());
@@ -98,7 +93,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup, caller, cogsPerCall,
                     expirationThreshold.add(BigInteger.valueOf(1)));
 
-            makeServiceCall(serviceClient);
+            IntEnv.makeServiceCall(serviceClient);
 
             Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
             assertEquals("Number of payment channels", 1, channels.count());
@@ -113,7 +108,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO,
                     expirationThreshold.add(BigInteger.valueOf(2)));
 
-            makeServiceCall(serviceClient);
+            IntEnv.makeServiceCall(serviceClient);
 
             List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
@@ -131,7 +126,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup, caller, cogsPerCall, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
-            makeServiceCall(serviceClient);
+            IntEnv.makeServiceCall(serviceClient);
 
             List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
@@ -150,7 +145,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO, BigInteger.ZERO);
             BigInteger blockBeforeCall = sdk.getEthereum().getEthBlockNumber();
 
-            makeServiceCall(serviceClient);
+            IntEnv.makeServiceCall(serviceClient);
 
             List<PaymentChannel> channels = getChannels(caller, serviceClient)
                 .collect(Collectors.toList());
@@ -167,20 +162,6 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         return sdk.getBlockchainPaymentChannelManager()
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), caller);
     }
-
-
-    private void makeServiceCall(ServiceClient serviceClient) {
-        CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
-        Numbers numbers = Numbers.newBuilder()
-            .setA(7)
-            .setB(6)
-            .build();
-        Result result = stub.mul(numbers);
-
-        assertEquals("Result of 6 * 7", Result.newBuilder().setValue(42).build(), result);
-    }
-
 
     private void run(BiConsumer<Sdk, ServiceClient> test) throws Exception {
         PrivateKeyIdentity caller = setupNewIdentity();
