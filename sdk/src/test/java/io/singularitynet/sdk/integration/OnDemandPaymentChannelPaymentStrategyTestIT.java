@@ -80,7 +80,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
             IntEnv.makeServiceCall(serviceClient);
 
-            Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
+            Stream<PaymentChannel> channels = getChannels(caller);
             assertEquals("Number of payment channels", 1, channels.count());
         });
     }
@@ -95,7 +95,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
             IntEnv.makeServiceCall(serviceClient);
 
-            Stream<PaymentChannel> channels = getChannels(caller, serviceClient);
+            Stream<PaymentChannel> channels = getChannels(caller);
             assertEquals("Number of payment channels", 1, channels.count());
         });
     }
@@ -110,7 +110,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
             IntEnv.makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = getChannels(caller, serviceClient)
+            List<PaymentChannel> channels = getChannels(caller)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel balance",
@@ -128,7 +128,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
             IntEnv.makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = getChannels(caller, serviceClient)
+            List<PaymentChannel> channels = getChannels(caller)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel expiration block",
@@ -147,7 +147,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
 
             IntEnv.makeServiceCall(serviceClient);
 
-            List<PaymentChannel> channels = getChannels(caller, serviceClient)
+            List<PaymentChannel> channels = getChannels(caller)
                 .collect(Collectors.toList());
             assertEquals("Number of payment channels", 1, channels.size());
             assertEquals("Payment channel expiration block",
@@ -158,7 +158,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT {
         });
     }
 
-    private Stream<PaymentChannel> getChannels(WithAddress caller, ServiceClient serviceClient) {
+    private Stream<PaymentChannel> getChannels(WithAddress caller) {
         return sdk.getBlockchainPaymentChannelManager()
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), caller);
     }
