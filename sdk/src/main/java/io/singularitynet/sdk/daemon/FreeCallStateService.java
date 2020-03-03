@@ -2,6 +2,8 @@ package io.singularitynet.sdk.daemon;
 
 import com.google.protobuf.ByteString;
 import java.math.BigInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.daemon.escrow.StateService.*;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc;
@@ -15,6 +17,8 @@ import io.singularitynet.sdk.registry.PaymentGroupId;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
 
 public class FreeCallStateService {
+
+    private final static Logger log = LoggerFactory.getLogger(FreeCallStateService.class);
 
     private final String orgId;
     private final String serviceId;
@@ -35,6 +39,8 @@ public class FreeCallStateService {
 
     public long getFreeCallsAvailable(String dappUserId, String freeCallToken,
             BigInteger tokenExpirationBlock, Identity signer) {
+        log.info("Requesting number of free calls from daemon, dappUserId: {}, freeCallToken: {}, tokenExpirationBlock: {}, signer: {}",
+                dappUserId, freeCallToken, tokenExpirationBlock, signer);
 
         String endpointGroupName = daemonConnection.getEndpointGroupName();
         EndpointGroup endpointGroup = metadataProvider
@@ -67,7 +73,9 @@ public class FreeCallStateService {
 
         FreeCallStateReply reply = stub.getFreeCallsAvailable(request);
         
-        return reply.getFreeCallsAvailable();
+        long freeCallsAvailable = reply.getFreeCallsAvailable();
+        log.info("Free calls available: {}", freeCallsAvailable);
+        return freeCallsAvailable;
     }
 
 }

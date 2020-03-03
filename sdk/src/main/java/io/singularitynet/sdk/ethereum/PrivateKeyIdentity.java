@@ -60,4 +60,9 @@ public class PrivateKeyIdentity implements Identity {
         return Credentials.create(key);
     }
 
+    @Override
+    public String toString() {
+        return "PrivateKeyIdentity(address=" + getAddress() + ")";
+    }
+
 }

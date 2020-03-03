@@ -32,6 +32,8 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
     private final String freeCallToken;
     private final BigInteger tokenExpirationBlock;
     private final Identity signer;
+
+    @ToString.Exclude
     private final FreeCallPayment.Builder paymentBuilder;
 
     /**
@@ -43,22 +45,22 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
      * calls available
      * @param tokenExpirationBlock Ethereum block after which the token is
      * expired
-     * @param token token emitted by free call signer; in order to receive a
+     * @param freeCallToken token emitted by free call signer; in order to receive a
      * token one need to login to DApp using dappUserId and register an
      * Ethereum address of the signer there.
      */
     public FreeCallPaymentStrategy(Ethereum ethereum, Identity signer,
-            String dappUserId, BigInteger tokenExpirationBlock, String token) {
+            String dappUserId, BigInteger tokenExpirationBlock, String freeCallToken) {
         this.ethereum = ethereum;
         this.dappUserId = dappUserId;
         this.tokenExpirationBlock = tokenExpirationBlock;
-        this.freeCallToken = token;
+        this.freeCallToken = freeCallToken;
         this.signer = signer;
         this.paymentBuilder = FreeCallPayment.newBuilder()
             .setSigner(signer)
             .setDappUserId(dappUserId)
             .setTokenExpirationBlock(tokenExpirationBlock)
-            .setToken(token);
+            .setToken(freeCallToken);
     }
 
     @Override
@@ -77,15 +79,21 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
             .getEndpointGroupByName(groupName).get();
 
         if (endpointGroup.getFreeCalls() == 0) {
+            log.debug("Free calls are not configured for service id: {}, return invalid payment",
+                    serviceClient.getServiceId());
             return Payment.INVALID_PAYMENT;
         }
         long freeCallAvailable = serviceClient.getFreeCallStateService()
             .getFreeCallsAvailable(dappUserId, freeCallToken,
                     tokenExpirationBlock, signer);
         if (freeCallAvailable <= 0) {
+            log.debug("No free calls available for service id: {}, return invalid payment",
+                    serviceClient.getServiceId());
             return Payment.INVALID_PAYMENT;
         }
         
+        log.debug("Service id: {}, number of free calls available: {}, return free call payment",
+                serviceClient.getServiceId(), freeCallAvailable);
         return paymentBuilder
             .setCurrentBlockNumber(ethereum.getEthBlockNumber())
             .setOrgId(serviceClient.getOrgId())

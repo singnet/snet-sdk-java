@@ -1,5 +1,9 @@
 package io.singularitynet.sdk.client;
 
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.singularitynet.sdk.payment.Payment;
 
 /**
@@ -8,7 +12,10 @@ import io.singularitynet.sdk.payment.Payment;
  * payment. First valid payment is returned. If all strategies returned
  * Payment.INVALID_PAYMENT then it is returned.
  */
+@ToString
 public class CombinedPaymentStrategy implements PaymentStrategy {
+
+    private final static Logger log = LoggerFactory.getLogger(CombinedPaymentStrategy.class);
 
     private final PaymentStrategy[] strategies;
 
@@ -24,6 +31,7 @@ public class CombinedPaymentStrategy implements PaymentStrategy {
     @Override
     public <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient) {
         for (PaymentStrategy strategy : strategies) {
+            log.debug("Try payment strategy: {}", strategy);
             Payment payment = strategy.getPayment(parameters, serviceClient);
             if (payment != Payment.INVALID_PAYMENT) {
                 return payment;

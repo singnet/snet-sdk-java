@@ -29,7 +29,7 @@ public class PaymentChannelStateService {
     }
 
     public PaymentChannelStateReply getChannelState(BigInteger channelId) {
-        log.info("Requesting payment channel state from daemon");
+        log.info("Requesting payment channel state from daemon, channelId: {}", channelId);
 
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(GrpcUtils.toBytesString(channelId));
