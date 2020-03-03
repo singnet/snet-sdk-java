@@ -105,7 +105,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
             }
 
             if (FREE_CALL_STATE_SERVICE.equals(getServiceName(method))) {
-                log.debug("Skip processing for PaymentChannelStateService call");
+                log.debug("Skip processing for FreeCallStateService call");
                 return next.newCall(method, callOptions);
             }
 
