@@ -27,7 +27,7 @@ import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.ServiceClient;
 
-public class FreeCallWhenAvailablePaymentStrategyTestIT {
+public class CombinedPaymentStrategyTestIT {
 
     private Web3j web3j;
 
