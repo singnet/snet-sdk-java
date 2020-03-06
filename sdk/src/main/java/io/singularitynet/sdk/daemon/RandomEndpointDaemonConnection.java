@@ -3,6 +3,7 @@ package io.singularitynet.sdk.daemon;
 import io.grpc.*;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 
+// @ThreadSafe
 public class RandomEndpointDaemonConnection implements DaemonConnection {
 
     private final static Logger log = LoggerFactory.getLogger(RandomEndpointDaemonConnection.class);
@@ -19,7 +21,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     private final MetadataProvider metadataProvider;
     private final ClientInterceptorProxy interceptorProxy;
 
-    private ManagedChannel channel;
+    private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
 
     public RandomEndpointDaemonConnection(String groupName, MetadataProvider metadataProvider) {
         this.groupName = groupName;
@@ -44,22 +46,28 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
 
     @Override
     public void shutdownNow() {
-        channel.shutdownNow();
+        channel.get().shutdownNow();
         log.info("gRPC channel to daemon closed");
     }
 
     private ManagedChannel getChannelLazy() {
-        // TODO: make thread safe
-        if (channel == null) {
-            channel = getChannel();
+        ManagedChannel value = channel.get();
+        if (value != null) {
+            return value;
         }
-        return channel;
+
+        value = getChannel();
+        if (channel.compareAndSet(null, value)) {
+            return value;
+        }
+        return channel.get();
     }
     
     // TODO: make this part of the configuration
     private static int MAX_GRPC_INBOUND_MESSAGE_SIZE = 1 << 24;
 
-    private ManagedChannel getChannel() {
+    // @VisibleForTesting
+    ManagedChannel getChannel() {
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
         List<URL> urls = serviceMetadata.getEndpointGroups().stream()
             .filter(group -> groupName.equals(group.getGroupName()))
@@ -78,7 +86,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
         return channel;
     }
 
-    // ThreadSafe
+    // @ThreadSafe
     private static class ClientInterceptorProxy implements ClientInterceptor {
 
         private final static Logger log = LoggerFactory.getLogger(ClientInterceptorProxy.class);
