@@ -103,7 +103,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())
             .map(ch -> ch.getChannelId())
             .map(id -> serviceClient.getPaymentChannelStateProvider()
-                    .getChannelStateById(id))
+                    .getChannelStateById(id, getSigner()))
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {

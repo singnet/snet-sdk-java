@@ -114,7 +114,7 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
 
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract.getContractAddress(), ethereum, identity);
+                connection, mpeContract.getContractAddress(), ethereum);
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
         FreeCallStateService freeCallStateService = new FreeCallStateService(

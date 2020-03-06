@@ -90,9 +90,8 @@ package io.singularitynet.sdk.daemon {
     RandomEndpointDaemonConnection o-- MetadataProvider
 
     class PaymentChannelStateService {
-        PaymentChannelStateReply getChannelState(BigInteger channelId);
+        PaymentChannelStateReply getChannelState(BigInteger channelId, Identity signer);
     }
-    PaymentChannelStateService o-- Identity
     PaymentChannelStateService o-- Ethereum
     PaymentChannelStateService -- DaemonConnection
 
@@ -121,7 +120,7 @@ package io.singularitynet.sdk.mpe {
     }
 
     interface PaymentChannelStateProvider {
-        PaymentChannel getChannelStateById(BigInteger channelId);
+        PaymentChannel getChannelStateById(BigInteger channelId, Identity requestor);
     }
 
     class EscrowPayment

@@ -23,18 +23,18 @@ public class PaymentChannelStateService {
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
-            Address mpeAddress, Ethereum ethereum, Identity signer) {
-        this.signingHelper = new MessageSigningHelper(mpeAddress, ethereum, signer);
+            Address mpeAddress, Ethereum ethereum) {
+        this.signingHelper = new MessageSigningHelper(mpeAddress, ethereum);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 
-    public PaymentChannelStateReply getChannelState(BigInteger channelId) {
-        log.info("Requesting payment channel state from daemon, channelId: {}", channelId);
+    public PaymentChannelStateReply getChannelState(BigInteger channelId, Identity signer) {
+        log.info("Requesting payment channel state from daemon, channelId: {}, signer: {}", channelId, signer);
 
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(GrpcUtils.toBytesString(channelId));
 
-        signingHelper.signChannelStateRequest(request); 
+        signingHelper.signChannelStateRequest(request, signer); 
 
         ChannelStateReply grpcReply = stub.getChannelState(request.build());
         PaymentChannelStateReply.Builder builder = PaymentChannelStateReply.newBuilder()
@@ -67,16 +67,13 @@ public class PaymentChannelStateService {
 
         private final byte[] mpeContractAddress;
         private final Ethereum ethereum;
-        private final Identity signer;
 
-        public MessageSigningHelper(Address mpeAddress, Ethereum ethereum,
-                Identity signer) {
+        public MessageSigningHelper(Address mpeAddress, Ethereum ethereum) {
             this.mpeContractAddress = mpeAddress.toByteArray();
             this.ethereum = ethereum;
-            this.signer = signer;
         }
 
-        public void signChannelStateRequest(ChannelStateRequest.Builder request) {
+        public void signChannelStateRequest(ChannelStateRequest.Builder request, Identity signer) {
             Utils.wrapExceptions(() -> {
                 long block = ethereum.getEthBlockNumber().longValue();
 

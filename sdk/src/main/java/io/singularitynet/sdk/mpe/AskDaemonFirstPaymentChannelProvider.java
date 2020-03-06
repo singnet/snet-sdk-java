@@ -9,6 +9,7 @@ import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
@@ -43,10 +44,10 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
     }
 
     @Override
-    public PaymentChannel getChannelStateById(BigInteger channelId) {
+    public PaymentChannel getChannelStateById(BigInteger channelId, Identity requestor) {
         log.debug("Getting the channel state, channelId: {}", channelId);
         PaymentChannel channel = mpe.getChannelById(channelId).get();
-        PaymentChannelStateReply reply = stateService.getChannelState(channelId);
+        PaymentChannelStateReply reply = stateService.getChannelState(channelId, requestor);
         if (!reply.hasCurrentSignedAmount()) {
             log.info("No payments on the channel in the daemon");
             Preconditions.checkState(channel.getNonce().compareTo(reply.getCurrentNonce()) >= 0,
