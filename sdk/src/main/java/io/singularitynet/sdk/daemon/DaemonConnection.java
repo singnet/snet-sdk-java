@@ -1,5 +1,6 @@
 package io.singularitynet.sdk.daemon;
 
+import java.math.BigInteger;
 import java.util.function.Function;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
@@ -35,6 +36,12 @@ public interface DaemonConnection {
      * @return name of the endpoint group
      */
     String getEndpointGroupName();
+
+    /**
+     * Return last Ethereum block number for authentication.
+     * @return last ethereum block number.
+     */
+    BigInteger getLastEthereumBlockNumber();
 
     /**
      * Closes platform service connection. This call causes calling

@@ -9,7 +9,6 @@ import io.singularitynet.daemon.escrow.StateService.*;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc.*;
 
-import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.MetadataProvider;
@@ -23,16 +22,14 @@ public class FreeCallStateService {
     // TODO: get orgId and serviceId from MetadataProvider
     private final String orgId;
     private final String serviceId;
-    private final Ethereum ethereum;
     private final MetadataProvider metadataProvider;
     private final DaemonConnection daemonConnection;
     private final FreeCallStateServiceBlockingStub stub;
 
-    public FreeCallStateService(String orgId, String serviceId, Ethereum ethereum,
+    public FreeCallStateService(String orgId, String serviceId,
             MetadataProvider metadataProvider, DaemonConnection daemonConnection) {
         this.orgId = orgId;
         this.serviceId = serviceId;
-        this.ethereum = ethereum;
         this.metadataProvider = metadataProvider;
         this.daemonConnection = daemonConnection;
         this.stub = this.daemonConnection.getGrpcStub(FreeCallStateServiceGrpc::newBlockingStub);
@@ -50,7 +47,7 @@ public class FreeCallStateService {
             // implementing failover strategy.
             .getEndpointGroupByName(endpointGroupName).get();
         PaymentGroupId paymentGroupId = endpointGroup.getPaymentGroupId();
-        BigInteger currentBlock = ethereum.getEthBlockNumber();
+        BigInteger currentBlock = daemonConnection.getLastEthereumBlockNumber();
 
         FreeCallPayment payment = FreeCallPayment.newBuilder()
             .setSigner(signer)

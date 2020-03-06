@@ -11,7 +11,6 @@ import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc;
 import io.singularitynet.daemon.escrow.PaymentChannelStateServiceGrpc.*;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.daemon.DaemonConnection;
@@ -25,8 +24,8 @@ public class PaymentChannelStateService {
     private final PaymentChannelStateServiceBlockingStub stub;
 
     public PaymentChannelStateService(DaemonConnection daemonConnection,
-            Address mpeAddress, Ethereum ethereum) {
-        this.signingHelper = new MessageSigningHelper(mpeAddress, ethereum);
+            Address mpeAddress) {
+        this.signingHelper = new MessageSigningHelper(mpeAddress, daemonConnection);
         this.stub = daemonConnection.getGrpcStub(PaymentChannelStateServiceGrpc::newBlockingStub);
     }
 
@@ -68,16 +67,16 @@ public class PaymentChannelStateService {
         private static final byte[] GET_CHANNEL_STATE_PREFIX = Utils.strToBytes("__get_channel_state");
 
         private final byte[] mpeContractAddress;
-        private final Ethereum ethereum;
+        private final DaemonConnection daemonConnection;
 
-        public MessageSigningHelper(Address mpeAddress, Ethereum ethereum) {
+        public MessageSigningHelper(Address mpeAddress, DaemonConnection daemonConnection) {
             this.mpeContractAddress = mpeAddress.toByteArray();
-            this.ethereum = ethereum;
+            this.daemonConnection = daemonConnection;
         }
 
         public void signChannelStateRequest(ChannelStateRequest.Builder request, Identity signer) {
             Utils.wrapExceptions(() -> {
-                long block = ethereum.getEthBlockNumber().longValue();
+                long block = daemonConnection.getLastEthereumBlockNumber().longValue();
 
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bytes.write(GET_CHANNEL_STATE_PREFIX);

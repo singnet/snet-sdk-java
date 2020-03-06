@@ -82,12 +82,14 @@ package io.singularitynet.sdk.daemon {
         <T> T getGrpcStub(Function<Channel, T> constructor);
         void setClientCallsInterceptor(ClientInterceptor interceptor);
         String getEndpointGroupName();
+        BigInteger getLastEthereumBlockNumber();
         void shutdownNow();
     }
 
     class RandomEndpointDaemonConnection
     DaemonConnection <|.. RandomEndpointDaemonConnection
     RandomEndpointDaemonConnection o-- MetadataProvider
+    RandomEndpointDaemonConnection o-- Ethereum
 
 }
 
@@ -127,7 +129,6 @@ package io.singularitynet.sdk.mpe {
     class PaymentChannelStateService {
         PaymentChannelStateReply getChannelState(BigInteger channelId, Identity signer);
     }
-    PaymentChannelStateService o-- Ethereum
     PaymentChannelStateService o-- DaemonConnection
 
     class AskDaemonFirstPaymentChannelProvider
@@ -145,7 +146,6 @@ package io.singularitynet.sdk.freecall {
     class FreeCallStateService {
         long getFreeCallsAvailable(FreeCallAuthToken freeCallAuthToken, Identity signer);
     }
-    FreeCallStateService o-- Ethereum
     FreeCallStateService o-- MetadataProvider
     FreeCallStateService o-- DaemonConnection
     FreeCallStateService -- FreeCallPayment

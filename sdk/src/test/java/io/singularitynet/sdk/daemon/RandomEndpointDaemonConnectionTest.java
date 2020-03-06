@@ -28,7 +28,7 @@ public class RandomEndpointDaemonConnectionTest {
         MetadataProvider metadataProvider = mock(MetadataProvider.class);
         when(metadataProvider.getServiceMetadata()).thenReturn(serviceMetadata);
         RandomEndpointDaemonConnection connection = spy(
-            new RandomEndpointDaemonConnection(endpointGroupName, metadataProvider));
+            new RandomEndpointDaemonConnection(endpointGroupName, metadataProvider, null));
         final CountDownLatch ready = new CountDownLatch(2);
         final CountDownLatch go = new CountDownLatch(1);
         doAnswer(new Answer() {

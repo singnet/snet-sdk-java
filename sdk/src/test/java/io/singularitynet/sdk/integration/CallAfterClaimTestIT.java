@@ -46,7 +46,7 @@ public class CallAfterClaimTestIT {
 
         this.deployerConnection = new RandomEndpointDaemonConnection(
                 IntEnv.TEST_ENDPOINT_GROUP, sdk.getMetadataProvider(
-                    IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID));
+                    IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID), sdk.getEthereum());
         PrivateKeyIdentity deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
         this.controlService = new ProviderControlService(deployerConnection,
                 IntEnv.MPE_CONTRACT_ADDRESS, deployer, sdk.getEthereum());

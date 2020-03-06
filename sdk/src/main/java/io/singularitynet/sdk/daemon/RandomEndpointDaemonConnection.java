@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.daemon;
 
 import io.grpc.*;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 
@@ -20,12 +22,15 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     private final String groupName;
     private final MetadataProvider metadataProvider;
     private final ClientInterceptorProxy interceptorProxy;
+    private final Ethereum ethereum;
 
     private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
 
-    public RandomEndpointDaemonConnection(String groupName, MetadataProvider metadataProvider) {
+    public RandomEndpointDaemonConnection(String groupName,
+            MetadataProvider metadataProvider, Ethereum ethereum) {
         this.groupName = groupName;
         this.metadataProvider = metadataProvider;
+        this.ethereum = ethereum;
         this.interceptorProxy = new ClientInterceptorProxy();
     }
 
@@ -42,6 +47,11 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     @Override
     public String getEndpointGroupName() {
         return groupName;
+    }
+
+    @Override
+    public BigInteger getLastEthereumBlockNumber() {
+        return ethereum.getEthBlockNumber();
     }
 
     @Override
