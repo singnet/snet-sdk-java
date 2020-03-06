@@ -9,6 +9,7 @@ import io.singularitynet.sdk.ethereum.*;
 import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.daemon.*;
 import io.singularitynet.sdk.client.*;
+import io.singularitynet.sdk.paymentstrategy.FixedPaymentChannelPaymentStrategy;
 
 public class CallAfterClaimTestIT {
 

@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.client;
+package io.singularitynet.sdk.paymentstrategy;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -12,6 +12,7 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.client.ServiceClient;
 
 public class FreeCallPaymentStrategyTest {
 

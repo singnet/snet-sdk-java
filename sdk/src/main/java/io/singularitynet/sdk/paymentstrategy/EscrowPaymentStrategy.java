@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.client;
+package io.singularitynet.sdk.paymentstrategy;
 
 import java.math.BigInteger;
 
@@ -7,6 +7,10 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;
 import io.singularitynet.sdk.registry.*;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.client.Sdk;
+import io.singularitynet.sdk.client.GrpcCallParameters;
 
 // TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
 // OnDemandPaymentChannelPaymentStrategy from EscrowPaymentStrategy by

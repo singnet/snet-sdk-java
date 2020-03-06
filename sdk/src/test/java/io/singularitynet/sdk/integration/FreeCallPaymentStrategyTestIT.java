@@ -9,7 +9,7 @@ import java.util.Random;
 
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
-import io.singularitynet.sdk.client.FreeCallPaymentStrategy;
+import io.singularitynet.sdk.paymentstrategy.FreeCallPaymentStrategy;
 import io.singularitynet.sdk.client.Sdk;
 
 public class FreeCallPaymentStrategyTestIT extends AbstractIntegrationTest {

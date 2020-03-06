@@ -1,9 +1,13 @@
-package io.singularitynet.sdk.client;
+package io.singularitynet.sdk.paymentstrategy;
 
 import java.math.BigInteger;
 import lombok.ToString;
 
 import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.client.Sdk;
+import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
  * The class is responsible for providing a payment for the client call using

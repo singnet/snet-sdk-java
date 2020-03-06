@@ -4,8 +4,8 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import org.junit.rules.ExpectedException;
 
-import io.singularitynet.sdk.client.CombinedPaymentStrategy;
-import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.paymentstrategy.CombinedPaymentStrategy;
+import io.singularitynet.sdk.paymentstrategy.OnDemandPaymentChannelPaymentStrategy;
 
 public class CombinedPaymentStrategyTestIT extends AbstractIntegrationTest {
 

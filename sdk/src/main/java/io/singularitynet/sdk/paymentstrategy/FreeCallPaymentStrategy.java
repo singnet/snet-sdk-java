@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.client;
+package io.singularitynet.sdk.paymentstrategy;
 
 import java.math.BigInteger;
 
@@ -13,6 +13,9 @@ import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
  * Free call payment strategy implementation. Free call auth token emitted by

@@ -190,31 +190,6 @@ package io.singularitynet.sdk.client {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
     }
 
-    abstract class EscrowPaymentStrategy {
-        protected PaymentChannel selectChannel(ServiceClient serviceClient);
-    }
-    PaymentStrategy <|.. EscrowPaymentStrategy
-    EscrowPaymentStrategy o-- Identity
-    EscrowPaymentStrategy -- EscrowPayment
-
-    class FixedPaymentChannelPaymentStrategy
-    EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
-    
-    class OnDemandPaymentChannelPaymentStrategy
-    EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
-    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
-    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
-    
-    class FreeCallPaymentStrategy
-    PaymentStrategy <|.. FreeCallPaymentStrategy
-    FreeCallPaymentStrategy o-- Ethereum
-    FreeCallPaymentStrategy o-- Identity
-    FreeCallPaymentStrategy -- FreeCallPayment
-
-    class CombinedPaymentStrategy
-    PaymentStrategy <|.. CombinedPaymentStrategy
-    CombinedPaymentStrategy *-- PaymentStrategy
-
     class Sdk {
         Sdk(Configuration config);
         Sdk(DependencyFactory factory);
@@ -249,6 +224,38 @@ package io.singularitynet.sdk.client {
     BaseServiceClient *-- PaymentChannelStateProvider
     BaseServiceClient *-- PaymentStrategy
     BaseServiceClient *-- FreeCallStateService
+
+}
+
+package paymentstrategy {
+
+    abstract class EscrowPaymentStrategy {
+        protected PaymentChannel selectChannel(ServiceClient serviceClient);
+    }
+    PaymentStrategy ()- EscrowPaymentStrategy
+    EscrowPaymentStrategy o-- Identity
+    EscrowPaymentStrategy -- EscrowPayment
+    EscrowPaymentStrategy -- ServiceClient
+    EscrowPaymentStrategy -- Sdk
+
+    class FixedPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
+    
+    class OnDemandPaymentChannelPaymentStrategy
+    EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
+    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
+    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
+    
+    class FreeCallPaymentStrategy
+    PaymentStrategy ()- FreeCallPaymentStrategy
+    FreeCallPaymentStrategy o-- Ethereum
+    FreeCallPaymentStrategy o-- Identity
+    FreeCallPaymentStrategy -- FreeCallPayment
+    FreeCallPaymentStrategy -- ServiceClient
+
+    class CombinedPaymentStrategy
+    PaymentStrategy ()- CombinedPaymentStrategy
+    CombinedPaymentStrategy *-- PaymentStrategy
 
 }
 

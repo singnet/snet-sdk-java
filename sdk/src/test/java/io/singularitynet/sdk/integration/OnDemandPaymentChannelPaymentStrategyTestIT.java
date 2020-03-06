@@ -16,7 +16,7 @@ import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.client.Sdk;
-import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
+import io.singularitynet.sdk.paymentstrategy.OnDemandPaymentChannelPaymentStrategy;
 
 public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegrationTest {
 
