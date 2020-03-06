@@ -51,7 +51,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
         if (!reply.hasCurrentSignedAmount()) {
             log.info("No payments on the channel in the daemon");
             Preconditions.checkState(channel.getNonce().compareTo(reply.getCurrentNonce()) >= 0,
-                    "Daemon sent channel state which is newer then blockchain one. " +
+                    "Daemon sent channel state which is older than blockchain one. " +
                     "Channel id: %s", channel.getChannelId());
         } else {
             channel = mergeChannelState(channel, reply);
@@ -109,7 +109,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
         Address address = CryptoUtils.getSignerAddress(payment, signature);
         Preconditions.checkState(channel.getSigner().equals(address) ||
                 channel.getSender().equals(address), 
-                "Signature signer is not sender not signer. " + 
+                "Signature signer is not sender nor signer. " + 
                 "Daemon returned incorrect signature of the %s payment. " +
                 "Channel: %s, Payment signer: %s", type, channel, address);
     }
