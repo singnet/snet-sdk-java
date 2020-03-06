@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 
-import io.singularitynet.sdk.daemon.DaemonMock;
-
 public class TestServer {
 
     private static final int RANDOM_AVAILABLE_PORT = 0;

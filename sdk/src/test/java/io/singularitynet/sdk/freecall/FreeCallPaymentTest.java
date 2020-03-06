@@ -4,13 +4,12 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
-
 import java.io.ByteArrayOutputStream;
-import io.singularitynet.sdk.ethereum.Signature;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 

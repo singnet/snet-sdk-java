@@ -12,8 +12,6 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
-import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
-import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 
 /**
  * This class uses straightforward strategy to implement

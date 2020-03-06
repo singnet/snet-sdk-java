@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.mpe;
 
 import java.math.BigInteger;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +14,8 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
+import io.singularitynet.sdk.daemon.DaemonConnection;
+import io.singularitynet.sdk.daemon.GrpcUtils;
 
 public class PaymentChannelStateService {
 

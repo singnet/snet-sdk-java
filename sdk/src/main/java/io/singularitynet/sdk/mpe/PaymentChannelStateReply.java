@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.mpe;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
