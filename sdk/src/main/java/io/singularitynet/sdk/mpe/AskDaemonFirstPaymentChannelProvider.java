@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.mpe;
 
 import java.math.BigInteger;
 import java.util.stream.Stream;
@@ -11,10 +11,8 @@ import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
-import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
-import io.singularitynet.sdk.mpe.PaymentChannel;
-import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
-import io.singularitynet.sdk.mpe.EscrowPayment;
+import io.singularitynet.sdk.daemon.PaymentChannelStateReply;
+import io.singularitynet.sdk.daemon.PaymentChannelStateService;
 
 /**
  * This class uses straightforward strategy to implement
