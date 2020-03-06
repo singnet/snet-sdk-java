@@ -11,7 +11,6 @@ import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc.*;
 
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.EndpointGroup;
-import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 
@@ -22,15 +21,13 @@ public class FreeCallStateService {
     // TODO: get orgId and serviceId from MetadataProvider
     private final String orgId;
     private final String serviceId;
-    private final MetadataProvider metadataProvider;
     private final DaemonConnection daemonConnection;
     private final FreeCallStateServiceBlockingStub stub;
 
     public FreeCallStateService(String orgId, String serviceId,
-            MetadataProvider metadataProvider, DaemonConnection daemonConnection) {
+            DaemonConnection daemonConnection) {
         this.orgId = orgId;
         this.serviceId = serviceId;
-        this.metadataProvider = metadataProvider;
         this.daemonConnection = daemonConnection;
         this.stub = this.daemonConnection.getGrpcStub(FreeCallStateServiceGrpc::newBlockingStub);
     }
@@ -39,13 +36,7 @@ public class FreeCallStateService {
         log.info("Requesting number of free calls from daemon, token: {}, signer: {}",
                 token, signer);
 
-        String endpointGroupName = daemonConnection.getEndpointGroupName();
-        EndpointGroup endpointGroup = metadataProvider
-            .getServiceMetadata()
-            // TODO: what does guarantee that endpoint group name is not
-            // changed before actual call is made? Think about it when
-            // implementing failover strategy.
-            .getEndpointGroupByName(endpointGroupName).get();
+        EndpointGroup endpointGroup = daemonConnection.getEndpoint().getGroup();
         PaymentGroupId paymentGroupId = endpointGroup.getPaymentGroupId();
         BigInteger currentBlock = daemonConnection.getLastEthereumBlockNumber();
 

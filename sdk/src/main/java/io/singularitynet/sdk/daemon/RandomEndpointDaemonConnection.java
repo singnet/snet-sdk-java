@@ -3,33 +3,29 @@ package io.singularitynet.sdk.daemon;
 import io.grpc.*;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Ethereum;
-import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.registry.ServiceMetadata;
 
 // @ThreadSafe
 public class RandomEndpointDaemonConnection implements DaemonConnection {
 
     private final static Logger log = LoggerFactory.getLogger(RandomEndpointDaemonConnection.class);
 
-    private final String groupName;
-    private final MetadataProvider metadataProvider;
+    private final EndpointSelector endpointSelector;
     private final ClientInterceptorProxy interceptorProxy;
     private final Ethereum ethereum;
 
     private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
+    private volatile Endpoint endpoint;
 
-    public RandomEndpointDaemonConnection(String groupName,
-            MetadataProvider metadataProvider, Ethereum ethereum) {
-        this.groupName = groupName;
-        this.metadataProvider = metadataProvider;
+    public RandomEndpointDaemonConnection(EndpointSelector endpointSelector,
+            Ethereum ethereum) {
+        log.info("New daemon connection, endpointSelector: {}", endpointSelector);
+        this.endpointSelector = endpointSelector;
         this.ethereum = ethereum;
         this.interceptorProxy = new ClientInterceptorProxy();
     }
@@ -45,8 +41,8 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     }
 
     @Override
-    public String getEndpointGroupName() {
-        return groupName;
+    public Endpoint getEndpoint() {
+        return endpoint;
     }
 
     @Override
@@ -76,13 +72,9 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     // TODO: make this part of the configuration
     private static int MAX_GRPC_INBOUND_MESSAGE_SIZE = 1 << 24;
 
-    // @VisibleForTesting
-    ManagedChannel getChannel() {
-        ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
-        List<URL> urls = serviceMetadata.getEndpointGroups().stream()
-            .filter(group -> groupName.equals(group.getGroupName()))
-            .findFirst().get().getEndpoints();
-        URL url = Utils.getRandomItem(urls);
+    private ManagedChannel getChannel() {
+        endpoint = endpointSelector.nextEndpoint();
+        URL url = endpoint.getUrl();
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
             .maxInboundMessageSize(MAX_GRPC_INBOUND_MESSAGE_SIZE)
