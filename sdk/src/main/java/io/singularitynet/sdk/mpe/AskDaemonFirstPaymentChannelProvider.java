@@ -12,6 +12,7 @@ import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
+import io.singularitynet.sdk.daemon.DaemonConnection;
 
 /**
  * This class uses straightforward strategy to implement
@@ -36,9 +37,10 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
      */
     public AskDaemonFirstPaymentChannelProvider(
             MultiPartyEscrowContract mpe,
-            PaymentChannelStateService stateService) {
+            DaemonConnection connection) {
         this.mpe = mpe;
-        this.stateService = stateService;
+        this.stateService = new PaymentChannelStateService(connection,
+                mpe.getContractAddress());
     }
 
     @Override
