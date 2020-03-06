@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
+import io.singularitynet.sdk.daemon.FreeCallStateService;
 
 /**
  * The interface provides all necessary facilities to work with the platform
@@ -25,6 +26,12 @@ public interface ServiceClient {
      * @return actual payment channel state provider.
      */
     PaymentChannelStateProvider getPaymentChannelStateProvider();
+
+    /**
+     * Return a service instance to get free calls state.
+     * @return free call service instance.
+     */
+    FreeCallStateService getFreeCallStateService();
 
     /**
      * Construct new gRPC stub to call the platform service.

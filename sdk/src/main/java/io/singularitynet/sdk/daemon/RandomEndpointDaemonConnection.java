@@ -90,6 +90,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
         }
 
         private static final String PAYMENT_CHANNEL_STATE_SERVICE = "escrow.PaymentChannelStateService";
+        private static final String FREE_CALL_STATE_SERVICE = "escrow.FreeCallStateService";
         private static final String PROVIDER_CONTROL_SERVICE = "escrow.ProviderControlService";
 
         @Override
@@ -100,6 +101,11 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
 
             if (PAYMENT_CHANNEL_STATE_SERVICE.equals(getServiceName(method))) {
                 log.debug("Skip processing for PaymentChannelStateService call");
+                return next.newCall(method, callOptions);
+            }
+
+            if (FREE_CALL_STATE_SERVICE.equals(getServiceName(method))) {
+                log.debug("Skip processing for FreeCallStateService call");
                 return next.newCall(method, callOptions);
             }
 

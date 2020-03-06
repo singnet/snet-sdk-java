@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.client;
+package io.singularitynet.sdk.paymentstrategy;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -17,6 +17,10 @@ import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
+import io.singularitynet.sdk.client.PaymentStrategy;
+import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.client.Sdk;
+import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
  * Payment channel strategy which manages channel on demand. It tries to find
@@ -99,7 +103,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
             .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())
             .map(ch -> ch.getChannelId())
             .map(id -> serviceClient.getPaymentChannelStateProvider()
-                    .getChannelStateById(id))
+                    .getChannelStateById(id, getSigner()))
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {

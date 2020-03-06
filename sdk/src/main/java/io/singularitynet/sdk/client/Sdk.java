@@ -14,10 +14,11 @@ import io.singularitynet.sdk.registry.IpfsMetadataStorage;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.CachingMetadataProvider;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
-import io.singularitynet.sdk.daemon.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
 import io.singularitynet.sdk.daemon.PaymentChannelStateService;
+import io.singularitynet.sdk.daemon.FreeCallStateService;
+import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
@@ -113,12 +114,14 @@ public class Sdk {
                 endpointGroupName, metadataProvider);
 
         PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract.getContractAddress(), ethereum, identity);
+                connection, mpeContract.getContractAddress(), ethereum);
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+        FreeCallStateService freeCallStateService = new FreeCallStateService(
+                orgId, serviceId, ethereum, metadataProvider, connection);
 
         return new BaseServiceClient(serviceId, connection, metadataProvider,
-                paymentChannelStateProvider, paymentStrategy); 
+                paymentChannelStateProvider, freeCallStateService, paymentStrategy); 
     }
 
     /**

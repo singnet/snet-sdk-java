@@ -6,8 +6,8 @@ import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.ConfigurationUtils;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.PaymentStrategy;
-import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.paymentstrategy.OnDemandPaymentChannelPaymentStrategy;
 
 import io.singularitynet.service.exampleservice.CalculatorGrpc;
 import io.singularitynet.service.exampleservice.CalculatorGrpc.CalculatorBlockingStub;

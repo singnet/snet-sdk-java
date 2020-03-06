@@ -27,9 +27,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import io.singularitynet.sdk.client.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
+import io.singularitynet.sdk.paymentstrategy.OnDemandPaymentChannelPaymentStrategy;
 import io.singularitynet.service.semanticsegmentation.Segmentation;
 import io.singularitynet.service.semanticsegmentation.SemanticSegmentationGrpc;
 

@@ -2,6 +2,8 @@ package io.singularitynet.sdk.common;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
 import java.util.Arrays;
@@ -137,6 +139,18 @@ public class Utils {
     public static <T> T getRandomItem(List<T> items) {
         int index = random.nextInt(items.size());
         return items.get(index);
+    }
+
+    public static URL strToUrl(String url) {
+        return wrapExceptions(() -> {
+            return new URL(url);
+        });
+    }
+
+    public static URI strToUri(String uri) {
+        return wrapExceptions(() -> {
+            return new URI(uri);
+        });
     }
 
 }

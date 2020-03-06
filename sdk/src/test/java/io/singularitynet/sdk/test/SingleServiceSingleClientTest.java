@@ -10,6 +10,7 @@ import io.singularitynet.sdk.mpe.*;
 import io.singularitynet.sdk.client.*;
 import io.singularitynet.sdk.ethereum.*;
 import io.singularitynet.sdk.daemon.*;
+import io.singularitynet.sdk.paymentstrategy.FixedPaymentChannelPaymentStrategy;
 import io.singularitynet.sdk.test.TestServiceGrpc.TestServiceBlockingStub;
 
 public class SingleServiceSingleClientTest {
