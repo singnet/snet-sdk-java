@@ -12,6 +12,7 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.freecall.FreeCallAuthToken;
 import io.singularitynet.sdk.client.ServiceClient;
 
 public class FreeCallPaymentStrategyTest {
@@ -28,9 +29,13 @@ public class FreeCallPaymentStrategyTest {
         ServiceClient serviceClient = mock(ServiceClient.class);
         when(serviceClient.getMetadataProvider()).thenReturn(metadataProvider);
         when(serviceClient.getEndpointGroupName()).thenReturn("default_group");
+        FreeCallAuthToken token = FreeCallAuthToken.newBuilder()
+            .setDappUserId("user@email.com")
+            .setExpirationBlock(BigInteger.ZERO)
+            .setToken("010203")
+            .build();
         FreeCallPaymentStrategy strategy = new FreeCallPaymentStrategy(
-                mock(Ethereum.class), mock(Identity.class), "user@email.com",
-                BigInteger.ZERO, "010203");
+                mock(Ethereum.class), mock(Identity.class), token);
         
         Payment payment = strategy.getPayment(null, serviceClient);
 

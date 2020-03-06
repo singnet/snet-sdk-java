@@ -93,15 +93,7 @@ package io.singularitynet.sdk.daemon {
         PaymentChannelStateReply getChannelState(BigInteger channelId, Identity signer);
     }
     PaymentChannelStateService o-- Ethereum
-    PaymentChannelStateService -- DaemonConnection
-
-    class FreeCallStateService {
-        long getFreeCallsAvailable(String dappUserId, String freeCallToken,
-                BigInteger tokenExpirationBlock, Identity signer);
-    }
-    FreeCallStateService o-- Ethereum
-    FreeCallStateService o-- MetadataProvider
-    FreeCallStateService o-- DaemonConnection
+    PaymentChannelStateService o-- DaemonConnection
 
 }
 
@@ -149,6 +141,13 @@ package io.singularitynet.sdk.freecall {
 
     class FreeCallPayment
     Payment ()- FreeCallPayment 
+
+    class FreeCallStateService {
+        long getFreeCallsAvailable(FreeCallAuthToken freeCallAuthToken, Identity signer);
+    }
+    FreeCallStateService o-- Ethereum
+    FreeCallStateService o-- MetadataProvider
+    FreeCallStateService o-- DaemonConnection
 
 }
 

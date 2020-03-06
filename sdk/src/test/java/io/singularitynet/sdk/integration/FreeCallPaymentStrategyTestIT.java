@@ -9,6 +9,7 @@ import java.util.Random;
 
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
+import io.singularitynet.sdk.freecall.FreeCallAuthToken;
 import io.singularitynet.sdk.paymentstrategy.FreeCallPaymentStrategy;
 import io.singularitynet.sdk.client.Sdk;
 
@@ -59,8 +60,11 @@ public class FreeCallPaymentStrategyTestIT extends AbstractIntegrationTest {
                 dappUserId, caller.getAddress(), freeCallExpirationBlock,
                 IntEnv.DEPLOYER_IDENTITY);
         return new FreeCallPaymentStrategy(sdk.getEthereum(),
-                caller, dappUserId, freeCallExpirationBlock,
-                freeCallToken);
+                caller, FreeCallAuthToken.newBuilder()
+                .setDappUserId(dappUserId)
+                .setExpirationBlock(freeCallExpirationBlock)
+                .setToken(freeCallToken)
+                .build());
     }
 
     private static final Random random = new Random();

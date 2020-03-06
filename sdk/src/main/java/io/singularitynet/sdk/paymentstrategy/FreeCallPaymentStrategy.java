@@ -11,6 +11,7 @@ import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
+import io.singularitynet.sdk.freecall.FreeCallAuthToken;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.client.ServiceClient;
@@ -31,9 +32,7 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
     @ToString.Exclude
     private final Ethereum ethereum;
 
-    private final String dappUserId;
-    private final String freeCallToken;
-    private final BigInteger tokenExpirationBlock;
+    private final FreeCallAuthToken freeCallAuthToken;
     private final Identity signer;
 
     @ToString.Exclude
@@ -44,26 +43,18 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
      * @param ethereum Ethereum client instance to get current ethereum block
      * @param signer identity which owns Ethereum address used to emit the
      * token; it is used to sign free call payment
-     * @param dappUserId DApp user id which is used to calculate number of free
-     * calls available
-     * @param tokenExpirationBlock Ethereum block after which the token is
-     * expired
-     * @param freeCallToken token emitted by free call signer; in order to receive a
-     * token one need to login to DApp using dappUserId and register an
-     * Ethereum address of the signer there.
+     * @param freeCallAuthToken token emitted by free call signer; in order to
+     * receive a token one need to login to DApp and register an Ethereum
+     * address of the signer there.
      */
     public FreeCallPaymentStrategy(Ethereum ethereum, Identity signer,
-            String dappUserId, BigInteger tokenExpirationBlock, String freeCallToken) {
+            FreeCallAuthToken freeCallAuthToken) {
         this.ethereum = ethereum;
-        this.dappUserId = dappUserId;
-        this.tokenExpirationBlock = tokenExpirationBlock;
-        this.freeCallToken = freeCallToken;
         this.signer = signer;
+        this.freeCallAuthToken = freeCallAuthToken;
         this.paymentBuilder = FreeCallPayment.newBuilder()
             .setSigner(signer)
-            .setDappUserId(dappUserId)
-            .setTokenExpirationBlock(tokenExpirationBlock)
-            .setToken(freeCallToken);
+            .setToken(freeCallAuthToken);
     }
 
     @Override
@@ -87,8 +78,7 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
             return Payment.INVALID_PAYMENT;
         }
         long freeCallAvailable = serviceClient.getFreeCallStateService()
-            .getFreeCallsAvailable(dappUserId, freeCallToken,
-                    tokenExpirationBlock, signer);
+            .getFreeCallsAvailable(freeCallAuthToken, signer);
         if (freeCallAvailable <= 0) {
             log.debug("No free calls available for service id: {}, return invalid payment",
                     serviceClient.getServiceId());
