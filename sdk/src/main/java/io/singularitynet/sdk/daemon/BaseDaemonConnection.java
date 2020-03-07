@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import io.singularitynet.sdk.ethereum.Ethereum;
 
 // @ThreadSafe
-public class RandomEndpointDaemonConnection implements DaemonConnection {
+public class BaseDaemonConnection implements DaemonConnection {
 
-    private final static Logger log = LoggerFactory.getLogger(RandomEndpointDaemonConnection.class);
+    private final static Logger log = LoggerFactory.getLogger(BaseDaemonConnection.class);
 
     private final EndpointSelector endpointSelector;
     private final ClientInterceptorProxy interceptorProxy;
@@ -22,7 +22,7 @@ public class RandomEndpointDaemonConnection implements DaemonConnection {
     private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
     private volatile Endpoint endpoint;
 
-    public RandomEndpointDaemonConnection(EndpointSelector endpointSelector,
+    public BaseDaemonConnection(EndpointSelector endpointSelector,
             Ethereum ethereum) {
         log.info("New daemon connection, endpointSelector: {}", endpointSelector);
         this.endpointSelector = endpointSelector;

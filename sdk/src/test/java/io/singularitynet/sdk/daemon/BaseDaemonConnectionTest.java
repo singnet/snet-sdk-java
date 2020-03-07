@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.registry.EndpointGroup;
 
-public class RandomEndpointDaemonConnectionTest {
+public class BaseDaemonConnectionTest {
 
     @Test
     public void getGrpcStubConcurrently() throws InterruptedException {
@@ -41,8 +41,8 @@ public class RandomEndpointDaemonConnectionTest {
             }
 
         };
-        RandomEndpointDaemonConnection connection = 
-            new RandomEndpointDaemonConnection(strategy, null);
+        BaseDaemonConnection connection = 
+            new BaseDaemonConnection(strategy, null);
         final Channel[] channels = new Channel[2];
         Thread threadA = new Thread(() -> {
             connection.getGrpcStub(channel -> channels[0] = channel);

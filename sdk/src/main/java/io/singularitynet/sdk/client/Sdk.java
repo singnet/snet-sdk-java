@@ -15,7 +15,7 @@ import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.CachingMetadataProvider;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
-import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
+import io.singularitynet.sdk.daemon.BaseDaemonConnection;
 import io.singularitynet.sdk.daemon.EndpointSelector;
 import io.singularitynet.sdk.daemon.FixedGroupEndpointSelector;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
@@ -114,7 +114,7 @@ public class Sdk implements AutoCloseable {
 
         EndpointSelector endpointSelector = new FixedGroupEndpointSelector(
                 metadataProvider, endpointGroupName);
-        DaemonConnection connection = new RandomEndpointDaemonConnection(
+        DaemonConnection connection = new BaseDaemonConnection(
                 endpointSelector, ethereum);
 
         PaymentChannelStateProvider paymentChannelStateProvider =

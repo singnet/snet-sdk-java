@@ -86,10 +86,10 @@ package io.singularitynet.sdk.daemon {
         void shutdownNow();
     }
 
-    class RandomEndpointDaemonConnection
-    DaemonConnection <|.. RandomEndpointDaemonConnection
-    RandomEndpointDaemonConnection o-- MetadataProvider
-    RandomEndpointDaemonConnection o-- Ethereum
+    class BaseDaemonConnection
+    DaemonConnection <|.. BaseDaemonConnection
+    BaseDaemonConnection o-- MetadataProvider
+    BaseDaemonConnection o-- Ethereum
 
 }
 
