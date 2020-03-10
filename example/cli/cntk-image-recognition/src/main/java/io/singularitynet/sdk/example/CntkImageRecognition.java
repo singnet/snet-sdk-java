@@ -48,7 +48,7 @@ public class CntkImageRecognition {
             }
 
         } finally {
-            sdk.shutdown();
+            sdk.close();
         }
     }
 

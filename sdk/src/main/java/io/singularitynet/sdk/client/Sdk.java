@@ -37,7 +37,7 @@ import io.singularitynet.sdk.ethereum.Address;
  * Sdk.shutdown() method should be called.
  * @see io.singularitynet.sdk.client.ServiceClient
  */
-public class Sdk {
+public class Sdk implements AutoCloseable {
 
     private final static Logger log = LoggerFactory.getLogger(Sdk.class);
 
@@ -168,11 +168,12 @@ public class Sdk {
     }
 
     /**
-     * Shutdown SDK and release all resources aquired.
+     * Close SDK and release all resources aquired.
      */
-    public void shutdown() {
+    @Override
+    public void close() {
         web3j.shutdown();
-        log.info("SDK shutdown");
+        log.info("SDK is closed");
     }
 
 }

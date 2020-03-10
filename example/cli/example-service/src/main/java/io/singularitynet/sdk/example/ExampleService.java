@@ -49,7 +49,7 @@ public class ExampleService {
             }
 
         } finally {
-            sdk.shutdown();
+            sdk.close();
         }
     }
 

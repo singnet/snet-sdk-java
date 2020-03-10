@@ -122,7 +122,7 @@
 
     } finally {
         // Shutdown SDK
-        sdk.shutdown();
+        sdk.close();
     }
 ```
 

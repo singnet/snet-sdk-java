@@ -37,7 +37,7 @@ public class AbstractIntegrationTest {
 
     @After
     public void tearDown() {
-        sdk.shutdown();
+        sdk.close();
     }
 
     public void run(PaymentStrategy paymentStrategy, Consumer<ServiceClient> test) {
@@ -73,7 +73,7 @@ public class AbstractIntegrationTest {
             throw new RuntimeException(e);
         } finally {
             web3j.shutdown();
-            sdk.shutdown();
+            sdk.close();
         }
 
         return identity;
