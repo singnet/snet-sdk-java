@@ -214,8 +214,9 @@ package io.singularitynet.sdk.client {
         String getOrgId();
         String getServiceId();
         String getEndpointGroupName();
-        void shutdownNow();
+        void close();
     }
+    AutoCloseable ()- ServiceClient
 
     class BaseServiceClient
     ServiceClient <|.. BaseServiceClient

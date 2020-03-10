@@ -48,7 +48,7 @@ public class AbstractIntegrationTest {
                 test.accept(serviceClient);
 
             } finally {
-                serviceClient.shutdownNow();
+                serviceClient.close();
             }
     }
 

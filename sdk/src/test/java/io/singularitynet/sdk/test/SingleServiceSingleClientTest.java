@@ -62,7 +62,7 @@ public class SingleServiceSingleClientTest {
 
     @After
     public void tearDown() {
-        serviceClient.shutdownNow();
+        serviceClient.close();
         sdk.close();
         env.server().shutdownNow();
     }

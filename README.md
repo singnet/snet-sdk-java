@@ -117,7 +117,7 @@
 
         } finally {
             // Shutdown service client
-            serviceClient.shutdownNow();
+            serviceClient.close();
         }
 
     } finally {

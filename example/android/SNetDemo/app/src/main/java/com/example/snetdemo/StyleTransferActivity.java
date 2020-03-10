@@ -164,7 +164,7 @@ public class StyleTransferActivity extends SnetDemoActivity
         {
             if (serviceClient != null)
             {
-                serviceClient.shutdownNow();
+                serviceClient.close();
             }
             if (sdk != null)
             {

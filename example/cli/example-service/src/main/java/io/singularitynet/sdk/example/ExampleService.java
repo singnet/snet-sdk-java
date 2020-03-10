@@ -45,7 +45,7 @@ public class ExampleService {
                 System.out.println("Response received: " + result);
 
             } finally {
-                serviceClient.shutdownNow();
+                serviceClient.close();
             }
 
         } finally {

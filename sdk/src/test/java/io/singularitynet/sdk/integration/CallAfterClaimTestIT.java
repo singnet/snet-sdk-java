@@ -55,7 +55,7 @@ public class CallAfterClaimTestIT {
     @After
     public void tearDown() {
         deployerConnection.shutdownNow();
-        serviceClient.shutdownNow();
+        serviceClient.close();
         sdk.close();
     }
 
