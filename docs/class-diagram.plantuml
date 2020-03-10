@@ -77,18 +77,26 @@ package io.singularitynet.sdk.registry {
 }
 
 package io.singularitynet.sdk.daemon {
+
+    interface EndpointSelector {
+        Endpoint nextEndpoint();
+    }
+
+    class FixedGroupEndpointSelector
+    EndpointSelector <|.. FixedGroupEndpointSelector
+    FixedGroupEndpointSelector o-- MetadataProvider
     
     interface DaemonConnection {
         <T> T getGrpcStub(Function<Channel, T> constructor);
         void setClientCallsInterceptor(ClientInterceptor interceptor);
-        String getEndpointGroupName();
+        Endpoint getEndpoint();
         BigInteger getLastEthereumBlockNumber();
         void shutdownNow();
     }
 
     class BaseDaemonConnection
     DaemonConnection <|.. BaseDaemonConnection
-    BaseDaemonConnection o-- MetadataProvider
+    BaseDaemonConnection *-- EndpointSelector
     BaseDaemonConnection o-- Ethereum
 
 }
@@ -146,7 +154,6 @@ package io.singularitynet.sdk.freecall {
     class FreeCallStateService {
         long getFreeCallsAvailable(FreeCallAuthToken freeCallAuthToken, Identity signer);
     }
-    FreeCallStateService o-- MetadataProvider
     FreeCallStateService o-- DaemonConnection
     FreeCallStateService -- FreeCallPayment
 
