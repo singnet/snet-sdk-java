@@ -1,7 +1,7 @@
 # Example service client
 
 This command line application demonstrates calling [Example Service](https://beta.singularitynet.io/servicedetails/org/snet/service/example-service)
-SingularityNet service.
+SingularityNet service. This example runs on Ethereum Ropsten.
 
 To run example one need passing payment channel signer private key as command
 line parameter:

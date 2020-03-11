@@ -44,11 +44,7 @@ Result should look like:
     MPE: 10
 ```
 
-4. Check and fix [ethereum.properties](./ethereum.properties) file if you use
-   non-standard parameters. You may also fix `gas.price` according to the
-   current Ethereum network state.
-
-5. Exit docker and build examples:
+4. Exit docker and build examples:
 ```sh
 $ mvn install
 ```
