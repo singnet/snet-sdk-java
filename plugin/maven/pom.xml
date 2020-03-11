@@ -3,7 +3,7 @@
 
   <parent>
     <groupId>com.github.singnet.snet-sdk-java</groupId>
-    <artifactId>snet-sdk-java-pom</artifactId>
+    <artifactId>snet-sdk-plugin-pom</artifactId>
     <version>master-SNAPSHOT</version>
   </parent>
 
