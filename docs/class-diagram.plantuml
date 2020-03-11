@@ -199,8 +199,9 @@ package io.singularitynet.sdk.client {
         Identity getIdentity();
         MetadataProvider getMetadataProvider(String orgId, String serviceId);
         BlockchainPaymentChannelManager getBlockchainPaymentChannelManager();
-        void shutdown();
+        void close();
     }
+    AutoCloseable ()- Sdk
     Sdk -- Configuration
     Sdk -- ServiceClient
     Sdk -- DependencyFactory
@@ -213,8 +214,9 @@ package io.singularitynet.sdk.client {
         String getOrgId();
         String getServiceId();
         String getEndpointGroupName();
-        void shutdownNow();
+        void close();
     }
+    AutoCloseable ()- ServiceClient
 
     class BaseServiceClient
     ServiceClient <|.. BaseServiceClient

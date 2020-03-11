@@ -62,6 +62,20 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
      * @param numberOfCalls number of calls by fixed price to be made after
      * channel is opened or updated.
      */
+    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, long channelLifetime,
+            long numberOfCalls) {
+        this(sdk, BigInteger.valueOf(channelLifetime), BigInteger.valueOf(numberOfCalls));
+    }
+
+    /**
+     * New on demand payment channel strategy.
+     * @param sdk SDK instance.
+     * @param channelLifetime number of blocks to be added to the service
+     * provider expiration threshold when opening or updating channels.
+     * @see io.singularitynet.sdk.registry.PaymentDetails#getPaymentExpirationThreshold
+     * @param numberOfCalls number of calls by fixed price to be made after
+     * channel is opened or updated.
+     */
     public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, BigInteger channelLifetime,
             BigInteger numberOfCalls) {
         super(sdk);

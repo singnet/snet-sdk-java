@@ -47,9 +47,9 @@
               <!-- API output dir -->
               <outputDir>${project.build.directory}/proto</outputDir>
               <!-- desired java package for classes generated -->
-              <javaPackage>io.singularitynet.exampleservice</javaPackage>
+              <javaPackage>io.singularitynet.client.cntk</javaPackage>
               <!-- Ethereum RPC endpoint to use -->
-              <ethereumJsonRpcEndpoint>io.singularitynet.service.cntkimagerecon</ethereumJsonRpcEndpoint>
+              <ethereumJsonRpcEndpoint>https://mainnet.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2</ethereumJsonRpcEndpoint>
             </configuration>
 
             <goals>
@@ -117,12 +117,12 @@
 
         } finally {
             // Shutdown service client
-            serviceClient.shutdownNow();
+            serviceClient.close();
         }
 
     } finally {
         // Shutdown SDK
-        sdk.shutdown();
+        sdk.close();
     }
 ```
 

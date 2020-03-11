@@ -62,8 +62,8 @@ public class SingleServiceSingleClientTest {
 
     @After
     public void tearDown() {
-        sdk.shutdown();
-        serviceClient.shutdownNow();
+        serviceClient.close();
+        sdk.close();
         env.server().shutdownNow();
     }
 

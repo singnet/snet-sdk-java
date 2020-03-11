@@ -88,7 +88,7 @@ public class BaseServiceClient implements ServiceClient {
     }
 
     @Override
-    public void shutdownNow() {
+    public void close() {
         daemonConnection.shutdownNow();
         log.info("Service client shutdown");
     }

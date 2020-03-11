@@ -44,11 +44,11 @@ public class CntkImageRecognition {
                 System.out.println("Response received: " + output);
 
             } finally {
-                serviceClient.shutdownNow();
+                serviceClient.close();
             }
 
         } finally {
-            sdk.shutdown();
+            sdk.close();
         }
     }
 

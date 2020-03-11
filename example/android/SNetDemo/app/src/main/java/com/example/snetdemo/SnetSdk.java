@@ -28,7 +28,7 @@ public class SnetSdk implements Closeable
 
     @Override
     public void close() {
-        sdk.shutdown();
+        sdk.close();
     }
 
 }

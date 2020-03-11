@@ -11,7 +11,7 @@ import io.singularitynet.sdk.daemon.FreeCallStateService;
  * The interface provides all necessary facilities to work with the platform
  * service.
  */
-public interface ServiceClient {
+public interface ServiceClient extends AutoCloseable {
 
     /**
      * Return an instance of the metadata provider.
@@ -65,6 +65,6 @@ public interface ServiceClient {
     /**
      * Closes platform service connection.
      */
-    void shutdownNow();
+    void close();
 
 }
