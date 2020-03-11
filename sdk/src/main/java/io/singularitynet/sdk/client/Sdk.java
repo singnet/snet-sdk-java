@@ -15,7 +15,9 @@ import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.CachingMetadataProvider;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.daemon.DaemonConnection;
-import io.singularitynet.sdk.daemon.RandomEndpointDaemonConnection;
+import io.singularitynet.sdk.daemon.BaseDaemonConnection;
+import io.singularitynet.sdk.daemon.EndpointSelector;
+import io.singularitynet.sdk.daemon.FixedGroupEndpointSelector;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
@@ -110,15 +112,15 @@ public class Sdk implements AutoCloseable {
 
         MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
-        DaemonConnection connection = new RandomEndpointDaemonConnection(
-                endpointGroupName, metadataProvider);
+        EndpointSelector endpointSelector = new FixedGroupEndpointSelector(
+                metadataProvider, endpointGroupName);
+        DaemonConnection connection = new BaseDaemonConnection(
+                endpointSelector, ethereum);
 
-        PaymentChannelStateService stateService = new PaymentChannelStateService(
-                connection, mpeContract.getContractAddress(), ethereum);
         PaymentChannelStateProvider paymentChannelStateProvider =
-            new AskDaemonFirstPaymentChannelProvider(mpeContract, stateService);
+            new AskDaemonFirstPaymentChannelProvider(mpeContract, connection);
         FreeCallStateService freeCallStateService = new FreeCallStateService(
-                orgId, serviceId, ethereum, metadataProvider, connection);
+                orgId, serviceId, connection);
 
         return new BaseServiceClient(serviceId, connection, metadataProvider,
                 paymentChannelStateProvider, freeCallStateService, paymentStrategy); 

@@ -2,39 +2,33 @@ package io.singularitynet.sdk.mpe;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.math.BigInteger;
 import com.google.protobuf.ByteString;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
-import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.daemon.GrpcUtils;
+import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.daemon.escrow.StateService.ChannelStateRequest;
-import io.singularitynet.sdk.test.Environment;
 
 public class PaymentChannelStateServiceTest {
-
-    private Environment env;
-
-    @Before
-    public void setUp() {
-        env = Environment.env();
-    }
 
     @Test
     public void signChannelStateRequest() {
         String privateKey = "89765001819765816734960087977248703971879862101523844953632906408104497565820";
-        long ethereumBlockNumber = 53;
+        BigInteger ethereumBlockNumber = BigInteger.valueOf(53);
         Address mpeAddress = new Address("0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF");
         long channelId = 42;
 
-        env.setCurrentEthereumBlockNumber(ethereumBlockNumber);
         Identity signer = new PrivateKeyIdentity(new BigInteger(privateKey));
+        DaemonConnection connection = mock(DaemonConnection.class);
+        when(connection.getLastEthereumBlockNumber()).thenReturn(ethereumBlockNumber);
         PaymentChannelStateService.MessageSigningHelper helper =
-            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, new Ethereum(env.web3j()));
+            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, connection);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(GrpcUtils.toBytesString(BigInteger.valueOf(channelId)));
 

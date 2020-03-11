@@ -9,10 +9,8 @@ import io.singularitynet.daemon.escrow.StateService.*;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc.*;
 
-import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.EndpointGroup;
-import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 import io.singularitynet.sdk.daemon.DaemonConnection;
 
@@ -23,17 +21,13 @@ public class FreeCallStateService {
     // TODO: get orgId and serviceId from MetadataProvider
     private final String orgId;
     private final String serviceId;
-    private final Ethereum ethereum;
-    private final MetadataProvider metadataProvider;
     private final DaemonConnection daemonConnection;
     private final FreeCallStateServiceBlockingStub stub;
 
-    public FreeCallStateService(String orgId, String serviceId, Ethereum ethereum,
-            MetadataProvider metadataProvider, DaemonConnection daemonConnection) {
+    public FreeCallStateService(String orgId, String serviceId,
+            DaemonConnection daemonConnection) {
         this.orgId = orgId;
         this.serviceId = serviceId;
-        this.ethereum = ethereum;
-        this.metadataProvider = metadataProvider;
         this.daemonConnection = daemonConnection;
         this.stub = this.daemonConnection.getGrpcStub(FreeCallStateServiceGrpc::newBlockingStub);
     }
@@ -42,15 +36,9 @@ public class FreeCallStateService {
         log.info("Requesting number of free calls from daemon, token: {}, signer: {}",
                 token, signer);
 
-        String endpointGroupName = daemonConnection.getEndpointGroupName();
-        EndpointGroup endpointGroup = metadataProvider
-            .getServiceMetadata()
-            // TODO: what does guarantee that endpoint group name is not
-            // changed before actual call is made? Think about it when
-            // implementing failover strategy.
-            .getEndpointGroupByName(endpointGroupName).get();
+        EndpointGroup endpointGroup = daemonConnection.getEndpoint().getGroup();
         PaymentGroupId paymentGroupId = endpointGroup.getPaymentGroupId();
-        BigInteger currentBlock = ethereum.getEthBlockNumber();
+        BigInteger currentBlock = daemonConnection.getLastEthereumBlockNumber();
 
         FreeCallPayment payment = FreeCallPayment.newBuilder()
             .setSigner(signer)

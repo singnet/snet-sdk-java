@@ -44,9 +44,10 @@ public class CallAfterClaimTestIT {
                 IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP,
                 new FixedPaymentChannelPaymentStrategy(sdk, channelId));
 
-        this.deployerConnection = new RandomEndpointDaemonConnection(
-                IntEnv.TEST_ENDPOINT_GROUP, sdk.getMetadataProvider(
-                    IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID));
+        this.deployerConnection = new BaseDaemonConnection(
+                new FixedGroupEndpointSelector(
+                    sdk.getMetadataProvider(IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID),
+                    IntEnv.TEST_ENDPOINT_GROUP), sdk.getEthereum());
         PrivateKeyIdentity deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
         this.controlService = new ProviderControlService(deployerConnection,
                 IntEnv.MPE_CONTRACT_ADDRESS, deployer, sdk.getEthereum());
