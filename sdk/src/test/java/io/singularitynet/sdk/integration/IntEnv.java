@@ -6,7 +6,6 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.client.Configuration;
-import io.singularitynet.sdk.client.StaticConfiguration;
 import io.singularitynet.sdk.client.ServiceClient;
 
 import io.singularitynet.sdk.test.CalculatorGrpc;
@@ -34,8 +33,8 @@ public class IntEnv {
     private IntEnv() {
     }
 
-    public static StaticConfiguration.Builder newTestConfigurationBuilder() {
-        return StaticConfiguration.newBuilder()
+    public static Configuration.Builder newTestConfigurationBuilder() {
+        return Configuration.newBuilder()
             .setEthereumJsonRpcEndpoint(ETHEREUM_JSON_RPC_ENDPOINT)
             .setIpfsEndpoint(IPFS_ENDPOINT)
             .setRegistryAddress(REGISTRY_CONTRACT_ADDRESS)

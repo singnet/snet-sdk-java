@@ -30,6 +30,7 @@
 
   <modules>
     <module>sdk</module>
+    <!-- TODO: move all plugins related projects into plugin subfolder -->
     <module>plugin-core</module>
     <module>maven-plugin</module>
     <module>gradle-plugin</module>

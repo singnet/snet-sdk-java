@@ -45,28 +45,27 @@ public class ConfigurationUtilsTest {
         assertArrayEquals("Identity private key", Utils.hexToBytes(privateKey), config.getIdentityPrivateKey().get());
         assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress().get());
         assertEquals("MultiPartyEscrow address", new Address(mpeAddress), config.getMultiPartyEscrowAddress().get());
-        assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice().get());
-        assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit().get());
+        assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice());
+        assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit());
     }
 
     @Test
     public void fromJsonLoadAllRequiredProperties() throws MalformedURLException {
         String json = "{" +
             "\"ethereum_json_rpc_endpoint\": \"" + ethereumJsonRpcEndpoint + "\"," +
-            "\"ipfs_endpoint\": \"" + ipfsEndpoint + "\"," +
             "\"identity_type\": \"" + identityType + "\"" +
             "}";
 
         Configuration config = ConfigurationUtils.fromJson(json);
 
         assertEquals("Ethereum JSON RPC endpoint", new URL(ethereumJsonRpcEndpoint), config.getEthereumJsonRpcEndpoint());
-        assertEquals("IPFS endpoint", new URL(ipfsEndpoint), config.getIpfsEndpoint());
+        assertEquals("IPFS endpoint", Configuration.DEFAULT_IPFS_ENDPOINT, config.getIpfsEndpoint());
         assertEquals("Identity type", Enum.valueOf(Configuration.IdentityType.class, identityType), config.getIdentityType());
         assertEquals("Identity private key", Optional.empty(), config.getIdentityPrivateKey());
         assertEquals("Registry address", Optional.empty(), config.getRegistryAddress());
         assertEquals("MultiPartyEscrow address", Optional.empty(), config.getMultiPartyEscrowAddress());
-        assertEquals("Gas price", Optional.empty(), config.getGasPrice());
-        assertEquals("Gas limit", Optional.empty(), config.getGasLimit());
+        assertEquals("Gas price", Configuration.DEFAULT_GAS_PRICE, config.getGasPrice());
+        assertEquals("Gas limit", Configuration.DEFAULT_GAS_LIMIT, config.getGasLimit());
     }
 
     @Test
@@ -89,26 +88,25 @@ public class ConfigurationUtilsTest {
         assertArrayEquals("Identity private key", Utils.hexToBytes(privateKey), config.getIdentityPrivateKey().get());
         assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress().get());
         assertEquals("MultiPartyEscrow address", new Address(mpeAddress), config.getMultiPartyEscrowAddress().get());
-        assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice().get());
-        assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit().get());
+        assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice());
+        assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit());
     }
 
     @Test
     public void fromPropertiesLoadAllRequiredProperties() throws MalformedURLException {
         Properties props = new Properties();
         props.setProperty("ethereum.json.rpc.endpoint", ethereumJsonRpcEndpoint);
-        props.setProperty("ipfs.endpoint", ipfsEndpoint);
         props.setProperty("identity.type", identityType);
 
         Configuration config = ConfigurationUtils.fromProperties(props);
 
         assertEquals("Ethereum JSON RPC endpoint", new URL(ethereumJsonRpcEndpoint), config.getEthereumJsonRpcEndpoint());
-        assertEquals("IPFS endpoint", new URL(ipfsEndpoint), config.getIpfsEndpoint());
+        assertEquals("IPFS endpoint", Configuration.DEFAULT_IPFS_ENDPOINT, config.getIpfsEndpoint());
         assertEquals("Identity type", Enum.valueOf(Configuration.IdentityType.class, identityType), config.getIdentityType());
         assertEquals("Identity private key", Optional.empty(), config.getIdentityPrivateKey());
         assertEquals("Registry address", Optional.empty(), config.getRegistryAddress());
         assertEquals("MultiPartyEscrow address", Optional.empty(), config.getMultiPartyEscrowAddress());
-        assertEquals("Gas price", Optional.empty(), config.getGasPrice());
-        assertEquals("Gas limit", Optional.empty(), config.getGasLimit());
+        assertEquals("Gas price", Configuration.DEFAULT_GAS_PRICE, config.getGasPrice());
+        assertEquals("Gas limit", Configuration.DEFAULT_GAS_LIMIT, config.getGasLimit());
     }
 }

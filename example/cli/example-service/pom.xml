@@ -54,18 +54,15 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
-
-    <resources>
-      <resource>
-        <directory>..</directory>
-        <includes>
-          <include>ethereum.properties</include>
-        </includes>
-      </resource>
-    </resources>
 
     <extensions>
       <extension>
@@ -88,7 +85,7 @@
               <serviceId>example-service</serviceId>
               <outputDir>${project.build.directory}/proto</outputDir>
               <javaPackage>io.singularitynet.service.exampleservice</javaPackage>
-              <ethereumJsonRpcEndpoint>${ethereum.json.rpc.endpoint}</ethereumJsonRpcEndpoint>
+              <ethereumJsonRpcEndpoint>https://ropsten.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2</ethereumJsonRpcEndpoint>
             </configuration>
             <goals>
               <goal>get</goal>
@@ -125,16 +122,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
       </plugin>
 
     </plugins>

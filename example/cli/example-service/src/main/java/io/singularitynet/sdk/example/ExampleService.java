@@ -1,11 +1,9 @@
 package io.singularitynet.sdk.example;
 
-import java.util.Properties;
-
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.ConfigurationUtils;
 import io.singularitynet.sdk.client.Sdk;
-import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.paymentstrategy.OnDemandPaymentChannelPaymentStrategy;
 
@@ -19,24 +17,24 @@ public class ExampleService {
     public static void main(String[] args) throws Exception {
         String privateKey = args[0];
 
-        Properties props = new Properties();
-        props.load(ExampleService.class.getClassLoader()
-                .getResourceAsStream("ethereum.properties"));
-        props.setProperty("identity.type", "PRIVATE_KEY");
-        props.setProperty("identity.private.key.hex", privateKey);
-        Configuration config = ConfigurationUtils.fromProperties(props);
+        Configuration config = Configuration.newBuilder()
+            .setEthereumJsonRpcEndpoint(Configuration.ROPSTEN_INFURA_ETHEREUM_JSON_RPC_ENDPOINT)
+            .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
+            .setIdentityPrivateKey(Utils.hexToBytes(privateKey))
+            .build();
 
         Sdk sdk = new Sdk(config);
         try {
 
-            PaymentStrategy paymentStrategy =
-                new OnDemandPaymentChannelPaymentStrategy(sdk);
+            OnDemandPaymentChannelPaymentStrategy paymentStrategy =
+                new OnDemandPaymentChannelPaymentStrategy(sdk,
+                        40320 /* about a week in Ethereum blocks */, 100);
+
             ServiceClient serviceClient = sdk.newServiceClient("snet",
                     "example-service", "default_group", paymentStrategy); 
             try {
 
                 CalculatorBlockingStub stub = serviceClient.getGrpcStub(CalculatorGrpc::newBlockingStub);
-
                 Numbers numbers = Numbers.newBuilder()
                     .setA(7)
                     .setB(6)

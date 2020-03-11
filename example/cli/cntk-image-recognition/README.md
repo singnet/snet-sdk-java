@@ -1,7 +1,7 @@
 # CNTK image recognition service client
 
 This command line application demonstrates calling [AI Sight](https://beta.singularitynet.io/servicedetails/org/snet/service/cntk-image-recon)
-SingularityNet service.
+SingularityNet service. This example runs on Ethereum mainnet.
 
 To run example one need passing payment channel signer private key as command
 line parameter:

@@ -22,6 +22,7 @@ import io.ipfs.api.IPFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.ContractUtils;
@@ -29,6 +30,7 @@ import io.singularitynet.sdk.registry.IpfsMetadataStorage;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.registry.RegistryContract;
+import io.singularitynet.sdk.client.Configuration;
 
 public class ServiceApiGetter {
 
@@ -48,7 +50,7 @@ public class ServiceApiGetter {
     public static abstract class DefaultParameters implements Parameters {
 
         public URL getIpfsRpcEndpoint() {
-            return asURL(DEFAULT_IPFS_ENDPOINT);
+            return Utils.strToUrl(DEFAULT_IPFS_ENDPOINT);
         }
 
         public String getGetterEthereumAddress() {
@@ -59,13 +61,6 @@ public class ServiceApiGetter {
             return DEFAULT_REGISTRY_ADDRESS;
         }
 
-        private static URL asURL(String url) {
-            try {
-                return new URL(url);
-            } catch (MalformedURLException e) {
-                throw new IllegalStateException("Unexpected exception", e);
-            }
-        }
     }
 
     public static final String DEFAULT_IPFS_ENDPOINT = "http://ipfs.singularitynet.io:80";

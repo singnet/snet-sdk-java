@@ -16,7 +16,7 @@ public class ConfigurationDependencyFactoryTest {
     public void throwExceptionOnClientConnectionError() {
         exceptionRule.expect(IllegalArgumentException.class);
         exceptionRule.expectMessage("Could not perform operation on Ethereum RPC endpoint provided: http://localhost:1");
-        Configuration config = StaticConfiguration.newBuilder()
+        Configuration config = Configuration.newBuilder()
             .setEthereumJsonRpcEndpoint("http://localhost:1")
             .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
             .setIdentityType(Configuration.IdentityType.MNEMONIC)

@@ -45,8 +45,6 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
     public ConfigurationDependencyFactory(Configuration config) {
         Preconditions.checkArgument(config.getEthereumJsonRpcEndpoint() != null,
                 "Ethereum JSON RPC endpoint is required");
-        Preconditions.checkArgument(config.getIpfsEndpoint() != null,
-                "IPFS endpoint is required");
         Preconditions.checkArgument(config.getIdentityType() != null,
                 "Identity type is required");
 
@@ -66,9 +64,7 @@ public class ConfigurationDependencyFactory implements DependencyFactory {
         this.ipfs = new IPFS(ipfsEndpoint.getHost(), ipfsEndpoint.getPort());
 
         StaticGasProvider gasProvider = new StaticGasProvider(
-                config.getGasPrice().orElse(DefaultGasProvider.GAS_PRICE),
-                config.getGasLimit().orElse(DefaultGasProvider.GAS_LIMIT)
-                );
+                config.getGasPrice(), config.getGasLimit());
         TransactionManager transactionManager;
 
         log.info("New identity, type: {}", config.getIdentityType());
