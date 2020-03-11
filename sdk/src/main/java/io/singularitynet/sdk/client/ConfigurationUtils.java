@@ -25,7 +25,7 @@ public class ConfigurationUtils {
      * @return static configuration instance.
      */
     public static Configuration fromProperties(Properties props) {
-        StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
+        Configuration.Builder builder = Configuration.newBuilder()
             .setEthereumJsonRpcEndpoint(props.getProperty("ethereum.json.rpc.endpoint"))
             .setIpfsEndpoint(props.getProperty("ipfs.endpoint"))
             .setIdentityType(Enum.valueOf(Configuration.IdentityType.class, props.getProperty("identity.type").toUpperCase()));
@@ -61,7 +61,7 @@ public class ConfigurationUtils {
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         JsonConfiguration config = gson.fromJson(json, JsonConfiguration.class);
 
-        StaticConfiguration.Builder builder = StaticConfiguration.newBuilder()
+        Configuration.Builder builder = Configuration.newBuilder()
             .setEthereumJsonRpcEndpoint(config.ethereumJsonRpcEndpoint)
             .setIpfsEndpoint(config.ipfsEndpoint)
             .setIdentityType(Enum.valueOf(Configuration.IdentityType.class, config.identityType.toUpperCase()));

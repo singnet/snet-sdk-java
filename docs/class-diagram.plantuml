@@ -154,7 +154,7 @@ package io.singularitynet.sdk.freecall {
 
 package io.singularitynet.sdk.client {
 
-    interface Configuration {
+    class Configuration {
         URL getEthereumJsonRpcEndpoint();
         URL getIpfsEndpoint();
         IdentityType getIdentityType();
@@ -168,11 +168,7 @@ package io.singularitynet.sdk.client {
         static Configuration fromProperties(Properties props);
         static Configuration fromJson(String json);
     }
-    
     ConfigurationUtils -- Configuration
-
-    class StaticConfiguration
-    Configuration <|.. StaticConfiguration
 
     interface DependencyFactory {
         Web3j getWeb3j();

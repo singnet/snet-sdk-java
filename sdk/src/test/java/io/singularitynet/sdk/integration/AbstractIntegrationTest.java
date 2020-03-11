@@ -17,7 +17,6 @@ import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.Configuration;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.ServiceClient;
-import io.singularitynet.sdk.client.StaticConfiguration;
 
 public class AbstractIntegrationTest {
 
@@ -27,7 +26,7 @@ public class AbstractIntegrationTest {
     public void setUp() {
         PrivateKeyIdentity caller = setupNewIdentity();
 
-        StaticConfiguration config = IntEnv.newTestConfigurationBuilder()
+        Configuration config = IntEnv.newTestConfigurationBuilder()
             .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
             .setIdentityPrivateKey(caller.getCredentials().getEcKeyPair().getPrivateKey().toByteArray())
             .build();
