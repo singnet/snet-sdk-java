@@ -26,8 +26,5 @@ file in the root project folder using format below:
 ethereum.json.rpc.endpoint=https://mainnet.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2
 # Put Ethereum identity private key in hex below
 identity.private.key.hex=000102030405060708090A0B0C0D0E0F102132435465768798A9BACBDCEDFE0F
-ipfs.endpoint=http://ipfs.singularitynet.io:80
 identity.type=PRIVATE_KEY
-gas.price=6100000000
-gas.limit=200000
 ```

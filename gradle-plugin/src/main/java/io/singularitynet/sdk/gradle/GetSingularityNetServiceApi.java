@@ -10,6 +10,7 @@ import java.io.File;
 import java.net.URL;
 import lombok.Setter;
 
+import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.plugin.ServiceApiGetter;
 import io.singularitynet.sdk.plugin.PluginException;
 
@@ -33,13 +34,9 @@ public class GetSingularityNetServiceApi extends DefaultTask implements ServiceA
     private String registryAddress;
 
     public GetSingularityNetServiceApi() {
-        try {
-            ipfsRpcEndpoint = new URL(ServiceApiGetter.DEFAULT_IPFS_ENDPOINT);
-            getterEthereumAddress = ServiceApiGetter.DEFAULT_GETTER_ETHEREUM_ADDRESS;
-            registryAddress = ServiceApiGetter.DEFAULT_REGISTRY_ADDRESS;
-        } catch (java.net.MalformedURLException e) {
-            throw new IllegalStateException("Unexpected error", e);
-        }
+        ipfsRpcEndpoint = Utils.strToUrl(ServiceApiGetter.DEFAULT_IPFS_ENDPOINT);
+        getterEthereumAddress = ServiceApiGetter.DEFAULT_GETTER_ETHEREUM_ADDRESS;
+        registryAddress = ServiceApiGetter.DEFAULT_REGISTRY_ADDRESS;
 
         for (Task task : getProject().getTasksByName("preBuild", false)) {
             task.dependsOn(this);

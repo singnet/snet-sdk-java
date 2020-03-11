@@ -162,6 +162,8 @@ package io.singularitynet.sdk.client {
         Optional<byte[]> getIdentityPrivateKey();
         Optional<Address> getRegistryAddress();
         Optional<Address> getMultiPartyEscrowAddress();
+        BigInteger getGasPrice();
+        BigInteger getGasLimit();
     }
 
     class ConfigurationUtils {

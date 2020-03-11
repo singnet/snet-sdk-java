@@ -88,7 +88,6 @@
     // Create SDK configuration
     Configuration config = Configuration.newBuilder()
         .setEthereumJsonRpcEndpoint("https://mainnet.infura.io/v3/" /* + your infura project id */)
-        .setIpfsEndpoint("http://ipfs.singularitynet.io:80")
         .setIdentityType(Configuration.IdentityType.PRIVATE_KEY)
         .setIdentityPrivateKey(new byte[] { /* identity private key */ });
 
