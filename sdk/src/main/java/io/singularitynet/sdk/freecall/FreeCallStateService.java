@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.freecall;
 
 import com.google.protobuf.ByteString;
 import java.math.BigInteger;
@@ -14,12 +14,13 @@ import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.PaymentGroupId;
-import io.singularitynet.sdk.freecall.FreeCallPayment;
+import io.singularitynet.sdk.daemon.DaemonConnection;
 
 public class FreeCallStateService {
 
     private final static Logger log = LoggerFactory.getLogger(FreeCallStateService.class);
 
+    // TODO: get orgId and serviceId from MetadataProvider
     private final String orgId;
     private final String serviceId;
     private final Ethereum ethereum;
@@ -37,10 +38,9 @@ public class FreeCallStateService {
         this.stub = this.daemonConnection.getGrpcStub(FreeCallStateServiceGrpc::newBlockingStub);
     }
 
-    public long getFreeCallsAvailable(String dappUserId, String freeCallToken,
-            BigInteger tokenExpirationBlock, Identity signer) {
-        log.info("Requesting number of free calls from daemon, dappUserId: {}, freeCallToken: {}, tokenExpirationBlock: {}, signer: {}",
-                dappUserId, freeCallToken, tokenExpirationBlock, signer);
+    public long getFreeCallsAvailable(FreeCallAuthToken token, Identity signer) {
+        log.info("Requesting number of free calls from daemon, token: {}, signer: {}",
+                token, signer);
 
         String endpointGroupName = daemonConnection.getEndpointGroupName();
         EndpointGroup endpointGroup = metadataProvider
@@ -54,9 +54,7 @@ public class FreeCallStateService {
 
         FreeCallPayment payment = FreeCallPayment.newBuilder()
             .setSigner(signer)
-            .setDappUserId(dappUserId)
-            .setTokenExpirationBlock(tokenExpirationBlock)
-            .setToken(freeCallToken)
+            .setToken(token)
             .setCurrentBlockNumber(currentBlock)
             .setOrgId(orgId)
             .setServiceId(serviceId)
@@ -64,9 +62,9 @@ public class FreeCallStateService {
             .build();
         
         FreeCallStateRequest request = FreeCallStateRequest.newBuilder()
-            .setUserId(dappUserId)
+            .setUserId(token.getDappUserId())
             .setTokenForFreeCall(ByteString.copyFrom(payment.getToken()))
-            .setTokenExpiryDateBlock(tokenExpirationBlock.longValue())
+            .setTokenExpiryDateBlock(token.getExpirationBlock().longValue())
             .setSignature(ByteString.copyFrom(payment.getSignature().getBytes()))
             .setCurrentBlock(currentBlock.longValue())
             .build();

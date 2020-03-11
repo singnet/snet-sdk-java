@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.mpe;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -6,14 +6,14 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import com.google.protobuf.ByteString;
 
-import io.singularitynet.sdk.test.Environment;
+import io.singularitynet.sdk.common.Utils;
+import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
-import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.daemon.GrpcUtils;
 import io.singularitynet.daemon.escrow.StateService.ChannelStateRequest;
-import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.test.Environment;
 
 public class PaymentChannelStateServiceTest {
 

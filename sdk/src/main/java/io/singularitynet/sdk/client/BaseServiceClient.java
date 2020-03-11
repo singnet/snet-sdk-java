@@ -10,7 +10,7 @@ import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
-import io.singularitynet.sdk.daemon.FreeCallStateService;
+import io.singularitynet.sdk.freecall.FreeCallStateService;
 
 /**
  * The class is responsible for providing all necessary facilities to call

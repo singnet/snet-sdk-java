@@ -103,9 +103,7 @@ public class FreeCallPayment implements Payment {
     public static class Builder {
 
         private Identity signer;
-        private String dappUserId;
-        private BigInteger tokenExpirationBlock;
-        private byte[] token;
+        private FreeCallAuthToken token;
         private BigInteger currentBlockNumber;
         private String orgId;
         private String serviceId;
@@ -116,18 +114,8 @@ public class FreeCallPayment implements Payment {
             return this;
         }
 
-        public Builder setDappUserId(String dappUserId) {
-            this.dappUserId = dappUserId;
-            return this;
-        }
-
-        public Builder setTokenExpirationBlock(BigInteger tokenExpirationBlock) {
-            this.tokenExpirationBlock = tokenExpirationBlock;
-            return this;
-        }
-
-        public Builder setToken(String token) {
-            this.token = Utils.hexToBytes(token);
+        public Builder setToken(FreeCallAuthToken token) {
+            this.token = token;
             return this;
         }
 
@@ -154,8 +142,10 @@ public class FreeCallPayment implements Payment {
         public FreeCallPayment build() {
             byte[] message = getMessage();
             Signature signature = signer.sign(message);
-            return new FreeCallPayment(dappUserId, tokenExpirationBlock,
-                    token, currentBlockNumber, signature);
+            return new FreeCallPayment(token.getDappUserId(),
+                    token.getExpirationBlock(),
+                    Utils.hexToBytes(token.getToken()),
+                    currentBlockNumber, signature);
         }
 
         private static final byte[] FREE_CALL_MESSAGE_PREFIX = Utils.strToBytes("__prefix_free_trial");
@@ -164,12 +154,12 @@ public class FreeCallPayment implements Payment {
             return Utils.wrapExceptions(() -> {
                 ByteArrayOutputStream message = new ByteArrayOutputStream();
                 message.write(FREE_CALL_MESSAGE_PREFIX);
-                message.write(Utils.strToBytes(dappUserId));
+                message.write(Utils.strToBytes(token.getDappUserId()));
                 message.write(Utils.strToBytes(orgId));
                 message.write(Utils.strToBytes(serviceId));
                 message.write(Utils.strToBytes(paymentGroupId.toString()));
                 message.write(Utils.bigIntToBytes32(currentBlockNumber));
-                message.write(token);
+                message.write(Utils.hexToBytes(token.getToken()));
                 return message.toByteArray();
             });
         }

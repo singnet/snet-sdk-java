@@ -1,4 +1,4 @@
-package io.singularitynet.sdk.daemon;
+package io.singularitynet.sdk.test;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.payment.PaymentSerializer;
 import io.singularitynet.sdk.mpe.PaymentChannel;
+import io.singularitynet.sdk.mpe.PaymentChannelStateReply;
 
 public class DaemonMock extends PaymentChannelStateServiceGrpc.PaymentChannelStateServiceImplBase
     implements ServerInterceptor {

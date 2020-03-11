@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.daemon.FreeCallStateService;
+import io.singularitynet.sdk.freecall.FreeCallStateService;
 
 /**
  * The interface provides all necessary facilities to work with the platform

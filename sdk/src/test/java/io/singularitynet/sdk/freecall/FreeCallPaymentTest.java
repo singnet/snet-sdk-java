@@ -4,13 +4,12 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
-
 import java.io.ByteArrayOutputStream;
-import io.singularitynet.sdk.ethereum.Signature;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 
@@ -35,9 +34,11 @@ public class FreeCallPaymentTest {
 
         FreeCallPayment payment = FreeCallPayment.newBuilder()
             .setSigner(signer)
-            .setDappUserId("user1")
-            .setTokenExpirationBlock(new BigInteger("83081670000"))
-            .setToken("9ADB876B6607F574867C557087CB8DE57D3D5C5AC6D269804A56B3478529F804148467BFD94EEDFE649DBA17F16DD8FAE6D66A3300E1D22768FDCCFE9690F9A500")
+            .setToken(FreeCallAuthToken.newBuilder()
+                    .setDappUserId("user1")
+                    .setExpirationBlock(new BigInteger("83081670000"))
+                    .setToken("9ADB876B6607F574867C557087CB8DE57D3D5C5AC6D269804A56B3478529F804148467BFD94EEDFE649DBA17F16DD8FAE6D66A3300E1D22768FDCCFE9690F9A500")
+                    .build())
             .setCurrentBlockNumber(new BigInteger("8308167"))
             .setOrgId("ExampleOrganizationId")
             .setServiceId("ExampleServiceId")
