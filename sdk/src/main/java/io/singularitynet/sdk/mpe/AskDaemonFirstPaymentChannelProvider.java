@@ -33,7 +33,7 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
      * Constructor.
      * @param mpe MultiPartyEscrowContract instance which is used to get
      * channel state from the blockchain.
-     * @param stateService client to the daemon payment channel state service.
+     * @param connection daemon connection.
      */
     public AskDaemonFirstPaymentChannelProvider(
             MultiPartyEscrowContract mpe,
