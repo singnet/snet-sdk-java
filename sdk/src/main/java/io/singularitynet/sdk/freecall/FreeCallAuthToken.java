@@ -68,6 +68,11 @@ public class FreeCallAuthToken {
             return this;
         }
 
+        public Builder setExpirationBlock(long expirationBlock) {
+            this.expirationBlock = BigInteger.valueOf(expirationBlock);
+            return this;
+        }
+
         public BigInteger getExpirationBlock() {
             return expirationBlock;
         }
