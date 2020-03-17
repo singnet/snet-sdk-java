@@ -18,17 +18,25 @@
   <!-- TODO: add link to the SDK tutorial -->
   <url>http://dev.singularitynet.io</url>
 
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+
   <dependencies>
 
     <dependency>
       <groupId>com.github.singnet.snet-sdk-java</groupId>
       <artifactId>snet-sdk-java</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
