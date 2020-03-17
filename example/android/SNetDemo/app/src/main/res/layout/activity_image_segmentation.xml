@@ -28,7 +28,7 @@
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <LinearLayout
-                android:id="@+id/linearLayout"
+                android:id="@+id/linearLayoutInputBtns"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:orientation="horizontal"
@@ -46,7 +46,7 @@
                     android:textSize="12sp"/>
 
                 <Button
-                    android:id="@+id/btn_grabCameraImage"
+                    android:id="@+id/btn_grabInputImage"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:layout_weight="0.5"

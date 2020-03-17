@@ -55,7 +55,8 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     private Button btn_UploadImageStyle;
     private Button btn_UploadImageInput;
-    private Button btn_GrabCameraImage;
+    private Button btn_GrabInputImage;
+    private Button btn_GrabStyleImage;
     private Button btn_RunStyleTransfer;
 
     private boolean isInputImageUploaded = false;
@@ -194,7 +195,8 @@ public class StyleTransferActivity extends SnetDemoActivity
 
         btn_UploadImageStyle = findViewById(R.id.btn_uploadImageStyle);
         btn_UploadImageInput = findViewById(R.id.btn_uploadImageInput);
-        btn_GrabCameraImage = findViewById(R.id.btn_grabCameraImage);
+        btn_GrabInputImage = findViewById(R.id.btn_grabInputImage);
+        btn_GrabStyleImage = findViewById(R.id.btn_grabStyleImage);
         btn_RunStyleTransfer = findViewById(R.id.btn_runStyleTransfer);
 
         textViewResponseTime = findViewById(R.id.textViewResponseTime);
@@ -241,7 +243,8 @@ public class StyleTransferActivity extends SnetDemoActivity
         btn_UploadImageStyle.setEnabled(false);
         btn_RunStyleTransfer.setEnabled(false);
 
-        btn_GrabCameraImage.setEnabled(false);
+        btn_GrabInputImage.setEnabled(false);
+        btn_GrabStyleImage.setEnabled(false);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -262,7 +265,8 @@ public class StyleTransferActivity extends SnetDemoActivity
         }
 
         if(isDeviceWithCamera) {
-            btn_GrabCameraImage.setEnabled(true);
+            btn_GrabInputImage.setEnabled(true);
+            btn_GrabStyleImage.setEnabled(true);
         }
 
     }
@@ -356,15 +360,29 @@ public class StyleTransferActivity extends SnetDemoActivity
 
     public void sendGrabCameraImageMessage(View view)
     {
-        cameraCapturer.grabImage(this::onImageCaptured);
+        String imgType = view.getTag().toString();
+        cameraCapturer.grabImage((currentPhotoPath) ->
+                this.onImageCaptured(imgType, currentPhotoPath));
     }
 
-    private void onImageCaptured(String currentPhotoPath) {
-        Log.i(TAG, "Image captured: " + currentPhotoPath);
-        isInputImageUploaded = true;
-        File f = new File(currentPhotoPath);
-        loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
-        imageInputPath = currentPhotoPath;
+    private void onImageCaptured(String imgType, String currentPhotoPath)
+    {
+        Log.i(TAG, "Image captured: imgType: " + imgType + ", currentPhotoPath: " + currentPhotoPath);
+
+        if ( imgType.compareTo("style_img") == 0  )
+        {
+            isStyleImageUploaded = true;
+            File f = new File(currentPhotoPath);
+            loadImageFromFileToImageView(imv_Style, Uri.fromFile(f));
+            imageStylePath = currentPhotoPath;
+        }
+        else
+        {
+            isInputImageUploaded = true;
+            File f = new File(currentPhotoPath);
+            loadImageFromFileToImageView(imv_Input, Uri.fromFile(f));
+            imageInputPath = currentPhotoPath;
+        }
     }
 
     private StyleTransferOuterClass.Image callStyleTransferService(String inputBase64, String styleBase64) throws IOException

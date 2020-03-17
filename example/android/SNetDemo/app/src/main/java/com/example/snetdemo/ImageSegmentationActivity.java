@@ -188,7 +188,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         btn_UploadImageInput = findViewById(R.id.btn_uploadImageForSegmentation);
         btn_RunImageSegmentation = findViewById(R.id.btn_runImageSegmentation);
 
-        btn_GrabCameraImage = findViewById(R.id.btn_grabCameraImage);
+        btn_GrabCameraImage = findViewById(R.id.btn_grabInputImage);
 
         imv_Input = findViewById(R.id.imageViewInput);
 
