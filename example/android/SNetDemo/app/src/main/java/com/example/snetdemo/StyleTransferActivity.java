@@ -369,7 +369,7 @@ public class StyleTransferActivity extends SnetDemoActivity
     {
         Log.i(TAG, "Image captured: imgType: " + imgType + ", currentPhotoPath: " + currentPhotoPath);
 
-        if ( imgType.compareTo("style_img") == 0  )
+        if ( imgType.equals("style_img") )
         {
             isStyleImageUploaded = true;
             File f = new File(currentPhotoPath);
