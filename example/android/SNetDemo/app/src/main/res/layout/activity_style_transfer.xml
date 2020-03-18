@@ -54,7 +54,7 @@
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <LinearLayout
-                android:id="@+id/linearLayout"
+                android:id="@+id/linearLayoutInputBtns"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal"
@@ -72,24 +72,46 @@
                     android:textSize="12sp"/>
 
                 <Button
-                    android:id="@+id/btn_grabCameraImage"
+                    android:id="@+id/btn_grabInputImage"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_weight="0.5"
                     android:onClick="sendGrabCameraImageMessage"
-                    android:text="Grab Camera Image"
+                    android:tag="input_img"
+                    android:text="Grab Input Image"
                     android:textSize="12sp"/>
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_uploadImageStyle"
+            <LinearLayout
+                android:id="@+id/linearLayoutStyleBtns"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:orientation="horizontal"
                 android:layout_weight="0"
-                android:onClick="sendUploadStyleImageMessage"
-                android:text="Upload Style Image"
-                android:textSize="12sp" />
+                app:layout_constraintBottom_toTopOf="@+id/btn_runImageSegmentation"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/btn_uploadImageStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5"
+                    android:onClick="sendUploadStyleImageMessage"
+                    android:text="Upload Style Image"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_grabStyleImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5"
+                    android:onClick="sendGrabCameraImageMessage"
+                    android:tag="style_img"
+                    android:text="Grab Style Image"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_runStyleTransfer"
