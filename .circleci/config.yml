@@ -41,6 +41,12 @@ jobs:
             cd ./example/cli
             mvn install
 
+      - run:
+          name: Build and run tutorial app
+          command: |
+            cd ./example/tutorial
+            mvn package exec:java
+
   build-android:
     docker:
       # specify the version you desire here
