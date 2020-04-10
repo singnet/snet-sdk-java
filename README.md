@@ -28,13 +28,17 @@
 
 ```xml
 <project>
+  <properties>
+    <snet.sdk.java.version>0.3.0</snet.sdk.java.version>
+  </properties>
+
   <build>
     <plugins>
 
       <plugin>
         <groupId>com.github.singnet.snet-sdk-java</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
-        <version>0.3.0</version>
+        <version>${snet.sdk.java.version}</version>
 
         <executions>
           <execution>
@@ -72,7 +76,7 @@
 	<dependency>
 	    <groupId>com.github.singnet.snet-sdk-java</groupId>
 	    <artifactId>snet-sdk-java</artifactId>
-	    <version>0.3.0</version>
+	    <version>${snet.sdk.java.version}</version>
 	</dependency>
 ```
 
