@@ -2,10 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'io.singularitynet.sdk'
 apply plugin: 'com.google.protobuf'
 
-def grpcVersion = '1.20.0'
-def protobufVersion = '3.5.1'
-def protocVersion = protobufVersion
-
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
@@ -51,7 +47,7 @@ dependencies {
 
     implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation 'org.slf4j:slf4j-android:1.7.30'
-    implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.3.0'
+    implementation "com.github.singnet.snet-sdk-java:snet-sdk-java:${snetSdkJavaVersion}"
 }
 
 tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
@@ -78,7 +74,7 @@ android {
 }
 
 protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    protoc { artifact = "com.google.protobuf:protoc:${protobufVersion}" }
     plugins {
         grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
     }

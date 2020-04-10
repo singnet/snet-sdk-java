@@ -5,16 +5,21 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.singnet.snet-sdk-java</groupId>
-  <artifactId>snet-sdk-maven-plugin</artifactId>
-  <version>0.3.0</version>
+  <artifactId>snet-sdk-maven-plugin-test</artifactId>
+  <version>master-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Test MyMojo</name>
+
+  <properties>
+    <snet.sdk.java.version>0.3.0</snet.sdk.java.version>
+  </properties>
 
   <build>
     <plugins>
       <plugin>
         <groupId>com.github.singnet.snet-sdk-java</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
+        <version>${snet.sdk.java.version}</version>
         <configuration>
           <ipfsRpcEndpoint>http://localhost:5002</ipfsRpcEndpoint>
           <ethereumJsonRpcEndpoint>http://localhost:8545</ethereumJsonRpcEndpoint>

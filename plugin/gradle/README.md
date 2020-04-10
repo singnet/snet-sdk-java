@@ -1,4 +1,15 @@
-# How to use SDK in Android app
+# Using SDK in Android application
+
+Sdk supports Android platfrom version 7.0 or higher (API level 24 or higher).
+
+## Root project `gradle.properties`
+
+It is convenient to add dependencies version into `gradle.properties` file:
+```
+snetSdkJavaVersion=0.3.0
+grpcVersion=1.20.0
+protobufVersion=3.5.1
+```
 
 ## Root project `build.gradle`
 
@@ -6,17 +17,28 @@ Add Maven Central and Jitpack.io repositories into `buildscript/repositories`
 section. Maven Central is used to get Gradle Protobuf plugin. Jitpack.io repo
 contains SingularityNet SDK dependencies.
 ```
+buildscript {
+    repositories {
+        ...
         mavenCentral()
         maven {
             url 'https://jitpack.io'
         }
+        ...
+    }
+}
 ```
 
 Add SingularityNet and Protobuf plugins into the classpath using
 `buildscript/dependencies` section:
 ```
-        classpath 'com.github.singnet.snet-sdk-java:snet-sdk-gradle-plugin:0.3.0'
+buildscript {
+    ...
+    dependencies {
+        classpath 'com.github.singnet.snet-sdk-java:snet-sdk-gradle-plugin:${snetSdkJavaVersion}'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
+    }
+}
 ```
 
 ## Android app `build.gradle` script
@@ -39,9 +61,9 @@ repositories {
 
 Add SingularityNet Java SDK into `dependencies` section:
 ```
-implementation 'io.grpc:grpc-okhttp:1.20.0'
+implementation 'io.grpc:grpc-okhttp:${grpcVersion}'
 implementation 'org.slf4j:slf4j-android:1.7.30'
-implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:0.3.0'
+implementation 'com.github.singnet.snet-sdk-java:snet-sdk-java:${snetSdkJavaVersion}'
 ```
 
 Add one Gradle task to download and unpack each SingularityNet service API you
@@ -54,6 +76,7 @@ tasks.register('getExampleServiceApi', io.singularitynet.sdk.gradle.GetSingulari
     serviceId = 'example-service'
     javaPackage = 'io.singularitynet.service.exampleservice'
     outputDir = file("$buildDir/proto")
+    ethereumJsonRpcEndpoint = '<your-ethereum-endpoint>'
 }
 ```
 
@@ -79,12 +102,8 @@ Use Protobuf compiler with gRPC plugin to compile SingularityNet service API
 into Java code. gRPC and Protobuf versions below are recommended as they were
 used to compile SingularityNet Java SDK.
 ```
-def grpcVersion = '1.20.0'
-def protobufVersion = '3.5.1'
-def protocVersion = protobufVersion
-
 protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    protoc { artifact = "com.google.protobuf:protoc:${protobufVersion}" }
     plugins {
         grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
     }
