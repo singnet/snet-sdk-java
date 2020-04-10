@@ -15,6 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <snet.sdk.java.version>0.3.0</snet.sdk.java.version>
   </properties>
 
   <repositories>
@@ -35,7 +36,7 @@
     <dependency>
       <groupId>com.github.singnet.snet-sdk-java</groupId>
       <artifactId>snet-sdk-java</artifactId>
-      <version>0.3.0</version>
+      <version>${snet.sdk.java.version}</version>
     </dependency>
 
     <dependency>
@@ -61,7 +62,7 @@
       <plugin>
         <groupId>com.github.singnet.snet-sdk-java</groupId>
         <artifactId>snet-sdk-maven-plugin</artifactId>
-        <version>0.3.0</version>
+        <version>${snet.sdk.java.version}</version>
         <executions>
           <execution>
 
