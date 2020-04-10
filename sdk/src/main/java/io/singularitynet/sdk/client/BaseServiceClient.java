@@ -122,6 +122,9 @@ public class BaseServiceClient implements ServiceClient {
                     serviceClient);
             log.debug("Payment calculated: {}", payment);
             if (payment == Payment.INVALID_PAYMENT) {
+                // TODO: throw exception which explains the reason of invalid
+                // payment correctly. For instance when number of free calls is
+                // zero user should know it.
                 throw new IllegalStateException("No payment returned by PaymentStrategy");
             }
             return new ClientCallWrapper<>(next.newCall(method, callOptions),
