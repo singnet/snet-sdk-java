@@ -55,12 +55,12 @@ class CameraImageCapturer
                     photoFile = createImageFile("input_image_");
                     currentPhotoPath = photoFile.getAbsolutePath();
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     Log.e(TAG, "Exception on image file creation", e);
 
                     new AlertDialog.Builder(activity)
-                            .setTitle("ERROR")
+                            .setTitle("ERROR: can't create image")
                             .setMessage(e.toString())
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
