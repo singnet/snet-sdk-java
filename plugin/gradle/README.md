@@ -7,7 +7,7 @@ Sdk supports Android platfrom version 7.0 or higher (API level 24 or higher).
 It is convenient to add dependencies version into `gradle.properties` file:
 ```
 snetSdkJavaVersion=master-SNAPSHOT
-grpcVersion=1.20.0
+grpcVersion=1.28.0
 protobufVersion=3.5.1
 ```
 
