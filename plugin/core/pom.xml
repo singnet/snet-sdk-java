@@ -23,6 +23,28 @@
     <dependency>
       <groupId>com.github.singnet.snet-sdk-java</groupId>
       <artifactId>snet-sdk-java</artifactId>
+      <exclusions>
+        <!-- TODO:
+            grpc-protobuf artifact depends on guava:28-android.
+            Android guava version doesn't inherit NonSerializableMemoizingSupplier
+            from java.util.function.Supplier which lead to error while using
+            gradle plugin to build Android app:
+                > Failed to apply plugin [id 'com.android.internal.application']
+                    > com.google.common.base.Suppliers$NonSerializableMemoizingSupplier cannot be cast to java.util.function.Supplier
+            the workaround below replaces guava Android version by JRE version
+            for plugins. It should be removed if guava is fixed.
+        -->
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <!-- version 28.1 corresponds to the grpc version 1.28.0 -->
+      <version>28.1-jre</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
