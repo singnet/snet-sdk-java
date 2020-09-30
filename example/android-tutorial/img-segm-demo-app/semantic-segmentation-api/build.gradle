@@ -1,0 +1,81 @@
+apply plugin: 'com.android.library'
+apply plugin: 'io.singularitynet.sdk'
+apply plugin: 'com.google.protobuf'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation "io.grpc:grpc-okhttp:${grpcVersion}"
+    implementation 'org.slf4j:slf4j-android:1.7.30'
+    implementation "com.github.singnet.snet-sdk-java:snet-sdk-java:${snetSdkJavaVersion}"
+
+}
+
+tasks.register('getImageSegmentationApi', io.singularitynet.sdk.gradle.GetSingularityNetServiceApi) {
+    orgId = 'snet'
+    serviceId = 'semantic-segmentation'
+    outputDir = file("$buildDir/proto")
+    javaPackage = 'io.singularitynet.service.semanticsegmentation'
+    ethereumJsonRpcEndpoint = new URL('https://mainnet.infura.io/v3/eaaeadeac3ce4a1c82d46b51dd39eb75')
+}
+
+android {
+    sourceSets {
+        main {
+            proto {
+                srcDir "$buildDir/proto"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.5.1" }
+    plugins {
+        java
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.20.0" }
+    }
+    generateProtoTasks {
+        all()*.builtins { remove java }
+        all()*.plugins {
+            grpc {}
+            java {}
+        }
+    }
+}

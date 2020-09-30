@@ -28,3 +28,5 @@ target
 # vim specific files
 *.swp
 .vim-project
+
+example/android-tutorial/img-segm-demo-app/.idea/
