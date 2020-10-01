@@ -1,4 +1,4 @@
-package com.example.imagesegmentationdemo;
+package io.singularitynet.sdk.tutorial;
 
 import android.content.Context;
 

@@ -1,16 +1,12 @@
-package com.example.imagesegmentationdemo;
+package io.singularitynet.sdk.tutorial;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.ManagedChannel;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 
 public class SNETServiceHelper
 {
