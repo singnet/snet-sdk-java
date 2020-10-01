@@ -69,7 +69,7 @@ protobuf {
     protoc { artifact = "com.google.protobuf:protoc:${protobufVersion}" }
     plugins {
         java
-        grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.20.0" }
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
     }
     generateProtoTasks {
         all()*.builtins { remove java }
