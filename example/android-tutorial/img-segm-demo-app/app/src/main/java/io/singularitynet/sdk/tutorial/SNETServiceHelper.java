@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.ManagedChannel;
@@ -35,7 +36,7 @@ public class SNETServiceHelper
                 }
                 catch (InterruptedException e)
                 {
-                    Log.e("CloseServiceChannelTask", "Closing channel error", e);
+                    Log.e("OpenServiceChannelTask", "Channel opening interrupted", e);
                 }
                 catch (Exception e)
                 {
@@ -64,14 +65,14 @@ public class SNETServiceHelper
                     }
                     catch (InterruptedException e)
                     {
-                        Log.e("CloseServiceChannelTask", "Closing channel error", e);
+                        Log.e("CloseServiceChannelTask", "Channel closing interrupted", e);
                     }
                 }
             }
         }).start();
     }
 
-    public void callImageSegmentationServiceAsync(Uri inputUri, int maxImageHeight, int maxImageWidth)
+    public void callImageSegmentationServiceAsync(Bitmap inputBitmap)
     {
         threadServiceCalling = new Thread(new Runnable()
         {
@@ -82,23 +83,11 @@ public class SNETServiceHelper
                 /*
                 *    PREPARE SERVICE INPUT DATA
                 */
-                byte[] data = new byte[0];
-                Bitmap bitmap;
-                try
-                {
-                    bitmap = ImageUtils.handleSamplingAndRotationBitmap(handlerMain.getContext(),
-                            inputUri, maxImageWidth, maxImageHeight);
-                }
-                catch(Exception e)
-                {
-
-                }
+                byte[] bytesInput = BitmapToJPEGByteArray(inputBitmap);
 
                 /*
                 *   CALL SINGULARITYNET SERVICE
                 * */
-                byte[] bytesInput = data;
-
 
                 /*
                 *   DECODE SERVICE RESPONSE
@@ -106,7 +95,6 @@ public class SNETServiceHelper
                 Bitmap decodedBitmap = null;
                 handlerMain.handleMessage(handlerMain.obtainMessage(HandlerMainActivity.MSG_SET_IMAGE_BITMAP, decodedBitmap));
                 handlerMain.sendEmptyMessage(HandlerMainActivity.MSG_ENABLE_ACTIVITY_GUI);
-
             }
         });
 
@@ -134,6 +122,14 @@ public class SNETServiceHelper
         {
             threadServiceInit.interrupt();
         }
+    }
+
+    public byte[] BitmapToJPEGByteArray(Bitmap bmp)
+    {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+
+        return byteArrayOutputStream.toByteArray();
     }
 
 }

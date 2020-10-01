@@ -20,13 +20,6 @@
             app:srcCompat="@drawable/ic_launcher_foreground" />
 
         <Button
-            android:id="@+id/btnOpenImage"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:onClick="onOpenImage"
-            android:text="Open image" />
-
-        <Button
             android:id="@+id/btnCallService"
             android:layout_width="match_parent"
             android:layout_height="54dp"
