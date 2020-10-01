@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_CODE_OPEN_IMAGE = 0;
     private static final int REQUEST_CODE_PERMISSIONS = 1234;
 
-    public final int maxImageHeight = 1024;
-    public final int maxImageWidth = 1024;
+    private final int MAX_IMAGE_HEIGHT = 1024;
+    private final int MAX_IMAGE_WIDTH = 1024;
 
     public static AlertDialog.Builder newAlertDialogBuilder(Context context) {
         return new AlertDialog.Builder(context)
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity
 
     public Uri getImageUri()
     {
-        return this.imageUri;
+        return imageUri;
     }
 
     @Override
