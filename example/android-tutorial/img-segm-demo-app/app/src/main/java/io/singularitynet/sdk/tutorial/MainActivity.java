@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity
         if(!permissionsRequired.isEmpty())
         {
             if(serviceHelper != null)
-                serviceHelper.callImageSegmentationServiceAsync(imageUri, maxImageHeight, maxImageWidth);
+                serviceHelper.callImageSegmentationServiceAsync(imageUri, MAX_IMAGE_HEIGHT, MAX_IMAGE_WIDTH);
         }
 
     }
