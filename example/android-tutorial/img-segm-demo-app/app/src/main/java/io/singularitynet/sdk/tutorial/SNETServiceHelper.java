@@ -1,7 +1,6 @@
 package io.singularitynet.sdk.tutorial;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
