@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity
 
     public Uri getImageUri()
     {
-        return this.imageUri;
+        return imageUri;
     }
 
     @Override
