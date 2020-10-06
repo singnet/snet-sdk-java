@@ -1,4 +1,4 @@
-package com.example.semantic_segmentation_api;
+package io.singularitynet.sdk.tutorial;
 
 import org.junit.Test;
 
