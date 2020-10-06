@@ -28,3 +28,5 @@ target
 # vim specific files
 *.swp
 .vim-project
+
+.idea

@@ -1,0 +1,3 @@
+include ':semantic-segmentation-api'
+include ':app'
+rootProject.name = "Image Segmentation Demo"
