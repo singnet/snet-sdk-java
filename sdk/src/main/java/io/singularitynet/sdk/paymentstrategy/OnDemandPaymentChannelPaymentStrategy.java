@@ -17,9 +17,7 @@ import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
-import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
-import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
  * Payment channel strategy which manages channel on demand. It tries to find
@@ -80,14 +78,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         BlockchainPaymentChannelManager blockchainChannelManager = serviceClient.getSdk().getBlockchainPaymentChannelManager();
         Identity signer = serviceClient.getSdk().getIdentity();
 
-        String groupName = serviceClient.getEndpointGroupName();
-        log.debug("Current endpoint group name: {}", groupName);
-        EndpointGroup endpointGroup = metadataProvider
-            .getServiceMetadata()
-            // TODO: what does guarantee that endpoint group name is not
-            // changed before actual call is made? Think about it when
-            // implementing failover strategy.
-            .getEndpointGroupByName(groupName).get();
+        EndpointGroup endpointGroup = getEndpointGroup(serviceClient);
 
         BigInteger price = endpointGroup.getPricing().stream()
             .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)

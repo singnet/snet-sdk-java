@@ -110,8 +110,6 @@ public class Sdk implements AutoCloseable {
                 paymentStrategy);
     }
 
-    // TODO: add BaseServiceClient constructor which performs all necessary
-    // initializations.
     /**
      * Return new instance of the ServiceClient for the given service.
      * @param orgId organization id.

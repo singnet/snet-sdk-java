@@ -1,15 +1,15 @@
 package io.singularitynet.sdk.paymentstrategy;
 
 import java.math.BigInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.payment.Payment;
-import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.EscrowPayment;
 import io.singularitynet.sdk.registry.*;
 import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
-import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
@@ -17,6 +17,8 @@ import io.singularitynet.sdk.client.GrpcCallParameters;
  * payment channel selection.
  */
 public abstract class EscrowPaymentStrategy implements PaymentStrategy {
+
+    private final static Logger log = LoggerFactory.getLogger(EscrowPaymentStrategy.class);
 
     /**
      * Constructor.
@@ -46,13 +48,19 @@ public abstract class EscrowPaymentStrategy implements PaymentStrategy {
             .build();
     }
 
+    protected EndpointGroup getEndpointGroup(ServiceClient serviceClient) {
+        String groupName = serviceClient.getEndpointGroupName();
+        log.debug("Current endpoint group name: {}", groupName);
+        return serviceClient.getMetadataProvider()
+            .getServiceMetadata()
+            // TODO: what does guarantee that endpoint group name is not
+            // changed before actual call is made? Think about it when
+            // implementing failover strategy.
+            .getEndpointGroupByName(groupName).get();
+    }
+
     private BigInteger getPrice(PaymentChannel channel, ServiceClient serviceClient) {
-        ServiceMetadata serviceMetadata = serviceClient.getMetadataProvider().getServiceMetadata();
-        // TODO: this can contradict to failover strategy:
-        // how to align endpoint group selected by failover and payment group?
-        EndpointGroup group = serviceMetadata.getEndpointGroups().stream()
-            .filter(grp -> channel.getPaymentGroupId().equals(grp.getPaymentGroupId()))
-            .findFirst().get();
+        EndpointGroup group = getEndpointGroup(serviceClient);
         Pricing price = group.getPricing().stream()
             .filter(pr -> PriceModel.FIXED_PRICE.equals(pr.getPriceModel()))
             .findFirst().get();

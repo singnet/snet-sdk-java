@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import lombok.ToString;
 
 import io.singularitynet.sdk.mpe.PaymentChannel;
-import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
 
 /**
