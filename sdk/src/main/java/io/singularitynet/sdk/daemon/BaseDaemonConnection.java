@@ -66,6 +66,7 @@ public class BaseDaemonConnection implements DaemonConnection {
         if (channel.compareAndSet(null, value)) {
             return value;
         }
+        value.shutdownNow();
         return channel.get();
     }
     
