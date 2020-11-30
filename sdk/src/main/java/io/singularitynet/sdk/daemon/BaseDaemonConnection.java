@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.registry.MetadataProvider;
-import io.singularitynet.sdk.ethereum.Ethereum;
 
 // @ThreadSafe
 public class BaseDaemonConnection implements DaemonConnection {
@@ -18,17 +17,15 @@ public class BaseDaemonConnection implements DaemonConnection {
 
     private final EndpointSelector endpointSelector;
     private final ClientInterceptorProxy interceptorProxy;
-    private final Ethereum ethereum;
     private final MetadataProvider metadataProvider;
 
     private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
     private volatile Endpoint endpoint;
 
     public BaseDaemonConnection(EndpointSelector endpointSelector,
-            Ethereum ethereum, MetadataProvider metadataProvider) {
+            MetadataProvider metadataProvider) {
         log.info("New daemon connection, endpointSelector: {}", endpointSelector);
         this.endpointSelector = endpointSelector;
-        this.ethereum = ethereum;
         this.interceptorProxy = new ClientInterceptorProxy();
         this.metadataProvider = metadataProvider;
     }
@@ -46,11 +43,6 @@ public class BaseDaemonConnection implements DaemonConnection {
     @Override
     public Endpoint getEndpoint() {
         return endpoint;
-    }
-
-    @Override
-    public BigInteger getLastEthereumBlockNumber() {
-        return ethereum.getEthBlockNumber();
     }
 
     @Override

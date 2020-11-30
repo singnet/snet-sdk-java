@@ -9,10 +9,10 @@ import com.google.protobuf.ByteString;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
 import io.singularitynet.sdk.daemon.GrpcUtils;
-import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.daemon.escrow.StateService.ChannelStateRequest;
 
 public class PaymentChannelStateServiceTest {
@@ -25,10 +25,10 @@ public class PaymentChannelStateServiceTest {
         long channelId = 42;
 
         Identity signer = new PrivateKeyIdentity(new BigInteger(privateKey));
-        DaemonConnection connection = mock(DaemonConnection.class);
-        when(connection.getLastEthereumBlockNumber()).thenReturn(ethereumBlockNumber);
+        Ethereum ethereum = mock(Ethereum.class);
+        when(ethereum.getEthBlockNumber()).thenReturn(ethereumBlockNumber);
         PaymentChannelStateService.MessageSigningHelper helper =
-            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, connection);
+            new PaymentChannelStateService.MessageSigningHelper(mpeAddress, ethereum);
         ChannelStateRequest.Builder request = ChannelStateRequest.newBuilder()
             .setChannelId(GrpcUtils.toBytesString(BigInteger.valueOf(channelId)));
 

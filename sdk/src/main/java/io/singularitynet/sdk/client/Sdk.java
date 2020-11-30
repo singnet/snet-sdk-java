@@ -129,12 +129,13 @@ public class Sdk implements AutoCloseable {
         MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
         DaemonConnection connection = new BaseDaemonConnection(
-                endpointSelector, ethereum, metadataProvider);
+                endpointSelector, metadataProvider);
 
         PaymentChannelStateProvider paymentChannelStateProvider =
-            new AskDaemonFirstPaymentChannelProvider(mpeContract, connection);
+            new AskDaemonFirstPaymentChannelProvider(mpeContract, connection,
+                    ethereum);
         FreeCallStateService freeCallStateService = new FreeCallStateService(
-                orgId, serviceId, connection);
+                orgId, serviceId, connection, ethereum);
 
         return new BaseServiceClient(this, serviceId, connection, metadataProvider,
                 paymentChannelStateProvider, freeCallStateService, paymentStrategy); 

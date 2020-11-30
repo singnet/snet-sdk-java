@@ -43,7 +43,7 @@ public class BaseDaemonConnectionTest {
 
         };
         BaseDaemonConnection connection = 
-            new BaseDaemonConnection(strategy, null, null);
+            new BaseDaemonConnection(strategy, null);
         final Channel[] channels = new Channel[2];
         Thread threadA = new Thread(() -> {
             connection.getGrpcStub(channel -> channels[0] = channel);

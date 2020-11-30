@@ -10,6 +10,7 @@ import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc;
 import io.singularitynet.daemon.escrow.FreeCallStateServiceGrpc.*;
 
 import io.singularitynet.sdk.ethereum.Identity;
+import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PaymentGroupId;
 import io.singularitynet.sdk.daemon.DaemonConnection;
@@ -22,13 +23,15 @@ public class FreeCallStateService {
     private final String orgId;
     private final String serviceId;
     private final DaemonConnection daemonConnection;
+    private final Ethereum ethereum;
     private final FreeCallStateServiceBlockingStub stub;
 
     public FreeCallStateService(String orgId, String serviceId,
-            DaemonConnection daemonConnection) {
+            DaemonConnection daemonConnection, Ethereum ethereum) {
         this.orgId = orgId;
         this.serviceId = serviceId;
         this.daemonConnection = daemonConnection;
+        this.ethereum = ethereum;
         this.stub = this.daemonConnection.getGrpcStub(FreeCallStateServiceGrpc::newBlockingStub);
     }
 
@@ -38,7 +41,7 @@ public class FreeCallStateService {
 
         EndpointGroup endpointGroup = daemonConnection.getEndpoint().getGroup();
         PaymentGroupId paymentGroupId = endpointGroup.getPaymentGroupId();
-        BigInteger currentBlock = daemonConnection.getLastEthereumBlockNumber();
+        BigInteger currentBlock = ethereum.getEthBlockNumber();
 
         FreeCallPayment payment = FreeCallPayment.newBuilder()
             .setSigner(signer)

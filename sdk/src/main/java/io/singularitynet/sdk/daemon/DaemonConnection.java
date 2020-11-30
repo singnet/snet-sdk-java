@@ -33,12 +33,6 @@ public interface DaemonConnection {
     Endpoint getEndpoint();
 
     /**
-     * Return last Ethereum block number for authentication.
-     * @return last ethereum block number.
-     */
-    BigInteger getLastEthereumBlockNumber();
-
-    /**
      * Closes platform service connection. This call causes calling
      * shutdownNow() on each stub returned by getGrpcStub() method.
      */
