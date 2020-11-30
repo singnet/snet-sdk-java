@@ -79,12 +79,12 @@ package io.singularitynet.sdk.registry {
 package io.singularitynet.sdk.daemon {
 
     interface EndpointSelector {
-        Endpoint nextEndpoint();
+        Endpoint nextEndpoint(MetadataProvider metadataProvider);
     }
+    EndpointSelector -- MetadataProvider
 
     class FixedGroupEndpointSelector
     EndpointSelector <|.. FixedGroupEndpointSelector
-    FixedGroupEndpointSelector o-- MetadataProvider
     
     interface DaemonConnection {
         <T> T getGrpcStub(Function<Channel, T> constructor);
@@ -96,8 +96,9 @@ package io.singularitynet.sdk.daemon {
 
     class BaseDaemonConnection
     DaemonConnection <|.. BaseDaemonConnection
-    BaseDaemonConnection *-- EndpointSelector
+    BaseDaemonConnection o-- EndpointSelector
     BaseDaemonConnection o-- Ethereum
+    BaseDaemonConnection o-- MetadataProvider
 
 }
 
@@ -219,6 +220,7 @@ package io.singularitynet.sdk.client {
         Sdk(DependencyFactory factory);
 
         ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
+        ServiceClient newServiceClient(String orgId, String serviceId, EndpointSelector endpointSelector, PaymentStrategy paymentStrategy);
         Ethereum getEthereum();
         void transfer(Address toAddress, BigInteger amount);
         Identity getIdentity();

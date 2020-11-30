@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.registry.EndpointGroup;
+import io.singularitynet.sdk.registry.MetadataProvider;
 
 public class BaseDaemonConnectionTest {
 
@@ -19,7 +20,7 @@ public class BaseDaemonConnectionTest {
         final CountDownLatch go = new CountDownLatch(1);
         EndpointSelector strategy = new EndpointSelector() {
 
-            public Endpoint nextEndpoint() {
+            public Endpoint nextEndpoint(MetadataProvider metadataProvider) {
                 return Utils.wrapExceptions(() -> {
                     ready.countDown();
                     go.await(); 
@@ -42,7 +43,7 @@ public class BaseDaemonConnectionTest {
 
         };
         BaseDaemonConnection connection = 
-            new BaseDaemonConnection(strategy, null);
+            new BaseDaemonConnection(strategy, null, null);
         final Channel[] channels = new Channel[2];
         Thread threadA = new Thread(() -> {
             connection.getGrpcStub(channel -> channels[0] = channel);
