@@ -12,30 +12,16 @@ import io.singularitynet.sdk.client.ServiceClient;
 import io.singularitynet.sdk.client.Sdk;
 import io.singularitynet.sdk.client.GrpcCallParameters;
 
-// TODO: replace inheritance of FixedPaymentChannelPaymentStrategy and
-// OnDemandPaymentChannelPaymentStrategy from EscrowPaymentStrategy by
-// aggregation
 /**
  * Escrow payment strategy class which is based on MultiPartyEscrow contract
  * payment channel selection.
  */
 public abstract class EscrowPaymentStrategy implements PaymentStrategy {
 
-    private final Identity signer;
-
     /**
      * Constructor.
-     * @param sdk SDK instance.
      */
-    public EscrowPaymentStrategy(Sdk sdk) {
-        this.signer = sdk.getIdentity();
-    }
-
-    /**
-     * @return payment check signer identity.
-     */
-    protected Identity getSigner() {
-        return signer;
+    public EscrowPaymentStrategy() {
     }
 
     /**
@@ -56,7 +42,7 @@ public abstract class EscrowPaymentStrategy implements PaymentStrategy {
         return EscrowPayment.newBuilder()
             .setPaymentChannel(channel)
             .setAmount(newAmount)
-            .setSigner(signer)
+            .setSigner(serviceClient.getSdk().getIdentity())
             .build();
     }
 

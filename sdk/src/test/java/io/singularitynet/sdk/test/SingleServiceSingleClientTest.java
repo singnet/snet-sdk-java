@@ -53,7 +53,7 @@ public class SingleServiceSingleClientTest {
                 env.registry().get(), env.mpe().get());
 
         PaymentStrategy paymentStrategy = new FixedPaymentChannelPaymentStrategy(
-                sdk, paymentChannel.getChannelId());
+                paymentChannel.getChannelId());
         serviceClient = sdk.newServiceClient(orgId, serviceId,
                 endpointGroup.getGroupName(), paymentStrategy);
 

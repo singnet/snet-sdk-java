@@ -100,7 +100,7 @@
     try {
 
         // Choose payment strategy
-        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk);
+        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
 
         // Create new service client instance
         ServiceClient serviceClient = sdk.newServiceClient("snet",

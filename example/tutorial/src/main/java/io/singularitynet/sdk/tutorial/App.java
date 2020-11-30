@@ -30,7 +30,7 @@ public class App {
 
             // 40320 is a week in Ethereum blocks assuming single block is mined in 15 seconds
             OnDemandPaymentChannelPaymentStrategy paymentStrategy =
-                new OnDemandPaymentChannelPaymentStrategy(sdk, 40320, 100);
+                new OnDemandPaymentChannelPaymentStrategy(40320, 100);
 
             ServiceClient serviceClient = sdk.newServiceClient("example-org",
                     "example-service", "default_group", paymentStrategy);

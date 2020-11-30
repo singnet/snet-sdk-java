@@ -122,7 +122,7 @@ public class Sdk implements AutoCloseable {
         FreeCallStateService freeCallStateService = new FreeCallStateService(
                 orgId, serviceId, connection);
 
-        return new BaseServiceClient(serviceId, connection, metadataProvider,
+        return new BaseServiceClient(this, serviceId, connection, metadataProvider,
                 paymentChannelStateProvider, freeCallStateService, paymentStrategy); 
     }
 

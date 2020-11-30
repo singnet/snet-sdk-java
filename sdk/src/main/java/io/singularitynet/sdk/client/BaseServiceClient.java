@@ -20,6 +20,7 @@ public class BaseServiceClient implements ServiceClient {
 
     private final static Logger log = LoggerFactory.getLogger(BaseServiceClient.class);
 
+    private final Sdk sdk;
     private final String serviceId;
     private final DaemonConnection daemonConnection;
     private final MetadataProvider metadataProvider;
@@ -29,6 +30,7 @@ public class BaseServiceClient implements ServiceClient {
 
     /**
      * Constructor.
+     * @param sdk SDK instance.
      * @param serviceId id of the service within organization.
      * @param daemonConnection provides live gRPC connection.
      * @param metadataProvider provides the service related metadata.
@@ -37,12 +39,14 @@ public class BaseServiceClient implements ServiceClient {
      * @param paymentStrategy provides payment for the client call.
      */
     public BaseServiceClient(
+            Sdk sdk,
             String serviceId,
             DaemonConnection daemonConnection,
             MetadataProvider metadataProvider,
             PaymentChannelStateProvider channelStateProvider,
             FreeCallStateService freeCallStateService,
             PaymentStrategy paymentStrategy) {
+        this.sdk = sdk;
         this.serviceId = serviceId;
         this.daemonConnection = daemonConnection;
         this.daemonConnection.setClientCallsInterceptor(new PaymentClientInterceptor(this, paymentStrategy));
@@ -50,6 +54,11 @@ public class BaseServiceClient implements ServiceClient {
         this.channelStateProvider = channelStateProvider;
         this.freeCallStateService = freeCallStateService;
         this.paymentStrategy = paymentStrategy;
+    }
+
+    @Override
+    public Sdk getSdk() {
+        return sdk;
     }
 
     @Override

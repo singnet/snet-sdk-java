@@ -35,7 +35,7 @@ public class FreeCallPaymentStrategyTest {
             .setToken("010203")
             .build();
         FreeCallPaymentStrategy strategy = new FreeCallPaymentStrategy(
-                mock(Ethereum.class), mock(Identity.class), token);
+                mock(Identity.class), token);
         
         Payment payment = strategy.getPayment(null, serviceClient);
 

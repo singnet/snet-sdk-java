@@ -191,6 +191,7 @@ package io.singularitynet.sdk.client {
     DependencyFactory <|.. ConfigurationDependencyFactory
 
     interface ServiceClient {
+        Sdk getSdk();
         MetadataProvider getMetadataProvider();
         PaymentChannelStateProvider getPaymentChannelStateProvider();
         FreeCallStateService getFreeCallStateService();
@@ -204,8 +205,9 @@ package io.singularitynet.sdk.client {
 
     class BaseServiceClient
     ServiceClient <|.. BaseServiceClient
+    BaseServiceClient o-- Sdk
     BaseServiceClient *-- DaemonConnection
-    BaseServiceClient *-- PaymentStrategy
+    BaseServiceClient o-- PaymentStrategy
 
     interface PaymentStrategy {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
@@ -237,27 +239,22 @@ package paymentstrategy {
         protected PaymentChannel selectChannel(ServiceClient serviceClient);
     }
     PaymentStrategy ()- EscrowPaymentStrategy
-    EscrowPaymentStrategy o-- Identity
     EscrowPaymentStrategy -- EscrowPayment
-    EscrowPaymentStrategy -- Sdk
 
     class FixedPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
     
     class OnDemandPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
-    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
-    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
     
     class FreeCallPaymentStrategy
     PaymentStrategy ()- FreeCallPaymentStrategy
-    FreeCallPaymentStrategy o-- Ethereum
     FreeCallPaymentStrategy o-- Identity
     FreeCallPaymentStrategy -- FreeCallPayment
 
     class CombinedPaymentStrategy
     PaymentStrategy ()- CombinedPaymentStrategy
-    CombinedPaymentStrategy *-- PaymentStrategy
+    CombinedPaymentStrategy o-- PaymentStrategy
 
 }
 

@@ -42,7 +42,7 @@ public class CallAfterClaimTestIT {
             .getChannelId();
         this.serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
                 IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP,
-                new FixedPaymentChannelPaymentStrategy(sdk, channelId));
+                new FixedPaymentChannelPaymentStrategy(channelId));
 
         this.deployerConnection = new BaseDaemonConnection(
                 new FixedGroupEndpointSelector(
