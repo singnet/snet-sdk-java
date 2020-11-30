@@ -28,3 +28,8 @@ target
 # vim specific files
 *.swp
 .vim-project
+
+# Eclipse specific files
+.classpath
+.settings
+.project
