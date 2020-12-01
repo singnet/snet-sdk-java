@@ -41,7 +41,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
      * New on demand payment channel strategy with default parameter values.
      */
     public OnDemandPaymentChannelPaymentStrategy() {
-        this(BigInteger.valueOf(1), BigInteger.valueOf(1));
+        this(1, 1);
     }
 
     /**
