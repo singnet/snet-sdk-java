@@ -86,7 +86,7 @@ public class ImageSegmentationActivity extends SnetDemoActivity
         String endpointGroupName = "default_group";
                 
         sdk = new SnetSdk(ImageSegmentationActivity.this);
-        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
+        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
         serviceClient = sdk.getSdk().newServiceClient(organizationId, serviceId, 
                 endpointGroupName, paymentStrategy);
     }

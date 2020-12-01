@@ -27,8 +27,7 @@ public class ExampleService {
         try {
 
             OnDemandPaymentChannelPaymentStrategy paymentStrategy =
-                new OnDemandPaymentChannelPaymentStrategy(sdk,
-                        40320 /* about a week in Ethereum blocks */, 100);
+                new OnDemandPaymentChannelPaymentStrategy(40320 /* about a week in Ethereum blocks */, 100);
 
             ServiceClient serviceClient = sdk.newServiceClient("snet",
                     "example-service", "default_group", paymentStrategy); 

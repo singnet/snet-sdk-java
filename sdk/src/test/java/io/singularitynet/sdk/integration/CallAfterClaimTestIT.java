@@ -42,12 +42,11 @@ public class CallAfterClaimTestIT {
             .getChannelId();
         this.serviceClient = sdk.newServiceClient(IntEnv.TEST_ORG_ID,
                 IntEnv.TEST_SERVICE_ID, IntEnv.TEST_ENDPOINT_GROUP,
-                new FixedPaymentChannelPaymentStrategy(sdk, channelId));
+                new FixedPaymentChannelPaymentStrategy(channelId));
 
         this.deployerConnection = new BaseDaemonConnection(
-                new FixedGroupEndpointSelector(
-                    sdk.getMetadataProvider(IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID),
-                    IntEnv.TEST_ENDPOINT_GROUP), sdk.getEthereum());
+                new FixedGroupEndpointSelector(IntEnv.TEST_ENDPOINT_GROUP),
+                sdk.getMetadataProvider(IntEnv.TEST_ORG_ID, IntEnv.TEST_SERVICE_ID));
         PrivateKeyIdentity deployer = new PrivateKeyIdentity(IntEnv.DEPLOYER_PRIVATE_KEY);
         this.controlService = new ProviderControlService(deployerConnection,
                 IntEnv.MPE_CONTRACT_ADDRESS, deployer, sdk.getEthereum());

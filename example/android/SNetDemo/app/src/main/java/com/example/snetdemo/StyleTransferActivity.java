@@ -99,7 +99,7 @@ public class StyleTransferActivity extends SnetDemoActivity
         String endpointGroupName = "default_group";
 
         sdk = new SnetSdk(StyleTransferActivity.this);
-        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy(sdk.getSdk());
+        PaymentStrategy paymentStrategy = new OnDemandPaymentChannelPaymentStrategy();
         serviceClient = sdk.getSdk().newServiceClient(organizationId, serviceId,
                 endpointGroupName, paymentStrategy);
     }
