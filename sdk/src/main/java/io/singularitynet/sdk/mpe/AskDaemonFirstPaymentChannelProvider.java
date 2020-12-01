@@ -9,6 +9,7 @@ import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.CryptoUtils;
 import io.singularitynet.sdk.ethereum.Address;
+import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Signature;
 import io.singularitynet.sdk.registry.PaymentGroupId;
@@ -34,13 +35,15 @@ public class AskDaemonFirstPaymentChannelProvider implements PaymentChannelState
      * @param mpe MultiPartyEscrowContract instance which is used to get
      * channel state from the blockchain.
      * @param connection daemon connection.
+     * @param ethereum ethereum API.
      */
     public AskDaemonFirstPaymentChannelProvider(
             MultiPartyEscrowContract mpe,
-            DaemonConnection connection) {
+            DaemonConnection connection,
+            Ethereum ethereum) {
         this.mpe = mpe;
         this.stateService = new PaymentChannelStateService(connection,
-                mpe.getContractAddress());
+                mpe.getContractAddress(), ethereum);
     }
 
     @Override

@@ -10,17 +10,14 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.singularitynet.sdk.ethereum.Ethereum;
+import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.registry.MetadataProvider;
 import io.singularitynet.sdk.registry.EndpointGroup;
 import io.singularitynet.sdk.registry.PaymentGroup;
 import io.singularitynet.sdk.registry.PriceModel;
 import io.singularitynet.sdk.mpe.PaymentChannel;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
-import io.singularitynet.sdk.client.PaymentStrategy;
 import io.singularitynet.sdk.client.ServiceClient;
-import io.singularitynet.sdk.client.Sdk;
-import io.singularitynet.sdk.client.GrpcCallParameters;
 
 /**
  * Payment channel strategy which manages channel on demand. It tries to find
@@ -37,50 +34,39 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
 
     private final static Logger log = LoggerFactory.getLogger(OnDemandPaymentChannelPaymentStrategy.class);
 
-    @ToString.Exclude
-    private final Ethereum ethereum;
-    @ToString.Exclude
-    private final BlockchainPaymentChannelManager blockchainChannelManager;
-
     private final BigInteger channelLifetime;
     private final BigInteger numberOfCalls;
         
     /**
      * New on demand payment channel strategy with default parameter values.
-     * @param sdk SDK instance.
      */
-    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk) {
-        this(sdk, BigInteger.valueOf(1), BigInteger.valueOf(1));
+    public OnDemandPaymentChannelPaymentStrategy() {
+        this(1, 1);
     }
 
     /**
      * New on demand payment channel strategy.
-     * @param sdk SDK instance.
      * @param channelLifetime number of blocks to be added to the service
      * provider expiration threshold when opening or updating channels.
      * @see io.singularitynet.sdk.registry.PaymentDetails#getPaymentExpirationThreshold
      * @param numberOfCalls number of calls by fixed price to be made after
      * channel is opened or updated.
      */
-    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, long channelLifetime,
+    public OnDemandPaymentChannelPaymentStrategy(long channelLifetime,
             long numberOfCalls) {
-        this(sdk, BigInteger.valueOf(channelLifetime), BigInteger.valueOf(numberOfCalls));
+        this(BigInteger.valueOf(channelLifetime), BigInteger.valueOf(numberOfCalls));
     }
 
     /**
      * New on demand payment channel strategy.
-     * @param sdk SDK instance.
      * @param channelLifetime number of blocks to be added to the service
      * provider expiration threshold when opening or updating channels.
      * @see io.singularitynet.sdk.registry.PaymentDetails#getPaymentExpirationThreshold
      * @param numberOfCalls number of calls by fixed price to be made after
      * channel is opened or updated.
      */
-    public OnDemandPaymentChannelPaymentStrategy(Sdk sdk, BigInteger channelLifetime,
+    public OnDemandPaymentChannelPaymentStrategy(BigInteger channelLifetime,
             BigInteger numberOfCalls) {
-        super(sdk);
-        this.ethereum = sdk.getEthereum();
-        this.blockchainChannelManager = sdk.getBlockchainPaymentChannelManager();
         this.channelLifetime = channelLifetime;
         this.numberOfCalls = numberOfCalls;
     }
@@ -89,15 +75,10 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
     protected PaymentChannel selectChannel(ServiceClient serviceClient) {
         log.debug("Selecting channel to make a call using service client");
         MetadataProvider metadataProvider = serviceClient.getMetadataProvider();
+        BlockchainPaymentChannelManager blockchainChannelManager = serviceClient.getSdk().getBlockchainPaymentChannelManager();
+        Identity signer = serviceClient.getSdk().getIdentity();
 
-        String groupName = serviceClient.getEndpointGroupName();
-        log.debug("Current endpoint group name: {}", groupName);
-        EndpointGroup endpointGroup = metadataProvider
-            .getServiceMetadata()
-            // TODO: what does guarantee that endpoint group name is not
-            // changed before actual call is made? Think about it when
-            // implementing failover strategy.
-            .getEndpointGroupByName(groupName).get();
+        EndpointGroup endpointGroup = getEndpointGroup(serviceClient);
 
         BigInteger price = endpointGroup.getPricing().stream()
             .filter(pr -> pr.getPriceModel() == PriceModel.FIXED_PRICE)
@@ -110,14 +91,14 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
         BigInteger expirationThreshold = paymentGroup
             .getPaymentDetails()
             .getPaymentExpirationThreshold();
-        BigInteger currentBlock = ethereum.getEthBlockNumber();
+        BigInteger currentBlock = serviceClient.getSdk().getEthereum().getEthBlockNumber();
         BigInteger minExpiration = currentBlock.add(expirationThreshold);
 
         Optional<Supplier<PaymentChannel>> channelSupplier = blockchainChannelManager
-            .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), getSigner())
+            .getChannelsAccessibleBy(paymentGroup.getPaymentGroupId(), signer)
             .map(ch -> ch.getChannelId())
             .map(id -> serviceClient.getPaymentChannelStateProvider()
-                    .getChannelStateById(id, getSigner()))
+                    .getChannelStateById(id, signer))
             .flatMap(channel -> {
                 if (channel.getBalance().compareTo(price) >= 0 && 
                     channel.getExpiration().compareTo(minExpiration) > 0) {
@@ -154,7 +135,7 @@ public class OnDemandPaymentChannelPaymentStrategy extends EscrowPaymentStrategy
 
         PaymentChannel channel = blockchainChannelManager.openPaymentChannel(
                 paymentGroup,
-                getSigner(),
+                signer,
                 numberOfCalls.multiply(price),
                 expirationThreshold.add(channelLifetime));
         log.info("New channel opened: {}", channel);

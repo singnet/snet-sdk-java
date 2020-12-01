@@ -95,8 +95,6 @@ public class Sdk implements AutoCloseable {
         this.paymentChannelManager = new MpePaymentChannelManager(mpeContract);
     }
 
-    // TODO: add BaseServiceClient constructor which performs all necessary
-    // initializations.
     /**
      * Return new instance of the ServiceClient for the given service.
      * @param orgId organization id.
@@ -107,22 +105,37 @@ public class Sdk implements AutoCloseable {
      */
     public ServiceClient newServiceClient(String orgId, String serviceId,
             String endpointGroupName, PaymentStrategy paymentStrategy) {
-        log.info("Start service client, orgId: {}, serviceId: {}, endpointGroupName: {}, paymentStrategy: {}",
-                orgId, serviceId, endpointGroupName, paymentStrategy);
+        return newServiceClient(orgId, serviceId,
+                new FixedGroupEndpointSelector(endpointGroupName),
+                paymentStrategy);
+    }
+
+    /**
+     * Return new instance of the ServiceClient for the given service.
+     * @param orgId organization id.
+     * @param serviceId service id.
+     * @param endpointSelector endpoint selection strategy.
+     * @param paymentStrategy payment strategy to use.
+     * @return new instance of service client.
+     */
+    public ServiceClient newServiceClient(String orgId, String serviceId,
+            EndpointSelector endpointSelector,
+            PaymentStrategy paymentStrategy) {
+        log.info("Start service client, orgId: {}, serviceId: {}, endpointSelector: {}, paymentStrategy: {}",
+                orgId, serviceId, endpointSelector, paymentStrategy);
 
         MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
-        EndpointSelector endpointSelector = new FixedGroupEndpointSelector(
-                metadataProvider, endpointGroupName);
         DaemonConnection connection = new BaseDaemonConnection(
-                endpointSelector, ethereum);
+                endpointSelector, metadataProvider);
 
         PaymentChannelStateProvider paymentChannelStateProvider =
-            new AskDaemonFirstPaymentChannelProvider(mpeContract, connection);
+            new AskDaemonFirstPaymentChannelProvider(mpeContract, connection,
+                    ethereum);
         FreeCallStateService freeCallStateService = new FreeCallStateService(
-                orgId, serviceId, connection);
+                orgId, serviceId, connection, ethereum);
 
-        return new BaseServiceClient(serviceId, connection, metadataProvider,
+        return new BaseServiceClient(this, serviceId, connection, metadataProvider,
                 paymentChannelStateProvider, freeCallStateService, paymentStrategy); 
     }
 

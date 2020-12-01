@@ -79,25 +79,24 @@ package io.singularitynet.sdk.registry {
 package io.singularitynet.sdk.daemon {
 
     interface EndpointSelector {
-        Endpoint nextEndpoint();
+        Endpoint nextEndpoint(MetadataProvider metadataProvider);
     }
+    EndpointSelector -- MetadataProvider
 
     class FixedGroupEndpointSelector
     EndpointSelector <|.. FixedGroupEndpointSelector
-    FixedGroupEndpointSelector o-- MetadataProvider
     
     interface DaemonConnection {
         <T> T getGrpcStub(Function<Channel, T> constructor);
         void setClientCallsInterceptor(ClientInterceptor interceptor);
         Endpoint getEndpoint();
-        BigInteger getLastEthereumBlockNumber();
         void shutdownNow();
     }
 
     class BaseDaemonConnection
     DaemonConnection <|.. BaseDaemonConnection
-    BaseDaemonConnection *-- EndpointSelector
-    BaseDaemonConnection o-- Ethereum
+    BaseDaemonConnection o-- EndpointSelector
+    BaseDaemonConnection o-- MetadataProvider
 
 }
 
@@ -138,6 +137,7 @@ package io.singularitynet.sdk.mpe {
         PaymentChannelStateReply getChannelState(BigInteger channelId, Identity signer);
     }
     PaymentChannelStateService o-- DaemonConnection
+    PaymentChannelStateService o-- Ethereum
 
     class AskDaemonFirstPaymentChannelProvider
     PaymentChannelStateProvider <|.. AskDaemonFirstPaymentChannelProvider
@@ -155,6 +155,7 @@ package io.singularitynet.sdk.freecall {
         long getFreeCallsAvailable(FreeCallAuthToken freeCallAuthToken, Identity signer);
     }
     FreeCallStateService o-- DaemonConnection
+    FreeCallStateService o-- Ethereum
     FreeCallStateService -- FreeCallPayment
 
 }
@@ -191,6 +192,7 @@ package io.singularitynet.sdk.client {
     DependencyFactory <|.. ConfigurationDependencyFactory
 
     interface ServiceClient {
+        Sdk getSdk();
         MetadataProvider getMetadataProvider();
         PaymentChannelStateProvider getPaymentChannelStateProvider();
         FreeCallStateService getFreeCallStateService();
@@ -204,8 +206,9 @@ package io.singularitynet.sdk.client {
 
     class BaseServiceClient
     ServiceClient <|.. BaseServiceClient
+    BaseServiceClient o-- Sdk
     BaseServiceClient *-- DaemonConnection
-    BaseServiceClient *-- PaymentStrategy
+    BaseServiceClient o-- PaymentStrategy
 
     interface PaymentStrategy {
         <ReqT, RespT> Payment getPayment(GrpcCallParameters<ReqT, RespT> parameters, ServiceClient serviceClient);
@@ -217,6 +220,7 @@ package io.singularitynet.sdk.client {
         Sdk(DependencyFactory factory);
 
         ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
+        ServiceClient newServiceClient(String orgId, String serviceId, EndpointSelector endpointSelector, PaymentStrategy paymentStrategy);
         Ethereum getEthereum();
         void transfer(Address toAddress, BigInteger amount);
         Identity getIdentity();
@@ -237,27 +241,22 @@ package paymentstrategy {
         protected PaymentChannel selectChannel(ServiceClient serviceClient);
     }
     PaymentStrategy ()- EscrowPaymentStrategy
-    EscrowPaymentStrategy o-- Identity
     EscrowPaymentStrategy -- EscrowPayment
-    EscrowPaymentStrategy -- Sdk
 
     class FixedPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- FixedPaymentChannelPaymentStrategy
     
     class OnDemandPaymentChannelPaymentStrategy
     EscrowPaymentStrategy <|-- OnDemandPaymentChannelPaymentStrategy
-    OnDemandPaymentChannelPaymentStrategy o-- Ethereum
-    OnDemandPaymentChannelPaymentStrategy o-- BlockchainPaymentChannelManager
     
     class FreeCallPaymentStrategy
     PaymentStrategy ()- FreeCallPaymentStrategy
-    FreeCallPaymentStrategy o-- Ethereum
     FreeCallPaymentStrategy o-- Identity
     FreeCallPaymentStrategy -- FreeCallPayment
 
     class CombinedPaymentStrategy
     PaymentStrategy ()- CombinedPaymentStrategy
-    CombinedPaymentStrategy *-- PaymentStrategy
+    CombinedPaymentStrategy o-- PaymentStrategy
 
 }
 

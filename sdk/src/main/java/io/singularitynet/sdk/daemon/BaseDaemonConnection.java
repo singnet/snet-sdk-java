@@ -8,7 +8,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.singularitynet.sdk.ethereum.Ethereum;
+import io.singularitynet.sdk.registry.MetadataProvider;
 
 // @ThreadSafe
 public class BaseDaemonConnection implements DaemonConnection {
@@ -17,17 +17,17 @@ public class BaseDaemonConnection implements DaemonConnection {
 
     private final EndpointSelector endpointSelector;
     private final ClientInterceptorProxy interceptorProxy;
-    private final Ethereum ethereum;
+    private final MetadataProvider metadataProvider;
 
     private AtomicReference<ManagedChannel> channel = new AtomicReference<>();
     private volatile Endpoint endpoint;
 
     public BaseDaemonConnection(EndpointSelector endpointSelector,
-            Ethereum ethereum) {
+            MetadataProvider metadataProvider) {
         log.info("New daemon connection, endpointSelector: {}", endpointSelector);
         this.endpointSelector = endpointSelector;
-        this.ethereum = ethereum;
         this.interceptorProxy = new ClientInterceptorProxy();
+        this.metadataProvider = metadataProvider;
     }
 
     @Override
@@ -46,11 +46,6 @@ public class BaseDaemonConnection implements DaemonConnection {
     }
 
     @Override
-    public BigInteger getLastEthereumBlockNumber() {
-        return ethereum.getEthBlockNumber();
-    }
-
-    @Override
     public void shutdownNow() {
         channel.get().shutdownNow();
         log.info("gRPC channel to daemon closed");
@@ -66,6 +61,7 @@ public class BaseDaemonConnection implements DaemonConnection {
         if (channel.compareAndSet(null, value)) {
             return value;
         }
+        value.shutdownNow();
         return channel.get();
     }
     
@@ -73,7 +69,7 @@ public class BaseDaemonConnection implements DaemonConnection {
     private static int MAX_GRPC_INBOUND_MESSAGE_SIZE = 1 << 24;
 
     private ManagedChannel getChannel() {
-        endpoint = endpointSelector.nextEndpoint();
+        endpoint = endpointSelector.nextEndpoint(metadataProvider);
         URL url = endpoint.getUrl();
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())

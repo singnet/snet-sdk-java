@@ -13,7 +13,7 @@ public class CombinedPaymentStrategyTestIT extends AbstractIntegrationTest {
     public void useChannelWhenFreeCallsAreOver() {
         CombinedPaymentStrategy strategy = new CombinedPaymentStrategy(
                 FreeCallPaymentStrategyTestIT.getFreeCallPaymentStrategy(sdk),
-                new OnDemandPaymentChannelPaymentStrategy(sdk));
+                new OnDemandPaymentChannelPaymentStrategy());
 
         run(strategy, serviceClient -> {
 

@@ -47,7 +47,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegra
 
     @Test
     public void newChannelIsCreatedOnFirstCall() {
-        run(new OnDemandPaymentChannelPaymentStrategy(sdk), serviceClient -> {
+        run(new OnDemandPaymentChannelPaymentStrategy(), serviceClient -> {
             WithAddress caller = sdk.getIdentity();
 
             IntEnv.makeServiceCall(serviceClient);
@@ -59,7 +59,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegra
 
     @Test
     public void oldChannelIsReusedOnSecondCall() {
-        run(new OnDemandPaymentChannelPaymentStrategy(sdk), serviceClient -> {
+        run(new OnDemandPaymentChannelPaymentStrategy(), serviceClient -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, cogsPerCall,
@@ -74,7 +74,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegra
 
     @Test
     public void oldChannelAddFundsOnCall() {
-        run(new OnDemandPaymentChannelPaymentStrategy(sdk), serviceClient -> {
+        run(new OnDemandPaymentChannelPaymentStrategy(), serviceClient -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO,
@@ -92,7 +92,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegra
 
     @Test
     public void oldChannelIsExtendedOnCall() {
-        run(new OnDemandPaymentChannelPaymentStrategy(sdk), serviceClient -> {
+        run(new OnDemandPaymentChannelPaymentStrategy(), serviceClient -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, cogsPerCall, BigInteger.ZERO);
@@ -111,7 +111,7 @@ public class OnDemandPaymentChannelPaymentStrategyTestIT extends AbstractIntegra
 
     @Test
     public void oldChannelIsExtendedAndFundsAddedOnCall() {
-        run(new OnDemandPaymentChannelPaymentStrategy(sdk), serviceClient -> {
+        run(new OnDemandPaymentChannelPaymentStrategy(), serviceClient -> {
             WithAddress caller = sdk.getIdentity();
             sdk.getBlockchainPaymentChannelManager().
                 openPaymentChannel(paymentGroup, caller, BigInteger.ZERO, BigInteger.ZERO);

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.payment.Payment;
 import io.singularitynet.sdk.freecall.FreeCallPayment;
@@ -29,9 +28,6 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
 
     private final static Logger log = LoggerFactory.getLogger(FreeCallPaymentStrategy.class);
 
-    @ToString.Exclude
-    private final Ethereum ethereum;
-
     private final FreeCallAuthToken freeCallAuthToken;
     private final Identity signer;
 
@@ -40,16 +36,14 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
 
     /**
      * Constructor.
-     * @param ethereum Ethereum client instance to get current ethereum block
      * @param signer identity which owns Ethereum address used to emit the
      * token; it is used to sign free call payment
      * @param freeCallAuthToken token emitted by free call signer; in order to
      * receive a token one need to login to DApp and register an Ethereum
      * address of the signer there.
      */
-    public FreeCallPaymentStrategy(Ethereum ethereum, Identity signer,
+    public FreeCallPaymentStrategy(Identity signer,
             FreeCallAuthToken freeCallAuthToken) {
-        this.ethereum = ethereum;
         this.signer = signer;
         this.freeCallAuthToken = freeCallAuthToken;
         this.paymentBuilder = FreeCallPayment.newBuilder()
@@ -88,7 +82,7 @@ public class FreeCallPaymentStrategy implements PaymentStrategy {
         log.debug("Service id: {}, number of free calls available: {}, return free call payment",
                 serviceClient.getServiceId(), freeCallAvailable);
         return paymentBuilder
-            .setCurrentBlockNumber(ethereum.getEthBlockNumber())
+            .setCurrentBlockNumber(serviceClient.getSdk().getEthereum().getEthBlockNumber())
             .setOrgId(serviceClient.getOrgId())
             .setServiceId(serviceClient.getServiceId())
             .setPaymentGroupId(endpointGroup.getPaymentGroupId())
