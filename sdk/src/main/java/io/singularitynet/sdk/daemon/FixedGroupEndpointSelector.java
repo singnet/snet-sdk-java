@@ -20,22 +20,17 @@ public class FixedGroupEndpointSelector implements EndpointSelector {
 
     private final static Logger log = LoggerFactory.getLogger(FixedGroupEndpointSelector.class);
 
-    @ToString.Exclude
-    private final MetadataProvider metadataProvider;
     private final String endpointGroupName;
 
     /**
-     * @param metadataProvider service metadata provider.
      * @param endpointGroupName name of the endpoint group to connect.
      */
-    public FixedGroupEndpointSelector(MetadataProvider metadataProvider,
-            String endpointGroupName) {
-        this.metadataProvider = metadataProvider;
+    public FixedGroupEndpointSelector(String endpointGroupName) {
         this.endpointGroupName = endpointGroupName;
     }
 
     @Override
-    public Endpoint nextEndpoint() {
+    public Endpoint nextEndpoint(MetadataProvider metadataProvider) {
         ServiceMetadata serviceMetadata = metadataProvider.getServiceMetadata();
         EndpointGroup group = serviceMetadata
             .getEndpointGroupByName(endpointGroupName).get();

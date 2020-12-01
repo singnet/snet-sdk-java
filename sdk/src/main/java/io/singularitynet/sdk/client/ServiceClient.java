@@ -14,6 +14,12 @@ import io.singularitynet.sdk.freecall.FreeCallStateService;
 public interface ServiceClient extends AutoCloseable {
 
     /**
+     * Return SDK instance which is used.
+     * @return Sdk instance
+     */
+    Sdk getSdk();
+
+    /**
      * Return an instance of the metadata provider.
      * @return metadata provider instance.
      */

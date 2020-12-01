@@ -59,12 +59,12 @@ public class FreeCallPaymentStrategyTestIT extends AbstractIntegrationTest {
         String freeCallToken = FreeCallPayment.generateFreeCallPaymentToken(
                 dappUserId, caller.getAddress(), freeCallExpirationBlock,
                 IntEnv.DEPLOYER_IDENTITY);
-        return new FreeCallPaymentStrategy(sdk.getEthereum(),
-                caller, FreeCallAuthToken.newBuilder()
-                .setDappUserId(dappUserId)
-                .setExpirationBlock(freeCallExpirationBlock)
-                .setToken(freeCallToken)
-                .build());
+        return new FreeCallPaymentStrategy(caller,
+                FreeCallAuthToken.newBuilder()
+                    .setDappUserId(dappUserId)
+                    .setExpirationBlock(freeCallExpirationBlock)
+                    .setToken(freeCallToken)
+                    .build());
     }
 
     private static final Random random = new Random();
