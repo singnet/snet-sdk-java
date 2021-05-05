@@ -1,6 +1,7 @@
 package io.singularitynet.sdk.registry;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -108,8 +109,53 @@ public class RegistryMetadataProviderTest {
                 .build())
         .build();
 
+    private static final String ORGANIZATION_METADATA_JSON =
+        "{" +
+        "    \"org_name\": \"snet\"," +
+        "    \"org_id\": \"snet\"," +
+        "    \"org_type\": \"\"," +
+        "    \"description\": {}," +
+        "    \"assets\": {}," +
+        "    \"contacts\": []," +
+        "    \"groups\": [" +
+        "        {" +
+        "            \"group_name\": \"default_group\"," +
+        "            \"group_id\": \"EoFmN3nvaXpf6ew8jJbIPVghE5NXfYupFF7PkRmVyGQ=\"," +
+        "            \"payment\": {" +
+        "                \"payment_address\": \"0xd1C9246f6A15A86bae293a3E72F28C57Da6e1dCD\"," +
+        "                \"payment_expiration_threshold\": 100," +
+        "                \"payment_channel_storage_type\": \"etcd\"," +
+        "                \"payment_channel_storage_client\": {" +
+        "                    \"connection_timeout\": \"100s\"," +
+        "                    \"request_timeout\": \"5s\"," +
+        "                    \"endpoints\": [" +
+        "                        \"https://snet-etcd.singularitynet.io:2379\"" +
+        "                    ]" +
+        "                }" +
+        "            }" +
+        "        }" +
+        "    ]" +
+        "}";
+
+    private static final OrganizationMetadata ORGANIZATION_METADATA_OBJECT =
+        OrganizationMetadata.newBuilder()
+        .setOrgId("snet")
+        .setOrgName("snet")
+        .addPaymentGroup(PaymentGroup.newBuilder()
+                .setGroupName("default_group")
+                .setPaymentGroupId(new PaymentGroupId("EoFmN3nvaXpf6ew8jJbIPVghE5NXfYupFF7PkRmVyGQ="))
+                .setPaymentDetails(PaymentDetails.newBuilder()
+                    .setPaymentAddress(new Address("0xd1C9246f6A15A86bae293a3E72F28C57Da6e1dCD"))
+                    .setPaymentExpirationThreshold(BigInteger.valueOf(100))
+                    .build())
+                .build())
+        .build();
+
     private RegistryContract registry;
     private MetadataStorage storage;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -144,11 +190,58 @@ public class RegistryMetadataProviderTest {
                 metadata);
     }
 
+    @Test
+    public void getServiceMetadataNoService() {
+        thrown.expect(RegistryMetadataProvider.NotFoundException.class);
+        thrown.expectMessage("Service not found, orgId: test-org, serviceId: test-service");
+        when(registry.getServiceRegistrationById("test-org", "test-service"))
+            .thenReturn(Optional.empty());
+        RegistryMetadataProvider provider = new RegistryMetadataProvider(
+                "test-org", "test-service", registry, storage);
+
+        provider.getServiceMetadata();
+    }
+
+    @Test
+    public void getOrganizationMetadata() {
+        addOrganizationMetadataToRegistry("test-org", ORGANIZATION_METADATA_JSON);
+        RegistryMetadataProvider provider = new RegistryMetadataProvider(
+                "test-org", "test-service", registry, storage);
+
+        OrganizationMetadata metadata = provider.getOrganizationMetadata();
+
+        assertEquals("Organization metadata",
+                ORGANIZATION_METADATA_OBJECT, metadata);
+    }
+
+    @Test
+    public void getOrganizationMetadataNoService() {
+        thrown.expect(RegistryMetadataProvider.NotFoundException.class);
+        thrown.expectMessage("Organization not found, orgId: test-org");
+        when(registry.getOrganizationById("test-org"))
+            .thenReturn(Optional.empty());
+        RegistryMetadataProvider provider = new RegistryMetadataProvider(
+                "test-org", "test-service", registry, storage);
+
+        provider.getOrganizationMetadata();
+    }
+
     private void addServiceMetadataToRegistry(String orgId, String serviceId, String metadataJson) {
         final URI metadataURI = Utils.strToUri("ipfs://QmNMahizv1b1VuZzWyo4x6qTUyPc5AuQhhfwsV2RNuoTBq");
         when(registry.getServiceRegistrationById(orgId, serviceId))
             .thenReturn(Optional.of(ServiceRegistration.newBuilder()
                         .setServiceId(serviceId)
+                        .setMetadataUri(metadataURI)
+                        .build()));
+        when(storage.get(metadataURI))
+            .thenReturn(Utils.strToBytes(metadataJson));
+    }
+
+    private void addOrganizationMetadataToRegistry(String orgId, String metadataJson) {
+        final URI metadataURI = Utils.strToUri("ipfs://QmWHm43Neb24LVprzduAhnvyTHfR1do8H9WJctiYXiToS7");
+        when(registry.getOrganizationById(orgId))
+            .thenReturn(Optional.of(OrganizationRegistration.newBuilder()
+                        .setOrgId(orgId)
                         .setMetadataUri(metadataURI)
                         .build()));
         when(storage.get(metadataURI))

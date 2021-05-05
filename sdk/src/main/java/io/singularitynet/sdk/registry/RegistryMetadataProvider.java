@@ -41,7 +41,8 @@ public class RegistryMetadataProvider implements MetadataProvider {
     @Override
     public OrganizationMetadata getOrganizationMetadata() {
         log.debug("Get organization metadata, orgId: {}", orgId);
-        OrganizationRegistration registration = registryContract.getOrganizationById(orgId).get();
+        OrganizationRegistration registration = registryContract.getOrganizationById(orgId)
+            .orElseThrow(() -> new NotFoundException("Organization not found, orgId: " + orgId));
         byte[] metadataBytes = metadataStorage.get(registration.getMetadataUri());
 
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -73,7 +74,8 @@ public class RegistryMetadataProvider implements MetadataProvider {
     @Override
     public ServiceMetadata getServiceMetadata() {
         log.debug("Get service metadata, orgId: {}, serviceId: {}", orgId, serviceId);
-        ServiceRegistration registration = registryContract.getServiceRegistrationById(orgId, serviceId).get();
+        ServiceRegistration registration = registryContract.getServiceRegistrationById(orgId, serviceId)
+            .orElseThrow(() -> new NotFoundException("Service not found, orgId: " + orgId + ", serviceId: " + serviceId));
         byte[] metadataBytes = metadataStorage.get(registration.getMetadataUri());
 
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -114,4 +116,9 @@ public class RegistryMetadataProvider implements MetadataProvider {
 
     }
 
+    public static class NotFoundException extends RuntimeException {
+        private NotFoundException(String message) {
+            super(message);
+        }
+    }
 }
