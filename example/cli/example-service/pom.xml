@@ -72,7 +72,7 @@
               <serviceId>example-service</serviceId>
               <outputDir>${project.build.directory}/proto</outputDir>
               <javaPackage>io.singularitynet.service.exampleservice</javaPackage>
-              <ethereumJsonRpcEndpoint>https://ropsten.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2</ethereumJsonRpcEndpoint>
+              <ethereumJsonRpcEndpoint>https://mainnet.infura.io/v3/e7732e1f679e461b9bb4da5653ac3fc2</ethereumJsonRpcEndpoint>
             </configuration>
             <goals>
               <goal>get</goal>
