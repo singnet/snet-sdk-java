@@ -2,5 +2,5 @@ coverage:
   status:
     project:
       default:
-        target: auto  # auto compares coverage to the previous base commit
-
+        target: 80%    # the required coverage value
+        threshold: 1%  # the leniency in hitting the target
