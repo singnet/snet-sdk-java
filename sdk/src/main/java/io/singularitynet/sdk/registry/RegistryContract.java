@@ -35,7 +35,7 @@ public class RegistryContract {
     public Optional<OrganizationRegistration> getOrganizationById(String orgId) {
         return wrapExceptions(() -> {
             log.info("Get organization from Registry, orgId: {}", orgId);
-            Tuple7<Boolean, byte[], byte[], String, List<String>, List<byte[]>, List<byte[]>> result =
+            Tuple7<Boolean, byte[], byte[], String, List<String>, List<byte[]>> result =
                 registry.getOrganizationById(strToBytes32(orgId)).send();
             if (result.getValue1()) {
                 OrganizationRegistration.Builder builder = OrganizationRegistration.newBuilder()
@@ -64,7 +64,7 @@ public class RegistryContract {
     public Optional<ServiceRegistration> getServiceRegistrationById(String orgId, String serviceId) {
         return wrapExceptions(() -> {
             log.info("Get service from Registry, orgId: {}, serviceId: {}", orgId, serviceId);
-            Tuple4<Boolean, byte[], byte[], List<byte[]>> result = 
+            Tuple4<Boolean, byte[], byte[]> result =
                 registry.getServiceRegistrationById(strToBytes32(orgId), strToBytes32(serviceId)).send();
             if (result.getValue1()) {
                 ServiceRegistration registration = ServiceRegistration.newBuilder()
