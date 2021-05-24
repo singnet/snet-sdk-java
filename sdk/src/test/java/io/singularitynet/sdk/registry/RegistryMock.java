@@ -23,10 +23,10 @@ public class RegistryMock {
                     eq(Utils.strToBytes32(serviceId))))
             .thenReturn(new RemoteCall<>(
                         () -> {
-                            return new Tuple4<>(true,
+                            return new Tuple3<>(true,
                                     Utils.strToBytes32(registration.getServiceId()),
-                                    Utils.strToBytes(registration.getMetadataUri().toString()),
-                                    registration.getTags().stream().map(Utils::strToBytes32).collect(toList()));
+                                    Utils.strToBytes(registration.getMetadataUri().toString())
+                                    );
                         })
                     );
     }
@@ -36,13 +36,12 @@ public class RegistryMock {
         when(registry.getOrganizationById(eq(Utils.strToBytes32(orgId))))
             .thenReturn(new RemoteCall<>(
                         () -> {
-                            return new Tuple7<>(true,
+                            return new Tuple6<>(true,
                                     Utils.strToBytes32(registration.getOrgId()),
                                     Utils.strToBytes(registration.getMetadataUri().toString()),
                                     "0xfA8a01E837c30a3DA3Ea862e6dB5C6232C9b800A",
                                     Collections.EMPTY_LIST,
-                                    registration.getServiceIds().stream().map(Utils::strToBytes32).collect(toList()),
-                                    Collections.EMPTY_LIST
+                                    registration.getServiceIds().stream().map(Utils::strToBytes32).collect(toList())
                                     );
                         })
                     );

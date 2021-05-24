@@ -39,7 +39,7 @@ public class Web3jTestIT {
         Registry registry = Registry.load(IntEnv.REGISTRY_CONTRACT_ADDRESS.toString(), web3j,
                 roTransactionManager, gasProvider);
 
-        Tuple4<Boolean, byte[], byte[], List<byte[]>> result = 
+        Tuple3<Boolean, byte[], byte[]> result = 
             registry.getServiceRegistrationById(Utils.strToBytes32(IntEnv.TEST_ORG_ID),
                     Utils.strToBytes32(IntEnv.TEST_SERVICE_ID)).send();
 
