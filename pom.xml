@@ -18,7 +18,7 @@
     <grpc.version>1.28.0</grpc.version>
     <web3j.version>4.2.0-android</web3j.version>
     <java-sdk-integration-test-env.image>singularitynet/java-sdk-integration-test-env</java-sdk-integration-test-env.image>
-    <java-sdk-integration-test-env.version>3.0.0</java-sdk-integration-test-env.version>
+    <java-sdk-integration-test-env.version>5.0.1</java-sdk-integration-test-env.version>
   </properties>
 
   <repositories>
