@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/singnet/snet-sdk-java.svg?style=svg)](https://circleci.com/gh/singnet/snet-sdk-java)
 [![codecov](https://codecov.io/gh/singnet/snet-sdk-java/branch/master/graph/badge.svg)](https://codecov.io/gh/singnet/snet-sdk-java)
 [![Release](https://jitpack.io/v/singnet/snet-sdk-java.svg)](https://jitpack.io/#singnet/snet-sdk-java)
-[![Javadoc](https://img.shields.io/badge/javadoc-0.4.0-brightgreen)](https://jitpack.io/com/github/singnet/snet-sdk-java/snet-sdk-java/0.4.0/javadoc)
+[![Javadoc](https://img.shields.io/badge/javadoc-master--SNAPSHOT-brightgreen)](https://jitpack.io/com/github/singnet/snet-sdk-java/snet-sdk-java/master-SNAPSHOT/javadoc)
 
 ## Implementing SingularityNet service client in Java
 
@@ -29,7 +29,7 @@
 ```xml
 <project>
   <properties>
-    <snet.sdk.java.version>0.4.0</snet.sdk.java.version>
+    <snet.sdk.java.version>master-SNAPSHOT</snet.sdk.java.version>
   </properties>
 
   <build>
