@@ -19,7 +19,7 @@ import java.util.List;
 import io.ipfs.api.IPFS;
 import io.ipfs.multihash.Multihash;
 import org.web3j.protocol.core.RemoteCall;
-import org.web3j.tuples.generated.Tuple4;
+import org.web3j.tuples.generated.Tuple3;
 
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.contracts.Registry;
@@ -45,10 +45,9 @@ public class ServiceApiGetterTest {
                     eq(Utils.strToBytes32(SERVICE_ID))))
             .thenReturn(new RemoteCall<>(
                         () -> {
-                            return new Tuple4<>(true,
+                            return new Tuple3<>(true,
                                     Utils.strToBytes32(SERVICE_ID),
-                                    Utils.strToBytes("ipfs://" + METADATA_HASH),
-                                    Collections.emptyList());
+                                    Utils.strToBytes("ipfs://" + METADATA_HASH));
                         }));
 
         ipfs = mock(IPFS.class);
