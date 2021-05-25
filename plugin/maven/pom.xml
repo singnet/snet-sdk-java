@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.github.singnet.snet-sdk-java</groupId>
     <artifactId>snet-sdk-plugin-pom</artifactId>
-    <version>master-SNAPSHOT</version>
+    <version>0.4.0</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
