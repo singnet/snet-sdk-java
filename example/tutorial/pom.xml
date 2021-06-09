@@ -15,7 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <snet.sdk.java.version>0.4.1-SNAPSHOT</snet.sdk.java.version>
+    <snet.sdk.java.version>master-SNAPSHOT</snet.sdk.java.version>
   </properties>
 
   <repositories>

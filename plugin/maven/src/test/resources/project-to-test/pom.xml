@@ -11,7 +11,7 @@
   <name>Test MyMojo</name>
 
   <properties>
-    <snet.sdk.java.version>0.4.1-SNAPSHOT</snet.sdk.java.version>
+    <snet.sdk.java.version>master-SNAPSHOT</snet.sdk.java.version>
   </properties>
 
   <build>
