@@ -16,6 +16,7 @@ public class BaseDaemonConnection implements DaemonConnection {
     private final static Logger log = LoggerFactory.getLogger(BaseDaemonConnection.class);
 
     private final EndpointSelector endpointSelector;
+    private final GrpcSettings grpcSettings;
     private final ClientInterceptorProxy interceptorProxy;
     private final MetadataProvider metadataProvider;
 
@@ -23,9 +24,10 @@ public class BaseDaemonConnection implements DaemonConnection {
     private volatile Endpoint endpoint;
 
     public BaseDaemonConnection(EndpointSelector endpointSelector,
-            MetadataProvider metadataProvider) {
+            GrpcSettings grpcSettings, MetadataProvider metadataProvider) {
         log.info("New daemon connection, endpointSelector: {}", endpointSelector);
         this.endpointSelector = endpointSelector;
+        this.grpcSettings = grpcSettings;
         this.interceptorProxy = new ClientInterceptorProxy();
         this.metadataProvider = metadataProvider;
     }
@@ -73,7 +75,7 @@ public class BaseDaemonConnection implements DaemonConnection {
         URL url = endpoint.getUrl();
         ManagedChannelBuilder builder = ManagedChannelBuilder
             .forAddress(url.getHost(), url.getPort())
-            .maxInboundMessageSize(MAX_GRPC_INBOUND_MESSAGE_SIZE)
+            .maxInboundMessageSize(this.grpcSettings.getMaxInboundMessageSize())
             .intercept(interceptorProxy);
         // TODO: test HTTPS connections
         if ("http".equals(url.getProtocol())) {

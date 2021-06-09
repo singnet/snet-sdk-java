@@ -220,7 +220,7 @@ package io.singularitynet.sdk.client {
         Sdk(DependencyFactory factory);
 
         ServiceClient newServiceClient(String orgId, String serviceId, String endpointGroupName, PaymentStrategy paymentStrategy);
-        ServiceClient newServiceClient(String orgId, String serviceId, EndpointSelector endpointSelector, PaymentStrategy paymentStrategy);
+        ServiceClient newServiceClient(String orgId, String serviceId, EndpointSelector endpointSelector, PaymentStrategy paymentStrategy, GrpcSettings grpcSettings);
         Ethereum getEthereum();
         void transfer(Address toAddress, BigInteger amount);
         Identity getIdentity();
