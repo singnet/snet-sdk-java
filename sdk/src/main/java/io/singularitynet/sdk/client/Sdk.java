@@ -18,6 +18,7 @@ import io.singularitynet.sdk.daemon.DaemonConnection;
 import io.singularitynet.sdk.daemon.BaseDaemonConnection;
 import io.singularitynet.sdk.daemon.EndpointSelector;
 import io.singularitynet.sdk.daemon.FixedGroupEndpointSelector;
+import io.singularitynet.sdk.daemon.GrpcSettings;
 import io.singularitynet.sdk.mpe.AskDaemonFirstPaymentChannelProvider;
 import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
@@ -107,7 +108,8 @@ public class Sdk implements AutoCloseable {
             String endpointGroupName, PaymentStrategy paymentStrategy) {
         return newServiceClient(orgId, serviceId,
                 new FixedGroupEndpointSelector(endpointGroupName),
-                paymentStrategy);
+                paymentStrategy,
+                GrpcSettings.DEFAULT);
     }
 
     /**
@@ -116,18 +118,20 @@ public class Sdk implements AutoCloseable {
      * @param serviceId service id.
      * @param endpointSelector endpoint selection strategy.
      * @param paymentStrategy payment strategy to use.
+     * @param grpcSettings gRPC client channel settings.
      * @return new instance of service client.
      */
     public ServiceClient newServiceClient(String orgId, String serviceId,
             EndpointSelector endpointSelector,
-            PaymentStrategy paymentStrategy) {
+            PaymentStrategy paymentStrategy,
+            GrpcSettings grpcSettings) {
         log.info("Start service client, orgId: {}, serviceId: {}, endpointSelector: {}, paymentStrategy: {}",
                 orgId, serviceId, endpointSelector, paymentStrategy);
 
         MetadataProvider metadataProvider = getMetadataProvider(orgId, serviceId);
 
         DaemonConnection connection = new BaseDaemonConnection(
-                endpointSelector, metadataProvider);
+                endpointSelector, grpcSettings, metadataProvider);
 
         PaymentChannelStateProvider paymentChannelStateProvider =
             new AskDaemonFirstPaymentChannelProvider(mpeContract, connection,
