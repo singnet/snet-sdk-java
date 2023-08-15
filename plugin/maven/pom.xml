@@ -17,7 +17,7 @@
   <url>http://dev.singularitynet.io</url>
 
   <properties>
-    <maven.version>3.3.9</maven.version>
+    <maven.version>3.8.1</maven.version>
   </properties>
 
   <prerequisites>
