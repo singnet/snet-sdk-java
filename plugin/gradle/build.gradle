@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'jacoco'
+
+}
+
+group = 'com.github.singnet.snet-sdk-java'
+version = 'master-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+
+
+dependencies {
+    implementation project(":snet-sdk-plugin-core")
+    implementation project(":snet-sdk-java")
+    compileOnly "org.projectlombok:lombok:1.18.30"
+    annotationProcessor "org.projectlombok:lombok:1.18.30"
+
+
+
+    // gradle plugin internals
+    implementation "org.codehaus.groovy:groovy:3.0.21"
+    compileOnly gradleApi()
+
+
+//     testImplementation "junit:junit:4.13.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+    testImplementation "org.mockito:mockito-core:5.18.0"
+    testImplementation "org.slf4j:slf4j-simple:2.0.16"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    testLogging {
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+            showStandardStreams = true
+        }
+}
+
+tasks.javadoc {
+    options.encoding = 'UTF-8'
+}
+

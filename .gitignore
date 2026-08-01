@@ -25,6 +25,10 @@ hs_err_pid*
 # maven build files
 target
 
+#gradle build files
+build
+.gradle
+
 # vim specific files
 *.swp
 .vim-project
@@ -33,3 +37,7 @@ target
 .classpath
 .settings
 .project
+
+#IntellijIDEA specific files
+
+.idea

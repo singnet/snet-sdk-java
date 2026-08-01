@@ -6,7 +6,6 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.exceptions.ClientConnectionException;
 import org.web3j.tx.gas.StaticGasProvider;
-import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.slf4j.Logger;
@@ -15,15 +14,13 @@ import io.ipfs.api.IPFS;
 
 import io.singularitynet.sdk.common.Preconditions;
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
+import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.ContractUtils;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.MnemonicIdentity;
 import io.singularitynet.sdk.ethereum.PrivateKeyIdentity;
-import io.singularitynet.sdk.contracts.Registry;
-import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 
 /**
  * Bootstraps SDK dependencies from configuration.

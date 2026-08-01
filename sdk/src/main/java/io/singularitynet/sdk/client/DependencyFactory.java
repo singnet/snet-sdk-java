@@ -1,10 +1,10 @@
 package io.singularitynet.sdk.client;
 
+import io.singularitynet.sdk.contracts.Registry;
 import org.web3j.protocol.Web3j;
 import io.ipfs.api.IPFS;
 
 import io.singularitynet.sdk.ethereum.Identity;
-import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 
 /**

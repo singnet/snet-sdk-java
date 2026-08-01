@@ -2,11 +2,12 @@ package io.singularitynet.sdk.client;
 
 import io.ipfs.api.IPFS;
 import java.math.BigInteger;
+
+import io.singularitynet.sdk.contracts.Registry;
 import org.web3j.protocol.Web3j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
 import io.singularitynet.sdk.registry.RegistryContract;
 import io.singularitynet.sdk.registry.MetadataStorage;
@@ -24,11 +25,7 @@ import io.singularitynet.sdk.mpe.BlockchainPaymentChannelManager;
 import io.singularitynet.sdk.mpe.MpePaymentChannelManager;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannelStateProvider;
-import io.singularitynet.sdk.mpe.PaymentChannelStateService;
 import io.singularitynet.sdk.freecall.FreeCallStateService;
-import io.singularitynet.sdk.client.PaymentStrategy;
-import io.singularitynet.sdk.client.ServiceClient;
-import io.singularitynet.sdk.client.BaseServiceClient;
 import io.singularitynet.sdk.ethereum.Identity;
 import io.singularitynet.sdk.ethereum.Ethereum;
 import io.singularitynet.sdk.ethereum.Address;

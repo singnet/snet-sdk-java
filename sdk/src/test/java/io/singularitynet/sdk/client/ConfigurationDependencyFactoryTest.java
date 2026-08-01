@@ -1,8 +1,8 @@
 package io.singularitynet.sdk.client;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+//import org.junit.rules.ExpectedException;
 
 import java.net.URL;
 import java.net.MalformedURLException;

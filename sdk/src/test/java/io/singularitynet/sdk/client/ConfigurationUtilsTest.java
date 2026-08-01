@@ -1,7 +1,7 @@
 package io.singularitynet.sdk.client;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -24,6 +24,7 @@ public class ConfigurationUtilsTest {
     private final static String gasPrice = "1000000";
     private final static String gasLimit = "2000000";
 
+
     @Test
     public void fromJsonLoadAllProperties() throws MalformedURLException {
         String json = "{" +
@@ -43,7 +44,15 @@ public class ConfigurationUtilsTest {
         assertEquals("IPFS endpoint", new URL(ipfsEndpoint), config.getIpfsEndpoint());
         assertEquals("Identity type", Enum.valueOf(Configuration.IdentityType.class, identityType), config.getIdentityType());
         assertArrayEquals("Identity private key", Utils.hexToBytes(privateKey), config.getIdentityPrivateKey().get());
-        assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress().get());
+        Address address = new Address(registryAddress);
+        System.out.println("address" + address.toString());
+        Address addressOpt = config.getRegistryAddress().get();
+        System.out.println("address" + addressOpt.toString());
+
+        assertEquals("Registry address", address, addressOpt);
+
+//        assertEquals("Registry address", new Address(registryAddress), config.getRegistryAddress().get());
+
         assertEquals("MultiPartyEscrow address", new Address(mpeAddress), config.getMultiPartyEscrowAddress().get());
         assertEquals("Gas price", new BigInteger(gasPrice), config.getGasPrice());
         assertEquals("Gas limit", new BigInteger(gasLimit), config.getGasLimit());

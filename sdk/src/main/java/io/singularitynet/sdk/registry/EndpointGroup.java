@@ -1,13 +1,13 @@
 package io.singularitynet.sdk.registry;
 
+import com.google.gson.annotations.SerializedName;
+import io.singularitynet.sdk.ethereum.Address;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-import com.google.gson.annotations.SerializedName;
 
-import io.singularitynet.sdk.ethereum.Address;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode
 @ToString

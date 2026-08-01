@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'com.github.singnet.snet-sdk-java'
+version = 'master-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    // compile scope
+    implementation(project(":snet-sdk-java")) {
+        exclude group: "com.google.guava", module: "guava"
+    }
+    implementation "com.google.guava:guava:33.4.0-jre"
+    implementation "org.apache.commons:commons-compress:1.27.1"
+    implementation "org.slf4j:slf4j-api:2.0.16"
+
+    // test scope
+//     testImplementation "junit:junit:4.13.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+    testImplementation "org.mockito:mockito-core:5.18.0"
+    testImplementation "org.slf4j:slf4j-simple:2.0.16"
+    implementation 'org.web3j:abi:5.0.0'
+    implementation 'org.web3j:contracts:5.0.0'
+    implementation 'org.web3j:crypto:5.0.0'
+    implementation 'org.web3j:rlp:5.0.0'
+    implementation 'org.web3j:tuples:5.0.0'
+    implementation 'com.github.ipfs:java-ipfs-api:v1.4.4'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    testLogging {
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+            showStandardStreams = true
+        }
+}
+
+tasks.javadoc {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('compileJava') {
+    dependsOn(
+        project(':snet-sdk-java').tasks.named('getDependencies'),
+        project(':snet-sdk-java').tasks.named('getContracts'),
+        project(':snet-sdk-java').tasks.named('generateContractStubsMain'),
+        project(':snet-sdk-java').tasks.named('generateContractStubsMulti'),
+        project(':snet-sdk-java').tasks.named('getDaemonProto'),
+        project(':snet-sdk-java').tasks.named('generateProto')
+    )
+}

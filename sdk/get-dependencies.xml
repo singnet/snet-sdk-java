@@ -34,6 +34,8 @@
       <arg value="${project.build.directory}/generated-sources/sol/java"/>
       <arg value="--package"/>
       <arg value="io.singularitynet.sdk.contracts"/>
+      <jvmarg value="-Djava.security.manager=disallow"/>
+<!--      HERE TURN OFF SECURITY MANAGER-->
     </java>
     <java classname="org.web3j.codegen.SolidityFunctionWrapperGenerator" classpath="${maven.compile.classpath.for.ant}">
       <arg value="solidity"/>
@@ -44,6 +46,8 @@
       <arg value="${project.build.directory}/generated-sources/sol/java"/>
       <arg value="--package"/>
       <arg value="io.singularitynet.sdk.contracts"/>
+      <jvmarg value="-Djava.security.manager=disallow"/>
+<!--      HERE TURN OFF SECURITY MANAGER-->
     </java>
   </target>
 

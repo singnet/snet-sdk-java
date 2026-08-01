@@ -10,8 +10,8 @@
   <properties>
     <skipITs>true</skipITs>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <platform-contracts.version>1.0.1</platform-contracts.version>
     <snet-daemon.version>3.0.0</snet-daemon.version>
     <protobuf.version>3.5.1</protobuf.version>
@@ -53,43 +53,52 @@
         <artifactId>snet-sdk-plugin-core</artifactId>
         <version>${project.version}</version>
       </dependency>
+
       <!-- protobuf + grpc begin -->
+      <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>${protobuf.version}</version>
+        <version>4.31.1</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/io.grpc/grpc-bom -->
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-bom</artifactId>
-        <version>${grpc.version}</version>
+        <version>1.73.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.2</version>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>2.1.1</version>
       </dependency>
+
       <!-- protobuf + grpc end -->
       <!-- web3j begin -->
+      <!-- https://mvnrepository.com/artifact/org.web3j/core -->
       <dependency>
         <groupId>org.web3j</groupId>
         <artifactId>core</artifactId>
-        <version>${web3j.version}</version>
+        <version>5.0.0</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.web3j/codegen -->
       <dependency>
         <groupId>org.web3j</groupId>
         <artifactId>codegen</artifactId>
-        <version>${web3j.version}</version>
+        <version>5.0.0</version>
         <scope>provided</scope>
       </dependency>
       <!-- web3j end -->
+
       <!-- IPFS begin -->
+      <!-- https://mvnrepository.com/artifact/com.github.ipfs/java-ipfs-http-client -->
       <dependency>
         <groupId>com.github.ipfs</groupId>
         <artifactId>java-ipfs-http-client</artifactId>
-        <version>1.2.3</version>
+        <version>v1.4.4</version>
       </dependency>
       <dependency>
         <groupId>com.github.multiformats</groupId>
@@ -97,51 +106,66 @@
         <version>1.2.1</version>
       </dependency>
       <!-- IPFS end -->
+
       <!-- apache commons -->
+      <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.21</version>
+        <version>1.27.1</version>
       </dependency>
+
+      <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.7</version>
+        <version>2.19.0</version>
       </dependency>
       <!-- apache commons end -->
+
+      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
-        <version>1.18.10</version>
+        <version>1.18.30</version>
         <scope>provided</scope>
       </dependency>
+
       <!-- slf4j -->
+      <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.29</version>
+        <version>2.0.16</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>1.7.29</version>
+        <version>2.0.16</version>
+        <scope>test</scope>
       </dependency>
       <!-- slf4j end -->
+
+      <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.8.5</version>
+        <version>2.10.1</version>
       </dependency>
+
       <!-- json start -->
+      <!-- https://mvnrepository.com/artifact/jakarta.json/jakarta.json-api -->
       <dependency>
-        <groupId>javax.json</groupId>
-        <artifactId>javax.json-api</artifactId>
-        <version>1.1.4</version>
+        <groupId>jakarta.json</groupId>
+        <artifactId>jakarta.json-api</artifactId>
+        <version>2.1.3</version>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.glassfish/jakarta.json -->
       <dependency>
         <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>1.1.4</version>
+        <artifactId>jakarta.json</artifactId>
+        <version>2.0.1</version>
       </dependency>
       <!-- json end -->
 
@@ -149,13 +173,14 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13.1</version>
+        <version>4.13.2</version>
         <scope>test</scope>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>3.1.0</version>
+        <version>5.18.0</version>
         <scope>test</scope>
       </dependency>
 
@@ -191,7 +216,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.2</version>
+          <version>0.8.12</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -214,7 +239,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.6</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>io.fabric8</groupId>
@@ -262,11 +287,15 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.13.0</version>
+          <configuration>
+            <source>17</source>
+            <target>17</target>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.2.5</version>
           <configuration>
             <trimStackTrace>false</trimStackTrace>
             <systemPropertyVariables>
@@ -291,12 +320,12 @@
     </pluginManagement>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
+<!--  <reporting>-->
+<!--    <plugins>-->
+<!--      <plugin>-->
+<!--        <artifactId>maven-project-info-reports-plugin</artifactId>-->
+<!--      </plugin>-->
+<!--    </plugins>-->
+<!--  </reporting>-->
 
 </project>

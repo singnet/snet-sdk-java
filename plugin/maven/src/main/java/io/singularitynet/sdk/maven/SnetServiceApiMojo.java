@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 import java.net.URL;
 import lombok.Getter;
+//import lombok.Setter;
 
 import io.singularitynet.sdk.plugin.ServiceApiGetter;
 import io.singularitynet.sdk.plugin.PluginException;
@@ -25,6 +26,8 @@ public class SnetServiceApiMojo extends AbstractMojo implements ServiceApiGetter
     @Parameter(property = "serviceId", required = true)
     private String serviceId;
 
+//    here was added setter for io.singularitynet.sdk.maven.SnetServiceApiMojoTestIT
+//    @Setter
     @Getter
     @Parameter(defaultValue = "${project.build.directory}/proto", property = "outputDir", required = true)
     private File outputDir;

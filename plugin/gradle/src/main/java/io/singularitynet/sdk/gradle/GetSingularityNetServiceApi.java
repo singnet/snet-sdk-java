@@ -5,7 +5,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
-
 import java.io.File;
 import java.net.URL;
 import lombok.Setter;

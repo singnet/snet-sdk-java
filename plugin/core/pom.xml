@@ -21,6 +21,7 @@
   <dependencies>
     <!-- compile scope -->
     <dependency>
+
       <groupId>com.github.singnet.snet-sdk-java</groupId>
       <artifactId>snet-sdk-java</artifactId>
       <exclusions>
@@ -39,36 +40,44 @@
           <artifactId>guava</artifactId>
         </exclusion>
       </exclusions>
+
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <!-- version 28.1 corresponds to the grpc version 1.28.0 -->
-      <version>29.0-jre</version>
+      <version>33.4.0-jre</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <version>2.0.16</version>
     </dependency>
 
     <!-- test scope -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <version>5.18.0</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <version>2.0.16</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

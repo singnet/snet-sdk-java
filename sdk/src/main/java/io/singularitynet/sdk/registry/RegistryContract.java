@@ -1,10 +1,13 @@
 package io.singularitynet.sdk.registry;
 
 import java.util.Optional;
+
+import io.singularitynet.sdk.contracts.Registry;
 import org.web3j.tuples.generated.*;
 import java.net.URI;
 import java.util.List;
-import io.singularitynet.sdk.contracts.Registry;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

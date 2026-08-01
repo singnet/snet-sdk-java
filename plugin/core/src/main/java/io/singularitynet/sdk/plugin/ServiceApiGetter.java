@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+
+import io.singularitynet.sdk.contracts.Registry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -23,14 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.singularitynet.sdk.common.Utils;
-import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.ethereum.Address;
 import io.singularitynet.sdk.ethereum.ContractUtils;
 import io.singularitynet.sdk.registry.IpfsMetadataStorage;
 import io.singularitynet.sdk.registry.RegistryMetadataProvider;
 import io.singularitynet.sdk.registry.ServiceMetadata;
 import io.singularitynet.sdk.registry.RegistryContract;
-import io.singularitynet.sdk.client.Configuration;
 
 public class ServiceApiGetter {
 

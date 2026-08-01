@@ -1,0 +1,107 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'maven-publish'
+    id 'jacoco'
+    id 'base'
+    id 'com.bmuschko.docker-remote-api' version '9.4.0'
+}
+
+group = 'com.github.singnet.snet-sdk-java'
+version = 'master-SNAPSHOT'
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repo.gradle.org/gradle/libs-releases-local"
+        }
+    maven { url "https://jitpack.io" }
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation project(':snet-sdk-plugin-core')
+
+    compileOnly "org.projectlombok:lombok:1.18.30"
+    annotationProcessor "org.projectlombok:lombok:1.18.30"
+
+    compileOnly "org.apache.maven:maven-plugin-api:3.9.9"
+    compileOnly "org.apache.maven:maven-core:3.3.9"
+    compileOnly "org.apache.maven:maven-artifact:3.3.9"
+    compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:3.15.1"
+
+//     testImplementation "junit:junit:4.13.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+    testImplementation "org.slf4j:slf4j-simple:2.0.16"
+    implementation "commons-io:commons-io:2.19.0"
+
+    testImplementation "org.apache.maven.plugin-testing:maven-plugin-testing-harness:3.3.0"
+    testImplementation "org.apache.maven:maven-compat:3.3.9"
+    implementation 'com.github.docker-java:docker-java:3.5.3'
+    implementation 'com.github.docker-java:docker-java-transport-httpclient5:3.5.3'
+
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    testLogging {
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+            showStandardStreams = true
+        }
+}
+
+tasks.javadoc {
+    options.encoding = 'UTF-8'
+}
+
+
+// import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+// import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+//
+// task createIpfs(type: DockerCreateContainer) {
+//      containerName = 'Ipfs'
+//      targetImageId 'ipfs/go-ipfs:master-latest'
+//      portSpecs = ['5002:5002']
+//  }
+//
+// task startIpfs(type: DockerStartContainer) {
+//     dependsOn createIpfs
+//     doLast{
+//         targetContainerId { createIpfs.getContainerId() }
+//     }
+// }
+//
+// task createEthereum(type: DockerCreateContainer) {
+//   containerName = 'Ethereum'
+//   targetImageId 'trufflesuite/ganache-cli:latest'
+//   portSpecs = ['8545:8545']
+// }
+//
+// task startEthereum(type: DockerStartContainer) {
+//     dependsOn createEthereum
+//     doLast{
+//         targetContainerId { createEthereum.getContainerId() }
+//     }
+// }
+//
+// tasks.test {
+//     dependsOn startIpfs, startEthereum
+//     doLast {
+//             println 'Останавливаем и удаляем контейнеры...'
+//             removeIpfs.execute()
+//             removeEthereum.execute()
+//         }
+// }

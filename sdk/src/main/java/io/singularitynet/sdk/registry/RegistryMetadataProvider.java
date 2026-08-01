@@ -1,14 +1,14 @@
 package io.singularitynet.sdk.registry;
 
 import com.google.gson.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.net.URL;
-
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.ethereum.Address;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Metadata provider implementation which synchronously forwards calls to the
@@ -31,7 +31,7 @@ public class RegistryMetadataProvider implements MetadataProvider {
      * @param metadataStorage metadata storage implementation.
      */
     public RegistryMetadataProvider(String orgId, String serviceId,
-            RegistryContract registryContract, MetadataStorage metadataStorage) {
+                                    RegistryContract registryContract, MetadataStorage metadataStorage) {
 		this.orgId = orgId;
 		this.serviceId = serviceId;
 		this.registryContract = registryContract;

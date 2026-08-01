@@ -1,0 +1,182 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.4'
+    id 'jacoco'
+}
+
+group = 'com.github.singnet'
+version = 'master-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.google.protobuf:protobuf-java:3.21.12'
+    implementation 'io.grpc:grpc-netty-shaded:1.71.0'
+    implementation 'io.grpc:grpc-protobuf:1.71.0'
+    implementation 'io.grpc:grpc-stub:1.71.0'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.web3j:core:5.0.0'
+    implementation 'org.web3j:codegen:5.0.0'
+    implementation 'com.github.ipfs:java-ipfs-api:1.4.4'
+    implementation 'com.github.multiformats:java-multihash:1.2.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+
+//     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.16'
+    testImplementation 'org.glassfish:javax.json:1.1.4'
+    implementation 'javax.json:javax.json-api:1.1.4'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.12"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.71.0"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.named('compileJava') {
+    dependsOn 'getDependencies','generateContractStubs', 'getContracts' ,'generateContractStubsMain', 'generateContractStubsMulti', 'getDaemonProto', 'generateProto'
+}
+
+tasks.named('generateProto') {
+    dependsOn 'getDaemonProto'
+}
+
+tasks.named("processResources") {
+    dependsOn(tasks.named("processTestResources"))
+}
+
+tasks.register('getDependencies') {
+    dependsOn 'generateContractStubs', 'getDaemonProto'
+}
+
+tasks.register('generateContractStubs') {
+    dependsOn 'getContracts', 'generateContractStubsMain', 'generateContractStubsMulti'
+
+}
+
+tasks.register('getContracts') {
+    def platformContractsVersion = rootProject.ext.platformContractsVersion
+    def buildDirPath = buildDir
+
+    doLast {
+     ant.get(    src: "https://registry.npmjs.org/singularitynet-platform-contracts/-/singularitynet-platform-contracts-${platformContractsVersion}.tgz",
+                        dest: "${buildDirPath}/singularitynet-platform-contracts.tgz")
+
+            ant.untar(  src: "${buildDirPath}/singularitynet-platform-contracts.tgz",
+                        dest: "${buildDirPath}",
+                        compression: 'gzip')
+
+            ant.mkdir(  dir: "${buildDirPath}/singularitynet-platform-contracts")
+            ant.mkdir(  dir: "${buildDirPath}/singularitynet-platform-contracts/package")
+
+            ant.move(   file: "${buildDirPath}/package",
+                        tofile: "${buildDirPath}/singularitynet-platform-contracts")
+
+            ant.mkdir(  dir: "${buildDirPath}/resources")
+
+            ant.move(   file: "${buildDirPath}/singularitynet-platform-contracts/networks",
+                        todir: "${buildDirPath}/resources")
+
+            ant.mkdir(  dir: "${buildDirPath}/generated/sol")
+            ant.mkdir(  dir: "${buildDirPath}/generated/sol/java")
+    }
+}
+
+tasks.register('generateContractStubsMain', JavaExec) {
+    dependsOn 'getContracts'
+    outputs.dir "$buildDir/generated/sol/java"
+    def buildDirPath = buildDir
+
+    classpath = configurations.runtimeClasspath
+    mainClass.set("org.web3j.codegen.SolidityFunctionWrapperGenerator")
+
+    args = [
+            "-a", "build/singularitynet-platform-contracts/abi/Registry.json",
+            "-o", "build/generated/sol/java",
+            "-p", "io.singularitynet.sdk.contracts"]
+}
+
+tasks.register('generateContractStubsMulti', JavaExec) {
+    dependsOn 'getContracts'
+    outputs.dir "$buildDir/generated/sol/java"
+    def buildDirPath = buildDir
+
+    classpath = configurations.runtimeClasspath
+    mainClass.set("org.web3j.codegen.SolidityFunctionWrapperGenerator")
+
+    args = [
+            "-a", "build/singularitynet-platform-contracts/abi/MultiPartyEscrow.json",
+            "-o", "build/generated/sol/java",
+            "-p", "io.singularitynet.sdk.contracts"]
+}
+
+tasks.register('getDaemonProto') {
+    def snetDaemonVersion = rootProject.ext.snetDaemonVersion
+    def buildDirPath = buildDir
+    doLast {
+      ant.get(src: "https://github.com/singnet/snet-daemon/releases/download/v${snetDaemonVersion}/snet-daemon-v${snetDaemonVersion}-linux-amd64.tar.gz",
+                dest: "$buildDirPath/snet-daemon.tar.gz")
+        ant.untar(src: "$buildDirPath/snet-daemon.tar.gz",
+                  dest: "$buildDirPath", compression: 'gzip')
+        ant.move(file: "$buildDirPath/snet-daemon-v${snetDaemonVersion}-linux-amd64",
+                 tofile: "$buildDirPath/snet-daemon")
+        ant.mkdir(dir: "$buildDirPath/proto")
+        ant.move(file: "$buildDirPath/snet-daemon/proto/state_service.proto", todir: "$buildDirPath/proto")
+        ant.move(file: "$buildDirPath/snet-daemon/proto/control_service.proto", todir: "$buildDirPath/proto")
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/sol/java/io/singularitynet/sdk/contracts"
+            srcDir "$buildDir/generated/source/proto/main/java"
+            srcDir "$buildDir/generated/source/proto/main/grpc"
+        }
+        proto {
+            srcDir "$buildDir/proto"
+        }
+        resources {
+            srcDir "$buildDir/resources"
+        }
+    }
+    test {
+        java {
+            srcDir "$buildDir/generated/source/proto/test/java"
+            srcDir "$buildDir/generated/source/proto/test/grpc"
+        }
+        proto {
+            srcDir "$buildDir/proto"
+        }
+        resources {
+            srcDir "$buildDir/resources/test"
+        }
+    }
+}

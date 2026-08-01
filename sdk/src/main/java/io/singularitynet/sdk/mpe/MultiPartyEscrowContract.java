@@ -1,12 +1,9 @@
 package io.singularitynet.sdk.mpe;
 
-import io.reactivex.Flowable;
 import java.math.BigInteger;
 import java.util.Optional;
-import java.util.Spliterators;
-import java.util.Spliterator;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.abi.EventEncoder;

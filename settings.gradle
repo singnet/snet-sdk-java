@@ -1,0 +1,17 @@
+rootProject.name = 'snet-sdk-java-pom'
+
+include(
+    "snet-sdk-maven-plugin",
+    "snet-sdk-plugin-core",
+    "snet-sdk-gradle-plugin",
+    "snet-sdk-java",
+    "snet-sdk-plugin-pom"
+)
+
+project(":snet-sdk-maven-plugin").projectDir = file("plugin/maven")
+project(":snet-sdk-plugin-core").projectDir = file("plugin/core")
+project(":snet-sdk-gradle-plugin").projectDir = file("plugin/gradle")
+project(":snet-sdk-java").projectDir = file("sdk")
+project(":snet-sdk-plugin-pom").projectDir = file("plugin")
+
+

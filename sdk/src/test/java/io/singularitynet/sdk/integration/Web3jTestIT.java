@@ -3,19 +3,17 @@ package io.singularitynet.sdk.integration;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import io.reactivex.Flowable;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tuples.generated.*;
 
-import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.contracts.MultiPartyEscrow;
+import io.singularitynet.sdk.contracts.Registry;
 import io.singularitynet.sdk.common.Utils;
 import io.singularitynet.sdk.mpe.MultiPartyEscrowContract;
 import io.singularitynet.sdk.mpe.PaymentChannel;
